@@ -1,14 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="#07090E">
 
-    <WebView
-        android:id="@+id/webview"
+    <!-- TOP APP HEADER BAR -->
+    <LinearLayout
+        android:id="@+id/header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#07090E">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_launcher"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="15.5sp"
+            android:textStyle="bold" />
+
+        <!-- Privilege Chip Badge (Clickable) -->
+        <TextView
+            android:id="@+id/tv_header_privilege"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:background="@drawable/bg_badge_shizuku"
+            android:text="SHIZUKU"
+            android:textColor="#00F0FF"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- TAB CONTENT CONTAINER -->
+    <FrameLayout
+        android:id="@+id/tab_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none"
-        android:overScrollMode="never" />
+        android:layout_below="@id/header_bar">
 
-</FrameLayout>
+        <include
+            android:id="@+id/tab_dashboard_view"
+            layout="@layout/tab_dashboard"
+            android:visibility="visible" />
+
+        <include
+            android:id="@+id/tab_apps_view"
+            layout="@layout/tab_apps"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/tab_terminal_view"
+            layout="@layout/tab_terminal"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/tab_settings_view"
+            layout="@layout/tab_settings"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- FLOATING BOTTOM NAVIGATION BAR -->
+    <LinearLayout
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="14dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/bg_nav_island"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:id="@+id/nav_item_dashboard"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/tv_nav_icon_dashboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚡"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_nav_label_dashboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tối ưu"
+                android:textColor="#00F0FF"
+                android:textSize="10.5sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_item_apps"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/tv_nav_icon_apps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📱"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_nav_label_apps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ứng dụng"
+                android:textColor="#64748B"
+                android:textSize="10.5sp"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_item_terminal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/tv_nav_icon_terminal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💻"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_nav_label_terminal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Terminal"
+                android:textColor="#64748B"
+                android:textSize="10.5sp"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_item_settings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/tv_nav_icon_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚙️"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_nav_label_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hệ thống"
+                android:textColor="#64748B"
+                android:textSize="10.5sp"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,4 +1,4 @@
-package com.zalorust.zrampurger;
+package com.tanmahwuan.zrampurger;
 
 import android.content.Context;
 import android.content.Intent;
@@ -715,7 +715,7 @@ public class GameBoosterManager {
         if (context != null && context.getFilesDir() != null) {
             return new File(context.getFilesDir(), SNAPSHOT_FILE_NAME);
         }
-        return new File("/data/data/com.zalorust.zrampurger/files/" + SNAPSHOT_FILE_NAME);
+        return new File("/data/data/com.tanmahwuan.zrampurger/files/" + SNAPSHOT_FILE_NAME);
     }
 
     private static SharedPreferences getPrefs(Context context) {

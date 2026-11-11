@@ -1,4 +1,4 @@
-package com.zalorust.zrampurger;
+package com.tanmahwuan.zrampurger;
 
 import android.os.Build;
 import java.lang.reflect.Method;

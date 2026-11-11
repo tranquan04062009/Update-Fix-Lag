@@ -1,4 +1,4 @@
-package com.zalorust.zrampurger;
+package com.tanmahwuan.zrampurger;
 
 import java.io.BufferedReader;
 import java.io.File;

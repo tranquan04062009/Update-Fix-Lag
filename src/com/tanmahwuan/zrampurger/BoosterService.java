@@ -1,4 +1,4 @@
-package com.zalorust.zrampurger;
+package com.tanmahwuan.zrampurger;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

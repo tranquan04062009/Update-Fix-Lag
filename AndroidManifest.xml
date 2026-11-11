@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zalorust.zrampurger"
+    package="com.tanmahwuan.zrampurger"
     android:versionCode="1"
     android:versionName="1.0.0">
 
@@ -45,7 +45,7 @@
 
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
-            android:authorities="com.zalorust.zrampurger.shizuku"
+            android:authorities="com.tanmahwuan.zrampurger.shizuku"
             android:multiprocess="false"
             android:enabled="true"
             android:exported="true"
@@ -56,7 +56,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.zalorust.zrampurger.ACTION_BOOST" />
+                <action android:name="com.tanmahwuan.zrampurger.ACTION_BOOST" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

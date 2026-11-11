@@ -1,4 +1,4 @@
-package com.zalorust.zrampurger;
+package com.tanmahwuan.zrampurger;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

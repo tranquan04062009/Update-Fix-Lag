@@ -1,4 +1,4 @@
-package com.zalorust.zrampurger;
+package com.tanmahwuan.zrampurger;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 public class RamWidgetProvider extends AppWidgetProvider {
 
-    public static final String ACTION_BOOST = "com.zalorust.zrampurger.ACTION_BOOST";
+    public static final String ACTION_BOOST = "com.tanmahwuan.zrampurger.ACTION_BOOST";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

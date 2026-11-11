@@ -1,4 +1,4 @@
-package com.zalorust.zrampurger;
+package com.tanmahwuan.zrampurger;
 
 import android.content.Context;
 import android.util.Log;
@@ -56,6 +56,8 @@ public class PerformanceEngine {
         public int gpuClockMhz = 0;
         public int gpuBusyPercent = 0;
         public double gpuTempC = 0.0;
+        public double cpuTempC = 0.0;
+        public double batteryTempC = 0.0;
         public String gpuModel = "Adreno 619";
         public int littleClusterFreqKHz = 0; // CPU 0-5
         public int bigClusterFreqKHz = 0;    // CPU 6-7
@@ -69,6 +71,8 @@ public class PerformanceEngine {
                 json.put("gpuClockMhz", gpuClockMhz);
                 json.put("gpuBusyPercent", gpuBusyPercent);
                 json.put("gpuTempC", String.format(Locale.US, "%.1f", gpuTempC));
+                json.put("cpuTempC", String.format(Locale.US, "%.1f", cpuTempC));
+                json.put("batteryTempC", String.format(Locale.US, "%.1f", batteryTempC));
                 json.put("gpuModel", gpuModel != null ? gpuModel : "Adreno 619");
                 json.put("littleClusterFreqKHz", littleClusterFreqKHz);
                 json.put("bigClusterFreqKHz", bigClusterFreqKHz);
@@ -379,14 +383,11 @@ public class PerformanceEngine {
             }
         }
 
-        // 4. GPU Temperature
-        String tempStr = readSysfsLine(KGSL_TEMP);
-        if (tempStr != null && !tempStr.isEmpty()) {
-            try {
-                long mC = Long.parseLong(tempStr.trim());
-                telemetry.gpuTempC = mC / 1000.0;
-            } catch (NumberFormatException ignored) {}
-        }
+        // 4. Accurate Hardware Temperatures via ThermalHelper
+        ThermalHelper.ThermalStats tStats = ThermalHelper.readTemperatures(null);
+        telemetry.gpuTempC = tStats.gpuTempC;
+        telemetry.cpuTempC = tStats.cpuTempC;
+        telemetry.batteryTempC = tStats.batteryTempC;
 
         // 5. CPU Cluster frequencies
         String littleFreq = readSysfsLine(CPU0_CUR_FREQ);
