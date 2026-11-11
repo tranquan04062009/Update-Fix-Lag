@@ -54,12 +54,12 @@ public class BoosterService extends Service {
 
         Notification notification = builder
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle("Z-RAM Purger: Extreme Performance Max")
-                .setContentText("Adreno 619 Turbo & Kryo EAS Priority Active")
+                .setContentTitle("Z-RAM Purger: Tăng tốc trò chơi")
+                .setContentText("Đang tối ưu hóa tài nguyên phần cứng cho trò chơi")
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .setCategory(Notification.CATEGORY_SERVICE)
-                .setColor(Color.parseColor("#00E5FF"))
+                .setColor(Color.parseColor("#00F0FF"))
                 .build();
 
         startForeground(NOTIFICATION_ID, notification);

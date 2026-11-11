@@ -290,7 +290,7 @@
                     android:paddingBottom="10dp"
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_chip_pill"
-                    android:text="Tiêu chuẩn\nKill ngầm"
+                    android:text="Tiêu chuẩn\nTiết kiệm"
                     android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
@@ -304,7 +304,7 @@
                     android:paddingBottom="10dp"
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_chip_pill"
-                    android:text="Thông minh\nStandby"
+                    android:text="Cân bằng\nTự động"
                     android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
@@ -317,7 +317,7 @@
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
                     android:background="@drawable/bg_chip_pill_active"
-                    android:text="Cực đại\nART GC"
+                    android:text="Chuyên sâu\nTối đa"
                     android:textColor="#00F0FF"
                     android:textSize="11sp"
                     android:textStyle="bold" />
@@ -336,7 +336,7 @@
             android:textSize="14.5sp"
             android:textStyle="bold" />
 
-        <!-- AOSP QUICK ACTIONS ROW -->
+        <!-- SYSTEM QUICK ACTIONS ROW -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -350,7 +350,7 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/bg_btn_secondary"
-                android:text="⚡ Bảo trì sâu AOSP"
+                android:text="⚡ Tối ưu hệ thống"
                 android:textColor="#FFFFFF"
                 android:textSize="11.5sp"
                 android:textStyle="bold" />
@@ -362,7 +362,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="5dp"
                 android:background="@drawable/bg_btn_secondary"
-                android:text="🧹 Dọn cache 2GB"
+                android:text="🧹 Dọn bộ nhớ đệm"
                 android:textColor="#FFFFFF"
                 android:textSize="11.5sp"
                 android:textStyle="bold" />
@@ -400,7 +400,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Adreno 619 Turbo • Kryo EAS Priority"
+                        android:text="Tăng tốc GPU &amp; Ưu tiên đồ họa"
                         android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:layout_marginTop="2dp" />
@@ -408,8 +408,17 @@
 
                 <Switch
                     android:id="@+id/switch_game_booster"
+                    style="@style/ShadcnSwitch"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:showText="false"
+                    android:textOn=""
+                    android:textOff=""
+                    android:switchMinWidth="48dp"
+                    android:thumbTextPadding="0dp"
+                    android:splitTrack="false"
+                    android:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb" />
             </LinearLayout>
 
             <!-- Hardware Telemetry Grid -->
@@ -527,7 +536,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- AOT Target Compilation Row -->
+            <!-- Target Game Compilation Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -554,7 +563,7 @@
                     android:layout_height="38dp"
                     android:layout_marginStart="6dp"
                     android:background="@drawable/bg_btn_secondary"
-                    android:text="AOT SPEED"
+                    android:text="TĂNG TỐC"
                     android:textColor="#00F0FF"
                     android:textSize="11sp"
                     android:textStyle="bold"
@@ -562,14 +571,14 @@
                     android:paddingEnd="12dp" />
             </LinearLayout>
 
-            <!-- Emergency Rollback Link -->
+            <!-- Reset Link -->
             <TextView
                 android:id="@+id/tv_emergency_rollback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
-                android:text="↺ Khôi phục mặc định OEM (Emergency Rollback)"
+                android:text="↺ Khôi phục cài đặt mặc định"
                 android:textColor="#64748B"
                 android:textSize="11sp"
                 android:padding="6dp" />

@@ -62,7 +62,7 @@
                 android:paddingEnd="14dp" />
         </LinearLayout>
 
-        <!-- AOSP ANIMATION LATENCY SCALER -->
+        <!-- ANIMATION SPEED SCALER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tăng tốc chuyển cảnh AOSP"
+                android:text="Tốc độ chuyển cảnh"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -82,7 +82,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rút ngắn độ trễ khung hình của Window Manager và Animator."
+                android:text="Tối ưu hóa thời gian phản hồi và chuyển cảnh mượt mà giữa các ứng dụng."
                 android:textColor="#94A3B8"
                 android:textSize="11.5sp"
                 android:layout_marginTop="2dp" />
@@ -101,7 +101,7 @@
                     android:gravity="center"
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_chip_pill"
-                    android:text="0.0x (Tắt)"
+                    android:text="Tắt hiệu ứng"
                     android:textColor="#94A3B8"
                     android:textSize="11.5sp" />
 
@@ -113,7 +113,7 @@
                     android:gravity="center"
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_chip_pill_active"
-                    android:text="0.5x (Siêu tốc)"
+                    android:text="0.5x (Nhanh)"
                     android:textColor="#00F0FF"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
@@ -125,13 +125,13 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:background="@drawable/bg_chip_pill"
-                    android:text="1.0x (Chuẩn)"
+                    android:text="1.0x (Mặc định)"
                     android:textColor="#94A3B8"
                     android:textSize="11.5sp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- AOSP PHENOTYPE LOW-RAM TUNER -->
+        <!-- BACKGROUND LOW-RAM TUNER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -151,7 +151,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AOSP Phenotype Low-RAM Tuner"
+                    android:text="Tối ưu hóa RAM chạy ngầm"
                     android:textColor="#FFFFFF"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -159,7 +159,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Compaction chủ động &amp; Cgroup v2 Freezer (đóng băng ngầm sau 10s)."
+                    android:text="Tự động thu hồi RAM và đóng băng các ứng dụng không hoạt động."
                     android:textColor="#94A3B8"
                     android:textSize="11.5sp"
                     android:layout_marginTop="2dp" />
@@ -167,8 +167,17 @@
 
             <Switch
                 android:id="@+id/switch_settings_lowram"
+                style="@style/ShadcnSwitch"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:showText="false"
+                android:textOn=""
+                android:textOff=""
+                android:switchMinWidth="48dp"
+                android:thumbTextPadding="0dp"
+                android:splitTrack="false"
+                android:track="@drawable/switch_track"
+                android:thumb="@drawable/switch_thumb" />
         </LinearLayout>
 
         <!-- WIDGET GUIDE CARD -->
@@ -198,7 +207,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- DEVICE & TECHNOLOGY SPECS CARD -->
+        <!-- DEVICE HARDWARE SPECS CARD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -210,7 +219,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thiết bị &amp; Công nghệ"
+                android:text="Thông tin thiết bị"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -219,7 +228,7 @@
                 android:id="@+id/tv_settings_device_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Model: Samsung Galaxy A42 5G (SM-A426N)\nChipset: Qualcomm Snapdragon 750G 5G • Android 13\nNhân điều khiển: Shizuku UID 2000 &amp; Linux Kernel 4.19\nGiao diện: 100% Native Java 60fps (Không WebView)"
+                android:text="Thiết bị: Samsung Galaxy A42 5G (SM-A426N)\nBộ xử lý: Qualcomm Snapdragon 750G 5G\nHệ điều hành: Android 13\nTrạng thái bộ nhớ: Đang hoạt động tối ưu"
                 android:textColor="#94A3B8"
                 android:textSize="12sp"
                 android:lineSpacingExtra="4dp"

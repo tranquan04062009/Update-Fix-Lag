@@ -8,17 +8,30 @@
     android:layout_marginBottom="6dp"
     android:background="@drawable/bg_card_bento">
 
-    <!-- App Avatar Circle -->
-    <TextView
-        android:id="@+id/app_avatar"
+    <!-- App Icon & Avatar Container -->
+    <FrameLayout
         android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:gravity="center"
-        android:background="@drawable/bg_chip_pill_active"
-        android:textColor="#00F0FF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="A" />
+        android:layout_height="38dp">
+
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:id="@+id/app_avatar"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_pill_active"
+            android:textColor="#00F0FF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="A" />
+    </FrameLayout>
 
     <!-- App Info Column -->
     <LinearLayout
@@ -52,24 +65,33 @@
             android:text="com.example.app" />
     </LinearLayout>
 
-    <!-- Hibernate Button -->
-    <Button
+    <!-- Hibernate Action Button -->
+    <TextView
         android:id="@+id/btn_hibernate"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
+        android:gravity="center"
         android:background="@drawable/bg_btn_secondary"
         android:textColor="#94A3B8"
         android:textSize="11sp"
         android:textStyle="bold"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="6dp"
         android:text="Ngủ đông" />
 
-    <!-- Whitelist Switch -->
-    <Switch
-        android:id="@+id/switch_whitelist"
+    <!-- Whitelist Lock/Protect Toggle Button -->
+    <TextView
+        android:id="@+id/btn_whitelist"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:background="@drawable/bg_btn_secondary"
+        android:textColor="#94A3B8"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="Khóa" />
 
 </LinearLayout>

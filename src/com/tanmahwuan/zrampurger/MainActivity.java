@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -154,14 +156,16 @@ public class MainActivity extends Activity {
         public boolean isSystem;
         public boolean isProtected;
         public boolean isWhitelisted;
+        public Drawable icon;
 
-        public AppEntry(String name, String packageName, int uid, boolean isSystem, boolean isProtected, boolean isWhitelisted) {
+        public AppEntry(String name, String packageName, int uid, boolean isSystem, boolean isProtected, boolean isWhitelisted, Drawable icon) {
             this.name = name;
             this.packageName = packageName;
             this.uid = uid;
             this.isSystem = isSystem;
             this.isProtected = isProtected;
             this.isWhitelisted = isWhitelisted;
+            this.icon = icon;
         }
     }
 
@@ -324,22 +328,22 @@ public class MainActivity extends Activity {
         btnSuperBoost.setOnClickListener(v -> executeSuperBoost());
 
         btnAospIdleMaint.setOnClickListener(v -> {
-            Toast.makeText(this, "⚡ Đang kích hoạt bảo trì sâu AOSP (fstrim, ZRAM, dexopt)...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "⚡ Đang tối ưu hóa hệ thống...", Toast.LENGTH_SHORT).show();
             new Thread(() -> {
                 AospAdbMaster.runIdleMaintenance();
                 mainHandler.post(() -> {
-                    Toast.makeText(this, "✅ Bảo trì AOSP hoàn tất thành công!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "✅ Tối ưu hóa hệ thống hoàn tất!", Toast.LENGTH_SHORT).show();
                     refreshTelemetryImmediate();
                 });
             }).start();
         });
 
         btnAospTrimCaches.setOnClickListener(v -> {
-            Toast.makeText(this, "🧹 Đang dọn sạch cache hệ thống 2GB qua AOSP StorageManager...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "🧹 Đang dọn sạch bộ nhớ đệm hệ thống...", Toast.LENGTH_SHORT).show();
             new Thread(() -> {
                 AospAdbMaster.trimSystemCaches(2147483648L);
                 mainHandler.post(() -> {
-                    Toast.makeText(this, "✅ Đã dọn sạch 2GB cache hệ thống!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "✅ Đã dọn sạch bộ nhớ đệm!", Toast.LENGTH_SHORT).show();
                     refreshTelemetryImmediate();
                 });
             }).start();
@@ -365,7 +369,7 @@ public class MainActivity extends Activity {
                     }
                     isBoosterUpdating = false;
                     updateWidget();
-                    Toast.makeText(MainActivity.this, isChecked ? "🚀 Đã bật Extreme Game Booster!" : "Đã khôi phục chế độ chuẩn OEM", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, isChecked ? "🚀 Đã bật chế độ Tăng tốc trò chơi!" : "Đã trở về chế độ mặc định", Toast.LENGTH_SHORT).show();
                 });
             }).start();
         });
@@ -376,13 +380,13 @@ public class MainActivity extends Activity {
                 Toast.makeText(this, "Vui lòng nhập tên gói ứng dụng hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Toast.makeText(this, "⚡ Bắt đầu biên dịch AOT speed-profile cho " + pkg + "...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "⚡ Đang tối ưu hóa ứng dụng " + pkg + "...", Toast.LENGTH_SHORT).show();
             btnTriggerAot.setEnabled(false);
             new Thread(() -> {
                 String res = AospAdbMaster.compileAppLayoutsAndSpeed(pkg);
                 mainHandler.post(() -> {
                     btnTriggerAot.setEnabled(true);
-                    Toast.makeText(MainActivity.this, "✅ AOT Speed hoàn tất cho " + pkg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "✅ Tối ưu hoàn tất cho " + pkg, Toast.LENGTH_SHORT).show();
                 });
             }).start();
         });
@@ -390,14 +394,14 @@ public class MainActivity extends Activity {
         tvEmergencyRollback.setOnClickListener(v -> {
             new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
                     .setTitle("Xác nhận khôi phục")
-                    .setMessage("Bạn có chắc chắn muốn khôi phục toàn bộ cài đặt phần cứng về mặc định xuất xưởng OEM?")
+                    .setMessage("Bạn có chắc chắn muốn khôi phục toàn bộ thiết lập về mặc định ban đầu?")
                     .setPositiveButton("Khôi phục", (dialog, which) -> {
                         new Thread(() -> {
                             boolean ok = GameBoosterManager.emergencyReset(MainActivity.this);
                             mainHandler.post(() -> {
                                 updateWidget();
                                 switchGameBooster.setChecked(false);
-                                Toast.makeText(MainActivity.this, ok ? "✅ Đã khôi phục mặc định OEM" : "Lỗi khôi phục", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, ok ? "✅ Đã khôi phục cài đặt mặc định" : "Lỗi khôi phục", Toast.LENGTH_SHORT).show();
                             });
                         }).start();
                     })
@@ -433,8 +437,8 @@ public class MainActivity extends Activity {
                 updateWidget();
 
                 String msg = String.format(Locale.US,
-                        "✅ Đã giải phóng %d MB RAM! (Đã kill: %d app, Nén: %d app)",
-                        res.freedMb, res.killedAppCount, res.compactedAppCount);
+                        "✅ Đã giải phóng %d MB RAM! (Dọn dẹp: %d ứng dụng)",
+                        res.freedMb, res.killedAppCount + res.compactedAppCount);
                 Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
             });
         }).start();
@@ -480,7 +484,12 @@ public class MainActivity extends Activity {
                 boolean isProt = systemProtected.contains(app.packageName);
                 boolean isWhite = customWhitelist.contains(app.packageName);
 
-                loaded.add(new AppEntry(name, app.packageName, app.uid, isSystem, isProt, isWhite));
+                Drawable icon = null;
+                try {
+                    icon = app.loadIcon(pm);
+                } catch (Throwable ignored) {}
+
+                loaded.add(new AppEntry(name, app.packageName, app.uid, isSystem, isProt, isWhite, icon));
             }
 
             Collections.sort(loaded, (a, b) -> a.name.compareToIgnoreCase(b.name));
@@ -535,11 +544,12 @@ public class MainActivity extends Activity {
             if (convertView == null) {
                 convertView = LayoutInflater.from(MainActivity.this).inflate(R.layout.app_list_item, parent, false);
                 holder = new ViewHolder();
+                holder.ivIcon = convertView.findViewById(R.id.app_icon);
                 holder.tvAvatar = convertView.findViewById(R.id.app_avatar);
                 holder.tvName = convertView.findViewById(R.id.app_name);
                 holder.tvPackage = convertView.findViewById(R.id.app_package);
                 holder.btnHibernate = convertView.findViewById(R.id.btn_hibernate);
-                holder.switchWhitelist = convertView.findViewById(R.id.switch_whitelist);
+                holder.btnWhitelist = convertView.findViewById(R.id.btn_whitelist);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -548,17 +558,39 @@ public class MainActivity extends Activity {
             AppEntry app = filteredAppsList.get(position);
             holder.tvName.setText(app.name);
             holder.tvPackage.setText(app.packageName);
-            holder.tvAvatar.setText(app.name.isEmpty() ? "A" : String.valueOf(app.name.charAt(0)).toUpperCase(Locale.US));
 
-            holder.switchWhitelist.setOnCheckedChangeListener(null);
-            holder.switchWhitelist.setChecked(customWhitelist.contains(app.packageName));
-            holder.switchWhitelist.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                toggleWhitelistApp(app.packageName, isChecked);
+            if (app.icon != null) {
+                holder.ivIcon.setImageDrawable(app.icon);
+                holder.ivIcon.setVisibility(View.VISIBLE);
+                holder.tvAvatar.setVisibility(View.GONE);
+            } else {
+                holder.ivIcon.setVisibility(View.GONE);
+                holder.tvAvatar.setVisibility(View.VISIBLE);
+                holder.tvAvatar.setText(app.name.isEmpty() ? "A" : String.valueOf(app.name.charAt(0)).toUpperCase(Locale.US));
+            }
+
+            boolean isWhitelisted = customWhitelist.contains(app.packageName);
+            if (isWhitelisted) {
+                holder.btnWhitelist.setText("🔒 Đã khóa");
+                holder.btnWhitelist.setBackgroundResource(R.drawable.bg_chip_pill_active);
+                holder.btnWhitelist.setTextColor(Color.parseColor("#00F0FF"));
+            } else {
+                holder.btnWhitelist.setText("🔓 Khóa");
+                holder.btnWhitelist.setBackgroundResource(R.drawable.bg_btn_secondary);
+                holder.btnWhitelist.setTextColor(Color.parseColor("#94A3B8"));
+            }
+
+            holder.btnWhitelist.setOnClickListener(v -> {
+                vibrate(25);
+                boolean newState = !customWhitelist.contains(app.packageName);
+                toggleWhitelistApp(app.packageName, newState);
+                appListAdapter.notifyDataSetChanged();
+                Toast.makeText(MainActivity.this, newState ? "🔒 Đã khóa bảo vệ: " + app.name : "Đã hủy bảo vệ: " + app.name, Toast.LENGTH_SHORT).show();
             });
 
             holder.btnHibernate.setOnClickListener(v -> {
                 vibrate(30);
-                Toast.makeText(MainActivity.this, "❄️ Đang đưa " + app.name + " vào ngủ đông AOSP...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "❄️ Đang đưa " + app.name + " vào chế độ ngủ đông...", Toast.LENGTH_SHORT).show();
                 new Thread(() -> {
                     boolean ok = AospAdbMaster.setAppHibernation(app.packageName, true);
                     mainHandler.post(() -> {
@@ -572,11 +604,12 @@ public class MainActivity extends Activity {
     }
 
     private static class ViewHolder {
+        ImageView ivIcon;
         TextView tvAvatar;
         TextView tvName;
         TextView tvPackage;
-        Button btnHibernate;
-        Switch switchWhitelist;
+        TextView btnHibernate;
+        TextView btnWhitelist;
     }
 
     private void toggleWhitelistApp(String pkg, boolean whitelist) {
@@ -701,16 +734,15 @@ public class MainActivity extends Activity {
                 boolean ok = AospAdbMaster.applyDeviceConfigLowRam(isChecked);
                 prefs.edit().putBoolean("aosp_device_config_enabled", isChecked).apply();
                 mainHandler.post(() -> {
-                    Toast.makeText(MainActivity.this, isChecked ? "⚡ Đã bật AOSP Low-RAM Tuner & Cgroup Freezer" : "Đã tắt AOSP Low-RAM Tuner", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, isChecked ? "⚡ Đã bật tối ưu hóa RAM chạy ngầm" : "Đã tắt tối ưu hóa RAM chạy ngầm", Toast.LENGTH_SHORT).show();
                 });
             }).start();
         });
 
         // Device Info
-        OemDetector.OemInfo oem = OemDetector.getOemInfo();
         String devInfo = String.format(
-                "Model: %s (%s)\nChipset: Qualcomm Snapdragon 750G 5G • Android %s\nCông nghệ RAM ảo: %s\nNhân điều khiển: Shizuku UID 2000 & Linux Kernel 4.19\nGiao diện: 100%% Native Java 60fps (Không WebView)",
-                Build.MODEL, Build.DEVICE, Build.VERSION.RELEASE, oem.virtualRamTech
+                "Thiết bị: %s (%s)\nBộ xử lý: Qualcomm Snapdragon 750G 5G\nHệ điều hành: Android %s\nTrạng thái bộ nhớ: Đang hoạt động tối ưu",
+                Build.MODEL, Build.DEVICE, Build.VERSION.RELEASE
         );
         tvSettingsDeviceInfo.setText(devInfo);
     }
@@ -830,13 +862,11 @@ public class MainActivity extends Activity {
         if (shizukuPerm) {
             tvHeaderPrivilege.setBackgroundResource(R.drawable.bg_badge_shizuku);
             tvHeaderPrivilege.setTextColor(Color.parseColor("#00F0FF"));
-            int uid = 2000;
-            try { uid = Shizuku.getUid(); } catch (Throwable ignored) {}
-            tvHeaderPrivilege.setText("SHIZUKU (UID " + uid + ")");
+            tvHeaderPrivilege.setText("● SHIZUKU SẴN SÀNG");
         } else if (rootAvail) {
             tvHeaderPrivilege.setBackgroundResource(R.drawable.bg_badge_root);
             tvHeaderPrivilege.setTextColor(Color.parseColor("#10B981"));
-            tvHeaderPrivilege.setText("ROOT SU");
+            tvHeaderPrivilege.setText("● ROOT SẴN SÀNG");
         } else {
             tvHeaderPrivilege.setBackgroundResource(R.drawable.bg_badge_shell);
             tvHeaderPrivilege.setTextColor(Color.parseColor("#94A3B8"));
