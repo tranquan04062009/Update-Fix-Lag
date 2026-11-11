@@ -568,19 +568,18 @@ public class GameBoosterManager {
     }
 
     /**
-     * Cold-start failsafe check:
-     * Inspects whether an uncommitted or active snapshot remains from a previous run or reboot.
+     * Cold-start check:
+     * If Game Booster was active, ensures the foreground service and active state persist.
      */
     public static void checkAndRecoverColdStart(Context context) {
         if (context == null) return;
         try {
-            StateSnapshot snap = loadSnapshot(context);
-            if (snap != null && !"RESTORED".equals(snap.state)) {
-                Log.w(TAG, "Cold-start recovery: Found dangling booster snapshot (" + snap.snapshotId + " in state " + snap.state + "). Triggering failsafe rollback!");
-                restoreOemState(context);
+            if (isBoosterActive(context)) {
+                Log.i(TAG, "Cold start: Game Booster is active. Ensuring foreground priority.");
+                startBoosterService(context);
             }
         } catch (Throwable t) {
-            Log.e(TAG, "Exception during cold-start recovery check", t);
+            Log.e(TAG, "Exception during cold-start check", t);
         }
     }
 

@@ -68,16 +68,7 @@ public class BoosterService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "BoosterService onDestroy triggered. Ensuring OEM state restoration...");
-        try {
-            if (GameBoosterManager.isBoosterActive(this)) {
-                Log.w(TAG, "BoosterService terminating while booster was active; executing automatic OEM restoration.");
-                GameBoosterManager.restoreOemState(this);
-            }
-        } catch (Throwable t) {
-            Log.e(TAG, "Error ensuring OEM restoration in BoosterService.onDestroy", t);
-        }
-
+        Log.i(TAG, "BoosterService onDestroy triggered.");
         stopForeground(true);
         super.onDestroy();
     }

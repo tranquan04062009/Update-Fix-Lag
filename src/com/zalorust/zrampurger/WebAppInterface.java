@@ -27,10 +27,65 @@ public class WebAppInterface {
 
     private final MainActivity activity;
     private final SharedPreferences prefs;
+    private volatile String cachedAppsJson = "[]";
+    private volatile long lastAppScanTime = 0;
 
     public WebAppInterface(MainActivity activity) {
         this.activity = activity;
         this.prefs = activity.getSharedPreferences("zram_prefs", Context.MODE_PRIVATE);
+        preloadAppsInBackground();
+    }
+
+    private void preloadAppsInBackground() {
+        new Thread(() -> {
+            try {
+                loadInstalledAppsInternal();
+            } catch (Throwable ignored) {}
+        }).start();
+    }
+
+    private synchronized String loadInstalledAppsInternal() {
+        if (!"[]".equals(cachedAppsJson) && (System.currentTimeMillis() - lastAppScanTime < 60000)) {
+            return cachedAppsJson;
+        }
+
+        JSONArray arr = new JSONArray();
+        PackageManager pm = activity.getPackageManager();
+        List<ApplicationInfo> apps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        Set<String> whitelist = getWhitelistSet();
+        Set<String> systemProtected = PurgeEngine.getCriticalWhitelist(activity);
+
+        for (ApplicationInfo app : apps) {
+            boolean isSystem = (app.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+            if (isSystem && !app.packageName.contains("google") && !app.packageName.contains("samsung") && !app.packageName.contains("xiaomi")) {
+                continue;
+            }
+
+            try {
+                JSONObject obj = new JSONObject();
+                CharSequence label = pm.getApplicationLabel(app);
+                obj.put("name", label != null ? label.toString() : app.packageName);
+                obj.put("package", app.packageName);
+                obj.put("uid", app.uid);
+                obj.put("isSystem", isSystem);
+                obj.put("isProtected", systemProtected.contains(app.packageName));
+                obj.put("isWhitelisted", whitelist.contains(app.packageName));
+                arr.put(obj);
+            } catch (Exception ignored) {}
+        }
+
+        cachedAppsJson = arr.toString();
+        lastAppScanTime = System.currentTimeMillis();
+        return cachedAppsJson;
+    }
+
+    @JavascriptInterface
+    public String getInstalledApps() {
+        if ("[]".equals(cachedAppsJson)) {
+            return loadInstalledAppsInternal();
+        }
+        return cachedAppsJson;
     }
 
     @JavascriptInterface
@@ -164,37 +219,6 @@ public class WebAppInterface {
             return "{\"exitCode\":-1,\"stdout\":\"\",\"stderr\":\"Empty command\",\"durationMs\":0,\"provider\":\"none\"}";
         }
         return CommandExecutor.execute(cmd.trim()).toJson();
-    }
-
-    @JavascriptInterface
-    public String getInstalledApps() {
-        JSONArray arr = new JSONArray();
-        PackageManager pm = activity.getPackageManager();
-        List<ApplicationInfo> apps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-
-        Set<String> whitelist = getWhitelistSet();
-        Set<String> systemProtected = PurgeEngine.getCriticalWhitelist(activity);
-
-        for (ApplicationInfo app : apps) {
-            boolean isSystem = (app.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-            if (isSystem && !app.packageName.contains("google") && !app.packageName.contains("samsung") && !app.packageName.contains("xiaomi")) {
-                continue;
-            }
-
-            try {
-                JSONObject obj = new JSONObject();
-                CharSequence label = pm.getApplicationLabel(app);
-                obj.put("name", label != null ? label.toString() : app.packageName);
-                obj.put("package", app.packageName);
-                obj.put("uid", app.uid);
-                obj.put("isSystem", isSystem);
-                obj.put("isProtected", systemProtected.contains(app.packageName));
-                obj.put("isWhitelisted", whitelist.contains(app.packageName));
-                arr.put(obj);
-            } catch (Exception ignored) {}
-        }
-
-        return arr.toString();
     }
 
     @JavascriptInterface
