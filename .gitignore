@@ -1,3 +1,6 @@
 bin/
 gen/
 *.dex
+build.sh
+test_verification.sh
+src/com/zalorust/zrampurger/TestVerificationRunner.java
