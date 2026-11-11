@@ -180,6 +180,104 @@
                 android:thumb="@drawable/switch_thumb" />
         </LinearLayout>
 
+        <!-- TOUCH SENSITIVITY BOOSTER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_card_bento">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Độ nhạy cảm ứng &amp; Phản hồi nhanh"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tăng tốc độ quét màn hình cảm ứng và giảm độ trễ phản hồi khi chạm."
+                    android:textColor="#94A3B8"
+                    android:textSize="11.5sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch_settings_touch"
+                style="@style/ShadcnSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:showText="false"
+                android:textOn=""
+                android:textOff=""
+                android:switchMinWidth="48dp"
+                android:thumbTextPadding="0dp"
+                android:splitTrack="false"
+                android:track="@drawable/switch_track"
+                android:thumb="@drawable/switch_thumb" />
+        </LinearLayout>
+
+        <!-- ZERO LATENCY RENDERING OPTIMIZER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_card_bento">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tối ưu hóa khung hình &amp; Hiển thị"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Loại bỏ độ trễ vẽ bề mặt và tối ưu hiệu suất mượt mà cho toàn hệ thống."
+                    android:textColor="#94A3B8"
+                    android:textSize="11.5sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch_settings_zerolatency"
+                style="@style/ShadcnSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:showText="false"
+                android:textOn=""
+                android:textOff=""
+                android:switchMinWidth="48dp"
+                android:thumbTextPadding="0dp"
+                android:splitTrack="false"
+                android:track="@drawable/switch_track"
+                android:thumb="@drawable/switch_thumb" />
+        </LinearLayout>
+
         <!-- WIDGET GUIDE CARD -->
         <LinearLayout
             android:layout_width="match_parent"

@@ -141,6 +141,8 @@ public class MainActivity extends Activity {
     private TextView pillAnim05;
     private TextView pillAnim1;
     private Switch switchSettingsLowram;
+    private Switch switchSettingsTouch;
+    private Switch switchSettingsZeroLatency;
     private TextView tvSettingsDeviceInfo;
 
     // Background Telemetry Thread
@@ -288,6 +290,8 @@ public class MainActivity extends Activity {
         pillAnim05 = findViewById(R.id.pill_anim_05);
         pillAnim1 = findViewById(R.id.pill_anim_1);
         switchSettingsLowram = findViewById(R.id.switch_settings_lowram);
+        switchSettingsTouch = findViewById(R.id.switch_settings_touch);
+        switchSettingsZeroLatency = findViewById(R.id.switch_settings_zerolatency);
         tvSettingsDeviceInfo = findViewById(R.id.tv_settings_device_info);
 
         tvHeaderPrivilege.setOnClickListener(v -> requestShizukuPermission());
@@ -735,6 +739,32 @@ public class MainActivity extends Activity {
                 prefs.edit().putBoolean("aosp_device_config_enabled", isChecked).apply();
                 mainHandler.post(() -> {
                     Toast.makeText(MainActivity.this, isChecked ? "⚡ Đã bật tối ưu hóa RAM chạy ngầm" : "Đã tắt tối ưu hóa RAM chạy ngầm", Toast.LENGTH_SHORT).show();
+                });
+            }).start();
+        });
+
+        // Touch Sensitivity Booster
+        boolean touchBoost = prefs.getBoolean("touch_boost_enabled", false);
+        switchSettingsTouch.setChecked(touchBoost);
+        switchSettingsTouch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            new Thread(() -> {
+                boolean ok = AospAdbMaster.setTouchSensitivityBoost(isChecked);
+                prefs.edit().putBoolean("touch_boost_enabled", isChecked).apply();
+                mainHandler.post(() -> {
+                    Toast.makeText(MainActivity.this, isChecked ? "⚡ Đã bật phản hồi cảm ứng nhanh" : "Đã tắt phản hồi cảm ứng nhanh", Toast.LENGTH_SHORT).show();
+                });
+            }).start();
+        });
+
+        // Zero Latency Rendering
+        boolean zeroLatency = prefs.getBoolean("zero_latency_enabled", false);
+        switchSettingsZeroLatency.setChecked(zeroLatency);
+        switchSettingsZeroLatency.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            new Thread(() -> {
+                boolean ok = AospAdbMaster.setSurfaceFlingerZeroLatency(isChecked);
+                prefs.edit().putBoolean("zero_latency_enabled", isChecked).apply();
+                mainHandler.post(() -> {
+                    Toast.makeText(MainActivity.this, isChecked ? "⚡ Đã bật tối ưu hóa khung hình mượt mà" : "Đã tắt tối ưu hóa khung hình", Toast.LENGTH_SHORT).show();
                 });
             }).start();
         });

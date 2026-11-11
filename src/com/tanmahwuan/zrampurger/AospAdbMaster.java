@@ -251,4 +251,126 @@ public class AospAdbMaster {
                      "cmd deviceidle step deep 2>/dev/null || true";
         CommandExecutor.execute(cmd);
     }
+
+    /**
+     * Enables or disables High Touch Sensitivity / Glove Mode to reduce screen touch input latency.
+     */
+    public static boolean setTouchSensitivityBoost(boolean enable) {
+        Log.i(TAG, "Touch Sensitivity Boost: " + enable);
+        String cmd = String.format(
+            "settings put secure high_touch_sensitivity %d 2>/dev/null; " +
+            "settings put secure long_press_timeout %d 2>/dev/null; " +
+            "settings put secure multi_press_timeout %d 2>/dev/null",
+            enable ? 1 : 0,
+            enable ? 250 : 400,
+            enable ? 250 : 400
+        );
+        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Optimizes SurfaceFlinger and HWUI frame presentation pipeline:
+     * - latch_unsignaled: eliminates fence wait latency for instant frame latching
+     * - render_thread_priority: sets RenderThread to RT priority (-20)
+     * - early phase offsets: minimizes touch-to-display latency
+     * - disable-blur: disables expensive Gaussian blur passes
+     */
+    public static boolean setSurfaceFlingerZeroLatency(boolean enable) {
+        Log.i(TAG, "SurfaceFlinger Zero Latency Pipeline: " + enable);
+        StringBuilder sb = new StringBuilder();
+        if (enable) {
+            sb.append("setprop debug.sf.latch_unsignaled 1 2>/dev/null; ");
+            sb.append("setprop debug.sf.early_phase_offset_ns 500000 2>/dev/null; ");
+            sb.append("setprop debug.sf.early_app_phase_offset_ns 500000 2>/dev/null; ");
+            sb.append("setprop debug.sf.early_gl_phase_offset_ns 3000000 2>/dev/null; ");
+            sb.append("setprop debug.sf.high_fps_early_phase_offset_ns 500000 2>/dev/null; ");
+            sb.append("setprop debug.sf.high_fps_early_gl_phase_offset_ns 3000000 2>/dev/null; ");
+            sb.append("setprop debug.hwui.render_thread_priority -20 2>/dev/null; ");
+            sb.append("setprop debug.hwui.fps_divisor 1 2>/dev/null; ");
+            sb.append("cmd window disable-blur 1 2>/dev/null; ");
+        } else {
+            sb.append("setprop debug.sf.latch_unsignaled 0 2>/dev/null; ");
+            sb.append("setprop debug.hwui.render_thread_priority 0 2>/dev/null; ");
+            sb.append("cmd window disable-blur 0 2>/dev/null; ");
+        }
+        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Enforces Low-Latency TCP and WiFi keepalive during high performance gaming.
+     */
+    public static boolean setLowLatencyNetworking(boolean enable) {
+        Log.i(TAG, "Low Latency Networking: " + enable);
+        String cmd = enable
+            ? "settings put global tcp_default_init_rwnd 60 2>/dev/null; " +
+              "settings put global wifi_sleep_policy 2 2>/dev/null"
+            : "settings put global tcp_default_init_rwnd 10 2>/dev/null; " +
+              "settings put global wifi_sleep_policy 2 2>/dev/null";
+        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Configures advanced Game Manager intervention configs (target FPS and dynamic downscale).
+     */
+    public static boolean setGameInterventions(String packageName, int targetFps, float downscale) {
+        if (!isValidPackageName(packageName)) return false;
+        Log.i(TAG, "Configuring Game Interventions for " + packageName + ": fps=" + targetFps + ", downscale=" + downscale);
+        StringBuilder sb = new StringBuilder();
+        sb.append("cmd game mode performance \"").append(packageName).append("\" 2>/dev/null; ");
+        if (targetFps > 0) {
+            sb.append("cmd game set --mode performance --fps ").append(targetFps).append(" \"").append(packageName).append("\" 2>/dev/null; ");
+        }
+        if (downscale > 0.0f && downscale < 1.0f) {
+            String scaleStr = String.format(Locale.US, "%.2f", downscale);
+            sb.append("cmd game set --mode performance --downscale ").append(scaleStr).append(" \"").append(packageName).append("\" 2>/dev/null; ");
+        }
+        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Restricts background app from running and draining RAM/battery via AppOps.
+     */
+    public static boolean setAppBackgroundRestricted(String packageName, boolean restrict) {
+        if (!isValidPackageName(packageName)) return false;
+        String mode = restrict ? "ignore" : "allow";
+        String cmd = "cmd appops set --user 0 \"" + packageName + "\" RUN_IN_BACKGROUND " + mode + " 2>/dev/null; " +
+                     "cmd appops set --user 0 \"" + packageName + "\" RUN_ANY_IN_BACKGROUND " + mode + " 2>/dev/null";
+        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Triggers AOSP memory pressure factor pulse to force all apps to release memory caches.
+     */
+    public static void pulseMemoryPressure() {
+        Log.i(TAG, "Pulsing AOSP memory pressure factor CRITICAL...");
+        CommandExecutor.execute("cmd activity memory-factor set CRITICAL 2>/dev/null");
+        try {
+            Thread.sleep(600);
+        } catch (InterruptedException ignored) {}
+        CommandExecutor.execute("cmd activity memory-factor reset 2>/dev/null");
+        Log.i(TAG, "Memory pressure factor reset to normal.");
+    }
+
+    /**
+     * Linux Kernel VM Tuning (watermark boost factor, compaction proactiveness, vfs cache pressure).
+     */
+    public static boolean applyKernelVmOptimization() {
+        Log.i(TAG, "Applying Linux Kernel VM optimization parameters...");
+        String cmd =
+            "echo 0 > /proc/sys/vm/watermark_boost_factor 2>/dev/null; " +
+            "echo 20 > /proc/sys/vm/compaction_proactiveness 2>/dev/null; " +
+            "echo 50 > /proc/sys/vm/vfs_cache_pressure 2>/dev/null; " +
+            "echo 10 > /proc/sys/vm/stat_interval 2>/dev/null; " +
+            "echo 5 > /proc/sys/vm/dirty_background_ratio 2>/dev/null; " +
+            "echo 10 > /proc/sys/vm/dirty_ratio 2>/dev/null; " +
+            "echo 512 > /sys/block/sda/queue/read_ahead_kb 2>/dev/null; " +
+            "echo 512 > /sys/block/mmcblk0/queue/read_ahead_kb 2>/dev/null || true";
+        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
+        return res.exitCode == 0;
+    }
 }

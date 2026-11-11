@@ -237,8 +237,9 @@ public class PurgeEngine {
         // Tier 3: Extreme Kernel, Multi-OEM & AOSP Compaction Pipeline
         // =========================================================================
         if (tier >= 3) {
-            // 1. Proactive AOSP DeviceConfig / Phenotype Low-RAM flags
+            // 1. Proactive AOSP DeviceConfig Low-RAM flags & Linux Kernel VM tuning
             AospAdbMaster.applyDeviceConfigLowRam(true);
+            AospAdbMaster.applyKernelVmOptimization();
 
             // 2. Trigger AOSP Memory Pressure Pulse (forces ART moving compacting GC)
             CommandExecutor.execute("cmd activity memory-factor set CRITICAL 2>/dev/null");
@@ -251,7 +252,13 @@ public class PurgeEngine {
             compactedCount = allTargetApps.size();
             artGcCount = allTargetApps.size();
 
-            // 4. System Services Compaction & System Idle Maintenance
+            // 4. Per-package cache cleanup for top non-whitelisted apps
+            for (int i = 0; i < Math.min(allTargetApps.size(), 25); i++) {
+                String pkg = allTargetApps.get(i).packageName;
+                CommandExecutor.execute("cmd package clear --cache-only \"" + pkg + "\" 2>/dev/null");
+            }
+
+            // 5. System Services Compaction & System Idle Maintenance
             CommandExecutor.execute("cmd activity compact system 2>/dev/null");
             CommandExecutor.execute("cmd activity compact-idle 2>/dev/null");
             AospAdbMaster.runIdleMaintenance();
@@ -259,26 +266,26 @@ public class PurgeEngine {
             // Wait for all background broadcast dispatches to settle
             CommandExecutor.execute("am wait-for-broadcast-idle 2>/dev/null");
 
-            // 5. OEM-Specific Subsystem Hooks with Graceful Fallback
+            // 6. OEM-Specific Subsystem Hooks with Graceful Fallback
             executeOemHooks(oem);
 
-            // 6. In-Memory ZRAM Compaction
+            // 7. In-Memory ZRAM Compaction
             CommandExecutor.execute("echo all > /sys/block/zram0/compact 2>/dev/null || echo 1 > /sys/block/zram0/compact 2>/dev/null");
 
-            // 7. Kernel ZRAM Flash Writeback (RAM Plus / swap backing dev)
+            // 8. Kernel ZRAM Flash Writeback (RAM Plus / swap backing dev)
             CommandExecutor.execute("echo all > /sys/block/zram0/idle 2>/dev/null || echo 1 > /sys/block/zram0/idle 2>/dev/null");
             CommandExecutor.execute("echo idle > /sys/block/zram0/writeback 2>/dev/null");
             CommandExecutor.execute("echo huge > /sys/block/zram0/writeback 2>/dev/null");
 
-            // 8. Allow ART GC Compactor & ZRAM to stabilize
+            // 9. Allow ART GC Compactor & ZRAM to stabilize
             try {
                 Thread.sleep(1200);
             } catch (InterruptedException ignored) {}
 
-            // 9. MANDATORY SAFETY: Reset Memory Pressure factor
+            // 10. MANDATORY SAFETY: Reset Memory Pressure factor
             CommandExecutor.execute("cmd activity memory-factor reset 2>/dev/null");
 
-            // 10. Kernel VM Cache Drop & Order Compaction (if root)
+            // 11. Kernel VM Cache Drop & Order Compaction (if root)
             CommandExecutor.execute("sync && echo 3 > /proc/sys/vm/drop_caches 2>/dev/null");
             CommandExecutor.execute("echo 1 > /proc/sys/vm/compact_memory 2>/dev/null");
         } else {

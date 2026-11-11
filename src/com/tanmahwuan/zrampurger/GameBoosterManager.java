@@ -413,6 +413,13 @@ public class GameBoosterManager {
             AospAdbMaster.setThermalGovernorOverride(true);
             AospAdbMaster.setWindowBlurDisabled(true);
             AospAdbMaster.applyDeviceConfigLowRam(true);
+            AospAdbMaster.setTouchSensitivityBoost(true);
+            AospAdbMaster.setSurfaceFlingerZeroLatency(true);
+            AospAdbMaster.setLowLatencyNetworking(true);
+            AospAdbMaster.applyKernelVmOptimization();
+            if (targetPackage != null && PerformanceEngine.isValidPackageName(targetPackage)) {
+                AospAdbMaster.setGameInterventions(targetPackage, 60, 0.85f);
+            }
 
             // Commit snapshot as APPLIED
             snapshot.state = "APPLIED";
@@ -509,6 +516,9 @@ public class GameBoosterManager {
             AospAdbMaster.setThermalGovernorOverride(false);
             AospAdbMaster.setWindowBlurDisabled(false);
             AospAdbMaster.applyDeviceConfigLowRam(false);
+            AospAdbMaster.setTouchSensitivityBoost(false);
+            AospAdbMaster.setSurfaceFlingerZeroLatency(false);
+            AospAdbMaster.setLowLatencyNetworking(false);
 
             // Stop Booster Foreground Service
             stopBoosterService(context);
