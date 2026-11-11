@@ -6,11 +6,15 @@
     <title>Z-RAM Purger Extreme</title>
     <style>
         :root {
+            /* World-Class Design Tokens (shadcn/ui + Magic UI + Aceternity) */
             --bg-canvas: #05070E;
-            --surface-card: rgba(13, 18, 32, 0.75);
-            --surface-card-hover: rgba(18, 25, 45, 0.85);
-            --surface-border: rgba(255, 255, 255, 0.08);
-            --surface-border-focus: rgba(0, 240, 255, 0.4);
+            --bg-card: rgba(13, 18, 32, 0.72);
+            --bg-card-hover: rgba(18, 25, 45, 0.85);
+            --bg-card-elevated: rgba(20, 28, 50, 0.9);
+            
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(0, 240, 255, 0.4);
+            --border-focus: rgba(168, 85, 247, 0.5);
             
             --cyan-primary: #00F0FF;
             --cyan-glow: rgba(0, 240, 255, 0.35);
@@ -28,6 +32,7 @@
             
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, sans-serif;
             --font-mono: ui-monospace, SFMono-Regular, "Roboto Mono", "Courier New", monospace;
+            --touch-target: 44px;
         }
 
         * {
@@ -43,15 +48,15 @@
             background-color: var(--bg-canvas);
             background-image: 
                 radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 55%),
-                radial-gradient(circle at 80% 40%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 45%);
+                radial-gradient(circle at 85% 35%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 45%);
             background-attachment: fixed;
             color: var(--text-body);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            padding-bottom: 84px;
+            padding-bottom: calc(84px + env(safe-area-inset-bottom, 12px));
         }
 
         /* Top Header */
@@ -63,7 +68,7 @@
             background: rgba(8, 12, 22, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--surface-border);
+            border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
             z-index: 50;
@@ -76,10 +81,10 @@
         }
 
         .brand-icon {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, #00F0FF 0%, #A855F7 100%);
-            border-radius: 10px;
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -90,7 +95,7 @@
             width: 18px;
             height: 18px;
             stroke: #05070E;
-            stroke-width: 2.4;
+            stroke-width: 2.5;
             fill: none;
         }
 
@@ -102,7 +107,7 @@
         .brand-title {
             font-size: 15px;
             font-weight: 800;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.5px;
             background: linear-gradient(180deg, #FFFFFF 30%, #CBD5E1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -110,9 +115,9 @@
 
         .brand-sub {
             font-size: 10px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--cyan-primary);
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
@@ -125,14 +130,13 @@
         .badge-chip {
             height: 28px;
             padding: 0 10px;
-            border-radius: 20px;
+            border-radius: 9999px;
             display: flex;
             align-items: center;
             gap: 6px;
             font-size: 11px;
             font-weight: 700;
             font-family: var(--font-mono);
-            letter-spacing: 0.3px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -160,409 +164,337 @@
         .badge-shell {
             background: rgba(245, 158, 11, 0.12);
             color: #FBBF24;
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.35);
         }
 
         .badge-gpu {
-            background: rgba(0, 240, 255, 0.08);
+            background: rgba(0, 240, 255, 0.1);
             color: var(--cyan-primary);
-            border: 1px solid rgba(0, 240, 255, 0.25);
+            border: 1px solid rgba(0, 240, 255, 0.3);
         }
 
         .pulse-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: currentColor;
-            box-shadow: 0 0 6px currentColor;
+            background-color: currentColor;
+            box-shadow: 0 0 8px currentColor;
+            animation: pulseFade 1.6s infinite ease-in-out;
         }
 
-        /* Tab Container */
+        @keyframes pulseFade {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Tabs */
         .tab-panel {
             display: none;
-            padding: 16px;
-            animation: tabFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeIn 0.25s ease-out;
         }
 
         .tab-panel.active {
             display: block;
         }
 
-        @keyframes tabFadeIn {
+        @keyframes fadeIn {
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Hero Telemetry Card */
-        .hero-gauge-card {
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
+        /* Hero Bento Gauge Card */
+        .hero-bento-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
             border-radius: 24px;
-            padding: 22px 18px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            padding: 20px 16px 18px;
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-        }
-
-        .hero-gauge-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 20%;
-            right: 20%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.6), transparent);
-        }
-
-        .gauge-flex-wrap {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             position: relative;
-            margin: 6px 0 14px;
+            overflow: hidden;
+        }
+
+        .hero-bento-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, var(--cyan-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .gauge-svg-wrap {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 2px;
         }
 
         .gauge-svg {
-            width: 220px;
-            height: 220px;
+            width: 100%;
+            height: 100%;
             transform: rotate(-90deg);
         }
 
         .gauge-track-bg {
             fill: none;
-            stroke: rgba(255, 255, 255, 0.05);
-            stroke-width: 14;
-        }
-
-        .gauge-track-sub {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.02);
-            stroke-width: 2;
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 12;
+            stroke-linecap: round;
         }
 
         .gauge-track-fill {
             fill: none;
-            stroke: url(#cyan-purple-gradient);
-            stroke-width: 14;
+            stroke: url(#gauge-gradient);
+            stroke-width: 12;
             stroke-linecap: round;
-            stroke-dasharray: 565.48;
+            stroke-dasharray: 565;
             stroke-dashoffset: 200;
-            transition: stroke-dashoffset 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: drop-shadow(0 0 10px var(--cyan-glow));
         }
 
-        .gauge-core-text {
+        .gauge-center-content {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        .gauge-main-percent {
-            font-size: 46px;
-            font-weight: 900;
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
+        .gauge-main-number {
+            font-size: 38px;
+            font-weight: 800;
+            color: #FFFFFF;
             letter-spacing: -1px;
-            background: linear-gradient(180deg, #FFFFFF 20%, #E2E8F0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .gauge-ratio-text {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-top: 5px;
             font-variant-numeric: tabular-nums;
-            letter-spacing: 0.2px;
+            line-height: 1;
         }
 
-        .gauge-sub-pill {
-            margin-top: 6px;
-            padding: 3px 8px;
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            border-radius: 12px;
-            font-size: 10px;
+        .gauge-unit {
+            font-size: 15px;
             font-weight: 700;
             color: var(--cyan-primary);
-            text-transform: uppercase;
+            margin-left: 2px;
+        }
+
+        .gauge-status-sub {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
             letter-spacing: 0.8px;
-        }
-
-        /* ZRAM & Swap Segment */
-        .zram-card-strip {
-            background: rgba(10, 15, 28, 0.6);
-            border: 1px solid var(--surface-border);
-            border-radius: 16px;
-            padding: 12px 14px;
-            margin-top: 14px;
-        }
-
-        .zram-header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .zram-tag-name {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--purple-neon);
-            letter-spacing: 0.4px;
-        }
-
-        .zram-val-numbers {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-body);
-            font-family: var(--font-mono);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .custom-progress-bg {
-            height: 7px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .custom-progress-bar {
-            height: 100%;
-            width: 45%;
-            background: linear-gradient(90deg, var(--purple-neon) 0%, var(--cyan-primary) 100%);
-            border-radius: 6px;
-            transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 0 10px var(--purple-glow);
-        }
-
-        .zram-stats-chips {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .zram-micro-chip {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--surface-border);
-            border-radius: 10px;
-            padding: 8px 6px;
-            text-align: center;
-        }
-
-        .zram-micro-label {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .zram-micro-val {
-            font-size: 13px;
-            font-weight: 800;
-            font-family: var(--font-mono);
-            font-variant-numeric: tabular-nums;
-            margin-top: 2px;
-        }
-
-        /* 3-Col Key Metrics Grid */
-        .metrics-tri-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .metric-tile {
-            background: rgba(13, 18, 32, 0.6);
-            border: 1px solid var(--surface-border);
-            border-radius: 14px;
-            padding: 12px 8px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .metric-label-txt {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }
-
-        .metric-val-txt {
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--text-title);
-            font-family: var(--font-mono);
-            font-variant-numeric: tabular-nums;
             margin-top: 4px;
         }
 
-        /* OEM Adaptive Card */
-        .oem-hero-card {
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(13, 18, 32, 0.8) 100%);
-            border: 1px solid rgba(168, 85, 247, 0.25);
-            border-radius: 18px;
-            padding: 14px 16px;
-            margin-top: 14px;
+        .gauge-total-sub {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            margin-top: 2px;
+        }
+
+        /* ZRAM & Telemetry Mini Strip */
+        .zram-mini-strip {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-subtle);
         }
 
-        .oem-content-left {
-            flex: 1;
-            margin-right: 12px;
-        }
-
-        .oem-badge-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: var(--purple-neon);
+        .zram-pill-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            letter-spacing: 0.4px;
+            font-size: 11.5px;
+            color: var(--text-muted);
         }
 
-        .oem-desc-line {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 3px;
-            line-height: 1.4;
+        .zram-pill-item b {
+            color: var(--cyan-primary);
             font-family: var(--font-mono);
         }
 
-        .oem-action-pill {
-            height: 36px;
-            padding: 0 14px;
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(99, 102, 241, 0.25));
-            border: 1px solid rgba(168, 85, 247, 0.5);
-            color: #F3E8FF;
+        /* Segmented Mode Selector (Pills) */
+        .tier-control-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tier-headline {
             font-size: 11px;
             font-weight: 800;
-            letter-spacing: 0.4px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tier-segmented-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            background: rgba(13, 18, 32, 0.6);
+            padding: 4px;
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tier-pill-btn {
+            background: transparent;
+            border: 1px solid transparent;
             border-radius: 12px;
+            padding: 10px 6px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.15s ease;
-            white-space: nowrap;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .oem-action-pill:active {
-            transform: scale(0.96);
-            background: var(--purple-neon);
+        .tier-pill-btn.active {
+            background: rgba(0, 240, 255, 0.12);
+            border-color: rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+        }
+
+        .tier-pill-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-title);
+        }
+
+        .tier-pill-btn.active .tier-pill-title {
+            color: var(--cyan-primary);
+        }
+
+        .tier-pill-sub {
+            font-size: 9.5px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        /* Primary Action Button (SUPER BOOST) */
+        .btn-super-boost {
+            position: relative;
+            width: 100%;
+            height: 56px;
+            background: linear-gradient(135deg, #00F0FF 0%, #0284C7 60%, #7C3AED 100%);
+            border: none;
+            border-radius: 18px;
             color: #05070E;
+            font-size: 14.5px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 6px 24px var(--cyan-glow), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+            transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
         }
 
-        /* Extreme Game Booster / Performance Max Card */
-        .booster-banner-card {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(20, 20, 38, 0.95) 100%);
-            border: 1px solid rgba(0, 240, 255, 0.25);
+        .btn-super-boost:active {
+            transform: scale(0.97);
+            filter: brightness(1.1);
+        }
+
+        .btn-super-boost svg {
+            width: 20px;
+            height: 20px;
+            stroke: #05070E;
+            stroke-width: 2.6;
+            fill: none;
+        }
+
+        /* Game Booster Bento Tile */
+        .bento-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
             border-radius: 20px;
             padding: 16px;
-            margin-top: 14px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .booster-banner-card.active {
-            border-color: var(--cyan-primary);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2), inset 0 0 20px rgba(0, 240, 255, 0.08);
-        }
-
-        .booster-header-row {
+        .booster-head-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .booster-label-col {
+        .booster-title-group {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .booster-svg-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: rgba(0, 240, 255, 0.12);
-            border: 1px solid rgba(0, 240, 255, 0.3);
+        .booster-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--cyan-primary);
+            color: var(--purple-neon);
         }
 
-        .booster-head-title {
-            font-size: 13px;
+        .booster-icon-box svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            fill: none;
+        }
+
+        .booster-title-text {
+            font-size: 13.5px;
             font-weight: 800;
-            color: var(--text-title);
-            letter-spacing: 0.5px;
+            color: #FFFFFF;
         }
 
-        .booster-head-sub {
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--text-muted);
+        .booster-desc-text {
+            font-size: 11px;
+            color: var(--text-dim);
             margin-top: 2px;
         }
 
-        .booster-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .booster-status-pill {
-            font-size: 10px;
-            font-weight: 800;
-            padding: 4px 8px;
-            border-radius: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            background: rgba(148, 163, 184, 0.12);
-            color: var(--text-muted);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            font-family: var(--font-mono);
-        }
-
-        .booster-status-pill.active {
-            background: rgba(0, 240, 255, 0.2);
-            color: var(--cyan-primary);
-            border-color: var(--cyan-primary);
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
-        }
-
-        /* Modern Tactile Switch */
+        /* shadcn Switch */
         .shadcn-switch {
             position: relative;
             display: inline-block;
-            width: 46px;
-            height: 26px;
-            flex-shrink: 0;
+            width: 48px;
+            height: 28px;
         }
 
         .shadcn-switch input {
@@ -579,16 +511,16 @@
             right: 0;
             bottom: 0;
             background-color: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            border-radius: 26px;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .shadcn-slider::before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
+            height: 22px;
+            width: 22px;
             left: 2px;
             bottom: 2px;
             background-color: #FFFFFF;
@@ -607,30 +539,30 @@
             transform: translateX(20px);
         }
 
-        /* Booster Telemetry Strip */
-        .booster-telemetry-row {
+        /* Telemetry Row */
+        .telemetry-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 6px;
             margin-top: 14px;
         }
 
-        .booster-stat-item {
+        .telemetry-box {
             background: rgba(5, 7, 14, 0.6);
-            border: 1px solid var(--surface-border);
+            border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 8px 4px;
             text-align: center;
         }
 
-        .booster-stat-lbl {
+        .telemetry-label {
             font-size: 9px;
             font-weight: 700;
             color: var(--text-dim);
             text-transform: uppercase;
         }
 
-        .booster-stat-val {
+        .telemetry-val {
             font-size: 12px;
             font-weight: 800;
             color: var(--cyan-primary);
@@ -639,449 +571,16 @@
             margin-top: 2px;
         }
 
-        .booster-dexopt-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .booster-pkg-input {
-            flex: 1;
-            height: 38px;
-            background: rgba(8, 12, 22, 0.8);
-            border: 1px solid var(--surface-border);
-            border-radius: 10px;
-            padding: 0 12px;
-            color: var(--text-title);
-            font-size: 12px;
-            font-family: var(--font-mono);
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-
-        .booster-pkg-input:focus {
-            border-color: var(--cyan-primary);
-        }
-
-        .booster-dexopt-btn {
-            height: 38px;
-            padding: 0 14px;
-            background: linear-gradient(135deg, var(--purple-neon), #6366F1);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: transform 0.15s ease;
-        }
-
-        .booster-dexopt-btn:active {
-            transform: scale(0.96);
-        }
-
-        .booster-restore-link {
-            width: 100%;
-            height: 34px;
-            background: rgba(244, 63, 94, 0.1);
-            border: 1px solid rgba(244, 63, 94, 0.3);
-            border-radius: 10px;
-            color: #FB7185;
-            font-size: 11px;
-            font-weight: 800;
-            margin-top: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.15s ease;
-        }
-
-        .booster-restore-link:active {
-            background: rgba(244, 63, 94, 0.25);
-            transform: scale(0.98);
-        }
-
-        /* Segmented Mode Selector (Pills) */
-        .tier-control-wrap {
-            margin-top: 16px;
-        }
-
-        .tier-headline {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .tier-segmented-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            background: rgba(13, 18, 32, 0.5);
-            padding: 4px;
-            border-radius: 14px;
-            border: 1px solid var(--surface-border);
-        }
-
-        .tier-pill-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            border-radius: 10px;
-            padding: 10px 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .tier-pill-btn.active {
-            background: rgba(0, 240, 255, 0.12);
-            border-color: rgba(0, 240, 255, 0.4);
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
-        }
-
-        .tier-pill-title {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--text-muted);
-            transition: color 0.2s ease;
-        }
-
-        .tier-pill-btn.active .tier-pill-title {
-            color: var(--cyan-primary);
-        }
-
-        .tier-pill-desc {
-            font-size: 9px;
-            font-weight: 600;
-            color: var(--text-dim);
-            margin-top: 2px;
-        }
-
-        /* Giant Tactile Super Boost Button */
-        .hero-action-section {
-            margin-top: 18px;
-        }
-
-        .super-boost-btn {
-            width: 100%;
-            height: 58px;
-            background: linear-gradient(135deg, #00F0FF 0%, #0284C7 100%);
-            border: none;
-            border-radius: 18px;
-            color: #05070E;
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: 0.8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 8px 24px rgba(0, 240, 255, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-            transition: transform 0.12s ease, filter 0.2s ease;
-        }
-
-        .super-boost-btn:active {
-            transform: scale(0.96);
-            filter: brightness(1.15);
-        }
-
-        .super-boost-btn.loading {
-            background: #1E293B;
-            color: var(--text-muted);
-            box-shadow: none;
-            pointer-events: none;
-        }
-
-        .btn-icon-svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            stroke-width: 2.4;
-            fill: none;
-        }
-
-        /* Result Callout Banner */
-        .result-callout {
-            display: none;
-            margin-top: 14px;
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            border-radius: 16px;
-            padding: 14px 16px;
-            animation: tabFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .result-callout.show {
-            display: block;
-        }
-
-        .result-head-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #34D399;
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .result-body-text {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-top: 4px;
-            line-height: 1.5;
-            font-family: var(--font-mono);
-        }
-
-        /* App Manager Tab */
-        .search-input-wrap {
-            position: relative;
-            margin-bottom: 12px;
-        }
-
-        .search-box-field {
-            width: 100%;
-            height: 44px;
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
-            border-radius: 14px;
-            padding: 0 16px 0 40px;
-            color: var(--text-title);
-            font-size: 13px;
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-
-        .search-box-field:focus {
-            border-color: var(--cyan-primary);
-        }
-
-        .search-svg-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            stroke: var(--text-dim);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        .apps-scroll-list {
-            max-height: calc(100vh - 230px);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-right: 2px;
-        }
-
-        .app-row-card {
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
-            border-radius: 14px;
-            padding: 12px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: background 0.15s ease;
-        }
-
-        .app-row-card:active {
-            background: var(--surface-card-hover);
-        }
-
-        .app-text-info {
-            flex: 1;
-            min-width: 0;
-            margin-right: 12px;
-        }
-
-        .app-disp-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-title);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .app-pkg-line {
-            font-size: 11px;
-            color: var(--text-dim);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 2px;
-            font-family: var(--font-mono);
-        }
-
-        .app-tag-badges {
-            display: flex;
-            gap: 6px;
-            margin-top: 4px;
-        }
-
-        .app-tag {
-            font-size: 9px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 6px;
-            text-transform: uppercase;
-        }
-
-        .app-tag-system {
-            background: rgba(148, 163, 184, 0.15);
-            color: #94A3B8;
-        }
-
-        .app-tag-protected {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34D399;
-        }
-
-        /* Terminal Console Tab */
-        .terminal-viewport {
-            background: #04060A;
-            border: 1px solid var(--surface-border);
-            border-radius: 16px;
-            padding: 14px;
-            height: 340px;
-            overflow-y: auto;
-            font-family: var(--font-mono);
-            font-size: 11.5px;
-            line-height: 1.6;
-            color: #6EE7B7;
-            white-space: pre-wrap;
-            word-break: break-all;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
-        }
-
-        .chips-scroller {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding: 10px 0;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .terminal-quick-chip {
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
-            border-radius: 10px;
-            padding: 6px 12px;
-            font-size: 11px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            cursor: pointer;
-            font-family: var(--font-mono);
-            transition: all 0.15s ease;
-        }
-
-        .terminal-quick-chip:active {
-            border-color: var(--cyan-primary);
-            color: var(--cyan-primary);
-            transform: scale(0.96);
-        }
-
-        .cmd-input-bar {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .terminal-input-field {
-            flex: 1;
-            height: 42px;
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
-            border-radius: 12px;
-            padding: 0 14px;
-            color: var(--text-title);
-            font-family: var(--font-mono);
-            font-size: 12px;
-            outline: none;
-        }
-
-        .terminal-input-field:focus {
-            border-color: var(--cyan-primary);
-        }
-
-        .terminal-submit-btn {
-            height: 42px;
-            padding: 0 18px;
-            background: var(--cyan-primary);
-            color: #05070E;
-            border: none;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 12px;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-            transition: transform 0.15s ease;
-        }
-
-        .terminal-submit-btn:active {
-            transform: scale(0.96);
-        }
-
-        /* Settings Card */
-        .info-card-block {
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .info-card-title {
-            font-size: 13.5px;
-            font-weight: 800;
-            color: var(--cyan-primary);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .info-card-text {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        .terminal-code-snippet {
-            background: #04060A;
-            border: 1px solid var(--surface-border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-top: 8px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: #38BDF8;
-            overflow-x: auto;
-        }
-
-        /* Minimalist Setting Row & Button (shadcn/ui style) */
+        /* Clean Setting Row (shadcn style) */
         .clean-setting-row {
-            background: rgba(13, 18, 32, 0.65);
-            border: 1px solid var(--surface-border);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
             border-radius: 16px;
             padding: 14px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
-            transition: border-color 0.2s ease;
+            margin-bottom: 10px;
         }
 
         .setting-row-left {
@@ -1094,13 +593,11 @@
             font-size: 13.5px;
             font-weight: 700;
             color: #FFFFFF;
-            letter-spacing: -0.2px;
         }
 
         .setting-subtitle {
             font-size: 11.5px;
             color: var(--text-dim);
-            font-family: var(--font-sans);
         }
 
         .btn-shadcn-pill {
@@ -1114,19 +611,236 @@
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             outline: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .btn-shadcn-pill:active {
             transform: scale(0.94);
             background: rgba(0, 240, 255, 0.15);
             border-color: rgba(0, 240, 255, 0.4);
-            box-shadow: 0 0 12px var(--cyan-glow);
         }
 
-        /* Update Modal (Glassmorphism) */
+        /* App Whitelist Tab */
+        .search-box-wrap {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-input-field {
+            width: 100%;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 0 16px 0 40px;
+            color: #FFFFFF;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-input-field:focus {
+            border-color: var(--cyan-primary);
+        }
+
+        .search-icon-svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-dim);
+            stroke-width: 2.2;
+            fill: none;
+        }
+
+        .apps-scroll-list {
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .app-item-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 75%;
+        }
+
+        .app-avatar-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--cyan-primary);
+        }
+
+        .app-info-col {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .app-name-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFFFFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .app-pkg-label {
+            font-size: 10.5px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Terminal Tab */
+        .terminal-viewport {
+            background: #04060A;
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 14px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #38BDF8;
+            height: 340px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .terminal-quick-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+
+        .term-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 9999px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .term-chip:active {
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--cyan-primary);
+        }
+
+        .cmd-bar {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .cmd-input {
+            flex: 1;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 0 14px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: #FFFFFF;
+            outline: none;
+        }
+
+        .cmd-run-btn {
+            background: var(--cyan-primary);
+            border: none;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-weight: 800;
+            font-size: 12px;
+            color: #05070E;
+            cursor: pointer;
+        }
+
+        /* Floating Island Bottom Navigation */
+        .floating-bottom-nav {
+            position: fixed;
+            bottom: 12px;
+            left: 16px;
+            right: 16px;
+            height: 62px;
+            background: rgba(10, 14, 26, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--text-dim);
+            font-size: 10.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 25%;
+            height: 100%;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            fill: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-item.active {
+            color: var(--cyan-primary);
+        }
+
+        .nav-item.active svg {
+            stroke: var(--cyan-primary);
+            transform: translateY(-2px);
+            filter: drop-shadow(0 0 8px var(--cyan-glow));
+        }
+
+        /* Glassmorphism Update Modal */
         .update-modal-backdrop {
             position: fixed;
             top: 0;
@@ -1150,22 +864,11 @@
             background: rgba(13, 18, 32, 0.95);
             border: 1px solid rgba(0, 240, 255, 0.35);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--cyan-glow);
-            border-radius: 20px;
+            border-radius: 22px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleUp {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
 
         .update-modal-badge {
@@ -1174,7 +877,7 @@
             border: 1px solid rgba(0, 240, 255, 0.4);
             color: var(--cyan-primary);
             padding: 4px 10px;
-            border-radius: 20px;
+            border-radius: 9999px;
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 0.5px;
@@ -1184,14 +887,14 @@
         }
 
         .update-modal-title {
-            font-size: 17px;
+            font-size: 16.5px;
             font-weight: 800;
             color: #FFFFFF;
         }
 
         .update-modal-changelog {
             background: rgba(5, 7, 14, 0.6);
-            border: 1px solid var(--surface-border);
+            border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 12px;
             font-size: 12px;
@@ -1200,7 +903,6 @@
             white-space: pre-wrap;
             max-height: 160px;
             overflow-y: auto;
-            font-family: var(--font-sans);
         }
 
         .update-modal-actions {
@@ -1212,17 +914,13 @@
 
         .btn-update-cancel {
             background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--surface-border);
+            border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 12px;
             color: var(--text-muted);
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-        }
-
-        .btn-update-cancel:active {
-            background: rgba(255, 255, 255, 0.12);
         }
 
         .btn-update-confirm {
@@ -1240,78 +938,22 @@
             cursor: pointer;
             box-shadow: 0 4px 16px var(--cyan-glow);
         }
-
-        .btn-update-confirm:active {
-            transform: scale(0.96);
-            filter: brightness(1.1);
-        }
-
-        /* Floating Island Bottom Navigation */
-        .floating-bottom-nav {
-            position: fixed;
-            bottom: 12px;
-            left: 16px;
-            right: 16px;
-            height: 60px;
-            background: rgba(10, 14, 26, 0.92);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        }
-
-        .nav-tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            color: var(--text-dim);
-            font-size: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            width: 25%;
-            height: 100%;
-        }
-
-        .nav-tab-item svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            stroke-width: 2;
-            fill: none;
-            transition: transform 0.2s ease, stroke 0.2s ease;
-        }
-
-        .nav-tab-item.active {
-            color: var(--cyan-primary);
-        }
-
-        .nav-tab-item.active svg {
-            transform: scale(1.12);
-            stroke: var(--cyan-primary);
-            filter: drop-shadow(0 0 6px var(--cyan-glow));
-        }
     </style>
 </head>
 <body>
 
-    <!-- SVG Gradients -->
-    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
-        <linearGradient id="cyan-purple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#00F0FF" />
-            <stop offset="60%" stop-color="#38BDF8" />
-            <stop offset="100%" stop-color="#A855F7" />
-        </linearGradient>
+    <!-- SVG Gradients Definition -->
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00F0FF" />
+                <stop offset="60%" stop-color="#38BDF8" />
+                <stop offset="100%" stop-color="#A855F7" />
+            </linearGradient>
+        </defs>
     </svg>
 
-    <!-- Header -->
+    <!-- Top Header -->
     <header>
         <div class="brand-wrap">
             <div class="brand-icon">
@@ -1319,7 +961,7 @@
             </div>
             <div class="brand-text-col">
                 <div class="brand-title">Z-RAM EXTREME</div>
-                <div class="brand-sub">Universal Kernel Purger</div>
+                <div class="brand-sub">Universal Kernel Engine</div>
             </div>
         </div>
         <div class="header-badges">
@@ -1334,259 +976,190 @@
         </div>
     </header>
 
-    <!-- Tab 1: Dashboard -->
-    <div id="tab-dashboard" class="tab-panel active">
-        <!-- Hero Gauge Card -->
-        <div class="hero-gauge-card">
-            <div class="gauge-flex-wrap">
-                <svg class="gauge-svg" viewBox="0 0 200 200">
-                    <circle class="gauge-track-bg" cx="100" cy="100" r="90" />
-                    <circle class="gauge-track-sub" cx="100" cy="100" r="78" />
-                    <circle id="gauge-progress" class="gauge-track-fill" cx="100" cy="100" r="90" />
-                </svg>
-                <div class="gauge-core-text">
-                    <div id="ram-percent" class="gauge-main-percent">0%</div>
-                    <div id="ram-ratio" class="gauge-ratio-text">-- GB / -- GB</div>
-                    <div class="gauge-sub-pill" id="ram-status-sub">ACTIVE MEMORY</div>
+    <!-- Main Viewport -->
+    <main class="container">
+        
+        <!-- TAB 1: TỐI ƯU (DASHBOARD) -->
+        <div id="tab-dashboard" class="tab-panel active">
+            
+            <!-- Hero Bento Gauge Card -->
+            <div class="hero-bento-card">
+                <div class="gauge-svg-wrap">
+                    <svg class="gauge-svg" viewBox="0 0 200 200">
+                        <circle class="gauge-track-bg" cx="100" cy="100" r="90" />
+                        <circle id="gauge-progress" class="gauge-track-fill" cx="100" cy="100" r="90" />
+                    </svg>
+                    <div class="gauge-center-content">
+                        <div class="gauge-main-number">
+                            <span id="ram-used-num">0.0</span><span class="gauge-unit">GB</span>
+                        </div>
+                        <div id="ram-percent-label" class="gauge-status-sub">ĐANG TẢI...</div>
+                        <div id="ram-ratio-text" class="gauge-total-sub">0.0 / 0.0 GB</div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- ZRAM Swap Progress Strip -->
-            <div class="zram-card-strip">
-                <div class="zram-header-row">
-                    <span class="zram-tag-name" id="swap-title">
-                        <svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                        Z-RAM POOL
-                    </span>
-                    <span id="swap-stats" class="zram-val-numbers">-- GB / -- GB (0%)</span>
-                </div>
-                <div class="custom-progress-bg">
-                    <div id="swap-progress-bar" class="custom-progress-bar"></div>
-                </div>
-                <div class="zram-stats-chips">
-                    <div class="zram-micro-chip">
-                        <div class="zram-micro-label">TỈ LỆ NÉN</div>
-                        <div id="zram-ratio-badge" class="zram-micro-val" style="color:var(--cyan-primary);">--x</div>
+                <!-- ZRAM & Saved Memory Mini Strip -->
+                <div class="zram-mini-strip">
+                    <div class="zram-pill-item">
+                        <span>ZRAM nén:</span>
+                        <b id="zram-ratio-val">--</b>
                     </div>
-                    <div class="zram-micro-chip">
-                        <div class="zram-micro-label">RAM TIẾT KIỆM</div>
-                        <div id="zram-saved-badge" class="zram-micro-val" style="color:var(--emerald-active);">-- MB</div>
-                    </div>
-                    <div class="zram-micro-chip">
-                        <div class="zram-micro-label">PAGES NÉN</div>
-                        <div id="zram-pages-badge" class="zram-micro-val" style="color:var(--purple-neon);">--</div>
+                    <div class="zram-pill-item">
+                        <span>Tiết kiệm:</span>
+                        <b id="zram-saved-val">-- MB</b>
                     </div>
                 </div>
             </div>
 
-            <!-- 3 Metrics Tiles -->
-            <div class="metrics-tri-grid">
-                <div class="metric-tile">
-                    <div class="metric-label-txt">Khả dụng</div>
-                    <div id="stat-avail" class="metric-val-txt">-- MB</div>
+            <!-- Segmented Cleaning Mode Selector -->
+            <div class="tier-control-wrap" style="margin-top: 14px;">
+                <div class="tier-headline">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Cường độ tối ưu
                 </div>
-                <div class="metric-tile">
-                    <div class="metric-label-txt">Cache/Buffers</div>
-                    <div id="stat-cached" class="metric-val-txt">-- MB</div>
-                </div>
-                <div class="metric-tile">
-                    <div class="metric-label-txt">ZRAM Free</div>
-                    <div id="stat-swap-free" class="metric-val-txt">-- MB</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Adaptive OEM Card -->
-        <div class="oem-hero-card" id="oem-card">
-            <div class="oem-content-left">
-                <div class="oem-badge-title" id="oem-card-title">
-                    <svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg>
-                    UNIVERSAL ANDROID
-                </div>
-                <div class="oem-desc-line" id="oem-status">Đang khởi tạo cơ chế nén OEM...</div>
-            </div>
-            <button class="oem-action-pill" id="oem-btn" onclick="triggerChimera()">NÉN BỘ NHỚ</button>
-        </div>
-
-        <!-- Extreme Game Booster / Performance Max Card -->
-        <div class="booster-banner-card" id="booster-card">
-            <div class="booster-header-row">
-                <div class="booster-label-col">
-                    <div class="booster-svg-icon">
-                        <svg style="width:18px;height:18px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <div class="tier-segmented-row">
+                    <div class="tier-pill-btn" onclick="selectTier(1)" id="tier-btn-1">
+                        <div class="tier-pill-title">Tiêu chuẩn</div>
+                        <div class="tier-pill-sub">Kill ngầm & Cache</div>
                     </div>
-                    <div>
-                        <div class="booster-head-title">EXTREME PERFORMANCE MAX</div>
-                        <div class="booster-head-sub">Adreno GPU Turbo • Kryo EAS Priority • SurfaceFlinger</div>
+                    <div class="tier-pill-btn" onclick="selectTier(2)" id="tier-btn-2">
+                        <div class="tier-pill-title">Thông minh</div>
+                        <div class="tier-pill-sub">Standby & Idle</div>
+                    </div>
+                    <div class="tier-pill-btn active" onclick="selectTier(3)" id="tier-btn-3">
+                        <div class="tier-pill-title">Cực đại</div>
+                        <div class="tier-pill-sub">ART GC & Sysfs</div>
                     </div>
                 </div>
-                <div class="booster-controls">
-                    <span id="booster-status-pill" class="booster-status-pill">BALANCED</span>
+            </div>
+
+            <!-- Primary Action Button (Super Boost) -->
+            <button type="button" class="btn-super-boost" onclick="onPurgeClicked()" id="btn-main-boost" style="margin-top: 14px;">
+                <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span id="btn-boost-text">BUNG HIỆU NĂNG TỨC THÌ</span>
+            </button>
+
+            <!-- Extreme Game Booster Card -->
+            <div class="bento-card" style="margin-top: 14px;">
+                <div class="booster-head-row">
+                    <div class="booster-title-group">
+                        <div class="booster-icon-box">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle><path d="M10 9v6"></path><path d="M7 12h6"></path></svg>
+                        </div>
+                        <div>
+                            <div class="booster-title-text">Extreme Game Booster</div>
+                            <div class="booster-desc-text">Ưu tiên GPU Adreno & CPU Kryo</div>
+                        </div>
+                    </div>
                     <label class="shadcn-switch">
-                        <input type="checkbox" id="booster-toggle" onchange="onBoosterToggleChanged(this.checked)">
+                        <input type="checkbox" id="booster-toggle" onchange="onBoosterToggleChanged()">
                         <span class="shadcn-slider"></span>
                     </label>
                 </div>
-            </div>
 
-            <!-- Live Performance Telemetry Grid -->
-            <div class="booster-telemetry-row">
-                <div class="booster-stat-item">
-                    <div class="booster-stat-lbl">GPU Core</div>
-                    <div id="booster-gpu-clk" class="booster-stat-val">-- MHz</div>
-                </div>
-                <div class="booster-stat-item">
-                    <div class="booster-stat-lbl">GPU Load</div>
-                    <div id="booster-gpu-load" class="booster-stat-val">-- %</div>
-                </div>
-                <div class="booster-stat-item">
-                    <div class="booster-stat-lbl">GPU Temp</div>
-                    <div id="booster-gpu-temp" class="booster-stat-val">-- °C</div>
-                </div>
-                <div class="booster-stat-item">
-                    <div class="booster-stat-lbl">Kryo Big</div>
-                    <div id="booster-cpu-big" class="booster-stat-val">-- GHz</div>
-                </div>
-            </div>
-
-            <!-- Target App AOT dexopt optimization row -->
-            <div class="booster-dexopt-row">
-                <input type="text" id="booster-target-pkg" class="booster-pkg-input" placeholder="Package game mục tiêu (vd: com.dts.freefireth)...">
-                <button class="booster-dexopt-btn" onclick="onTriggerArtDexopt()">AOT SPEED</button>
-            </div>
-
-            <!-- Emergency OEM Restoration Button -->
-            <button class="booster-restore-link" onclick="onEmergencyResetDefaults()">
-                <svg style="width:13px;height:13px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-                <span>KHÔI PHỤC MẶC ĐỊNH OEM (ROLLBACK)</span>
-            </button>
-            <div id="booster-verify-banner" style="font-size:10px; color:var(--text-muted); margin-top:6px; text-align:center;"></div>
-        </div>
-
-        <!-- Tier Segmented Radio Buttons -->
-        <div class="tier-control-wrap">
-            <div class="tier-headline">
-                <svg style="width:13px;height:13px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                CẤP ĐỘ CAN THIỆP GIẢI PHÓNG
-            </div>
-            <div class="tier-segmented-row">
-                <div class="tier-pill-btn" onclick="selectTier(1)" id="tier-pill-1">
-                    <div class="tier-pill-title">Tầng 1: Nhẹ</div>
-                    <div class="tier-pill-desc">Trim + kill-all</div>
-                </div>
-                <div class="tier-pill-btn" onclick="selectTier(2)" id="tier-pill-2">
-                    <div class="tier-pill-title">Tầng 2: Sâu</div>
-                    <div class="tier-pill-desc">Force-stop + Idle</div>
-                </div>
-                <div class="tier-pill-btn active" onclick="selectTier(3)" id="tier-pill-3">
-                    <div class="tier-pill-title">Tầng 3: Cực hạn</div>
-                    <div class="tier-pill-desc">AOSP Compact + ART</div>
+                <!-- Hardware Telemetry -->
+                <div class="telemetry-grid">
+                    <div class="telemetry-box">
+                        <div class="telemetry-label">GPU Xung</div>
+                        <div id="booster-gpu-clk" class="telemetry-val">-- MHz</div>
+                    </div>
+                    <div class="telemetry-box">
+                        <div class="telemetry-label">GPU Tải</div>
+                        <div id="booster-gpu-load" class="telemetry-val">-- %</div>
+                    </div>
+                    <div class="telemetry-box">
+                        <div class="telemetry-label">GPU Nhiệt</div>
+                        <div id="booster-gpu-temp" class="telemetry-val">-- °C</div>
+                    </div>
+                    <div class="telemetry-box">
+                        <div class="telemetry-label">CPU Big</div>
+                        <div id="booster-cpu-big" class="telemetry-val">-- GHz</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Giant Super Boost Button -->
-        <div class="hero-action-section">
-            <button id="purge-button" class="super-boost-btn" onclick="startPurge()">
-                <svg class="btn-icon-svg" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                <span id="purge-btn-text">GIẢI PHÓNG RAM CỰC HẠN</span>
-            </button>
-        </div>
-
-        <!-- Result Callout Banner -->
-        <div id="result-banner" class="result-callout">
-            <div id="result-title" class="result-head-row">
-                <svg style="width:16px;height:16px;stroke:currentColor;stroke-width:2.4;fill:none;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                <span>THÀNH CÔNG</span>
+        <!-- TAB 2: ỨNG DỤNG (WHITELIST) -->
+        <div id="tab-apps" class="tab-panel">
+            <div class="search-box-wrap">
+                <svg class="search-icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="app-search-input" class="search-input-field" placeholder="Tìm kiếm ứng dụng cài đặt..." oninput="onAppSearch(this.value)">
             </div>
-            <div id="result-details" class="result-body-text">...</div>
-        </div>
-    </div>
-
-    <!-- Tab 2: Apps & Whitelist -->
-    <div id="tab-apps" class="tab-panel">
-        <div class="search-input-wrap">
-            <svg class="search-svg-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="app-search" class="search-box-field" placeholder="Tìm kiếm ứng dụng..." oninput="filterApps()">
-        </div>
-        <div id="app-counter" style="font-size:12px; color:var(--text-muted); margin-bottom:8px; font-weight:600;">Đang tải danh sách...</div>
-        <div id="app-list" class="apps-scroll-list"></div>
-    </div>
-
-    <!-- Tab 3: Debug Console -->
-    <div id="tab-terminal" class="tab-panel">
-        <div class="chips-scroller">
-            <div class="terminal-quick-chip" onclick="runQuickCmd('cmd activity memory-factor show')">memory-factor show</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('cmd activity compact system')">compact system</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('cmd activity idle-maintenance')">idle-maintenance</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('pkill -10 -f com.google.android.gms')">kill -10 (SIGUSR1 ART GC)</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('dumpsys meminfo --compact')">dumpsys meminfo</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('cat /proc/meminfo | head -n 25')">cat /proc/meminfo</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('free -m')">free -m</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('ps -A | head -n 30')">ps -A</div>
-            <div class="terminal-quick-chip" onclick="runQuickCmd('pm trim-caches 4096M')">trim caches</div>
-        </div>
-        <div id="terminal-out" class="terminal-viewport">-- BẢNG ĐIỀU KHIỂN ADB / SHIZUKU TRỰC TIẾP --&#10;Sẵn sàng thực thi lệnh đặc quyền...</div>
-        <div class="cmd-input-bar">
-            <input type="text" id="term-input" class="terminal-input-field" placeholder="Lệnh shell (vd: getprop, am, pm, cmd activity)..." onkeydown="if(event.key==='Enter') executeCustomCmd()">
-            <button class="terminal-submit-btn" onclick="executeCustomCmd()">CHẠY</button>
-        </div>
-    </div>
-
-    <!-- Tab 4: Settings & Widget -->
-    <div id="tab-settings" class="tab-panel">
-        <div class="info-card-block">
-            <div class="info-card-title">
-                <svg style="width:16px;height:16px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                Tiện ích Màn hình chính (AppWidget)
-            </div>
-            <div class="info-card-text">
-                Z-RAM Purger Extreme đi kèm widget 1-chạm:<br>
-                1. Nhấn giữ vào màn hình chính điện thoại &rarr; chọn <b>Widgets</b>.<br>
-                2. Tìm <b>Z-RAM Purger Extreme</b> và kéo ra màn hình chính.<br>
-                3. Nhấn <b>⚡ BOOST</b> để giải phóng RAM tức thì không cần mở app!
+            <div id="apps-container" class="apps-scroll-list">
+                <!-- App cards injected via JS -->
             </div>
         </div>
 
-        <div class="info-card-block">
-            <div class="info-card-title">
-                <svg style="width:16px;height:16px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                Hướng dẫn cấp quyền Shizuku
+        <!-- TAB 3: TERMINAL (DEBUG) -->
+        <div id="tab-terminal" class="tab-panel">
+            <div class="terminal-quick-chips">
+                <div class="term-chip" onclick="runQuickCmd('free -m')">free -m</div>
+                <div class="term-chip" onclick="runQuickCmd('ps -A | head -n 30')">ps -A</div>
+                <div class="term-chip" onclick="runQuickCmd('pm trim-caches 4096M')">trim-caches</div>
+                <div class="term-chip" onclick="runQuickCmd('dumpsys meminfo')">meminfo</div>
             </div>
-            <div class="info-card-text">
-                Nếu bạn chưa khởi động Shizuku, có thể kích hoạt qua Wireless ADB bằng lệnh Termux hoặc máy tính:
-            </div>
-            <div class="terminal-code-snippet">adb shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh</div>
-            <div class="info-card-text" style="margin-top:8px;">
-                Sau khi Shizuku chạy, nhấn vào huy hiệu trạng thái góc trên bên phải để cấp quyền 1 chạm!
+            <div id="terminal-out" class="terminal-viewport">-- BẢNG ĐIỀU KHIỂN SHELL ADB / SHIZUKU --&#10;Sẵn sàng thực thi lệnh trực tiếp...</div>
+            <div class="cmd-bar">
+                <input type="text" id="term-input" class="cmd-input" placeholder="Nhập lệnh shell..." onkeydown="if(event.key==='Enter') executeCustomCmd()">
+                <button type="button" class="cmd-run-btn" onclick="executeCustomCmd()">CHẠY</button>
             </div>
         </div>
 
-        <div class="clean-setting-row">
-            <div class="setting-row-left">
-                <div class="setting-title">Phiên bản ứng dụng</div>
-                <div id="update-status-subtitle" class="setting-subtitle">Phiên bản 1.3.0</div>
+        <!-- TAB 4: HỆ THỐNG (SETTINGS) -->
+        <div id="tab-settings" class="tab-panel">
+            <!-- Software Update Card -->
+            <div class="clean-setting-row">
+                <div class="setting-row-left">
+                    <div class="setting-title">Phiên bản ứng dụng</div>
+                    <div id="update-status-subtitle" class="setting-subtitle">Phiên bản 1.0.0 (Bản chính thức)</div>
+                </div>
+                <button type="button" id="btn-check-update" class="btn-shadcn-pill" onclick="triggerManualCheckUpdate()">
+                    Kiểm tra
+                </button>
             </div>
-            <button type="button" id="btn-check-update" class="btn-shadcn-pill" onclick="triggerManualCheckUpdate()">
-                Kiểm tra
-            </button>
+
+            <!-- Home Widget Card -->
+            <div class="bento-card" style="margin-bottom: 10px;">
+                <div class="setting-title" style="margin-bottom: 4px;">Tiện ích Màn hình chính (Widget)</div>
+                <div class="setting-subtitle" style="line-height: 1.5;">
+                    Nhấn giữ ngoài màn hình chính &rarr; chọn <b>Widgets</b> &rarr; thêm <b>Z-RAM Extreme</b> để giải phóng RAM 1-chạm cực nhanh!
+                </div>
+            </div>
+
+            <!-- Device Info Card -->
+            <div class="bento-card">
+                <div class="setting-title" style="margin-bottom: 4px;">Thiết bị & Công nghệ</div>
+                <div class="setting-subtitle" id="device-info" style="line-height: 1.6;">
+                    Model: Samsung Galaxy A42 5G (SM-A426N)<br>
+                    Chipset: Qualcomm Snapdragon 750G 5G • Android 13<br>
+                    Nhân điều khiển: Shizuku UID 2000 & Linux Kernel 4.19
+                </div>
+            </div>
         </div>
 
-        <div class="info-card-block">
-            <div class="info-card-title">
-                <svg style="width:16px;height:16px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                Thông số thiết bị & Công nghệ
-            </div>
-            <div class="info-card-text" id="device-info">
-                Hệ điều hành: Android 13<br>
-                Model: Samsung Galaxy A42 5G (SM-A426N)<br>
-                Chipset: Qualcomm Snapdragon 750G 5G<br>
-                Cơ chế độc quyền: AOSP CachedAppOptimizer Compaction, Memory-Factor CRITICAL Pulse, Samsung Chimera DHA, ZRAM In-Memory Block Compaction.
-            </div>
-        </div>
-    </div>
+    </main>
 
-    <!-- Update Modal Dialog (Glassmorphism) -->
+    <!-- Floating Island Bottom Navigation -->
+    <nav class="floating-bottom-nav">
+        <div class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
+            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <div>Tối ưu</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('apps')" id="nav-apps">
+            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <div>Ứng dụng</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('terminal')" id="nav-terminal">
+            <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+            <div>Terminal</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('settings')" id="nav-settings">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <div>Hệ thống</div>
+        </div>
+    </nav>
+
+    <!-- Glassmorphism Update Modal -->
     <div id="update-modal" class="update-modal-backdrop" style="display: none;">
         <div class="update-modal-card">
             <div class="update-modal-badge">
@@ -1607,33 +1180,15 @@
         </div>
     </div>
 
-    <!-- Floating Island Bottom Navigation -->
-    <nav class="floating-bottom-nav">
-        <div class="nav-tab-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
-            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <div>Dọn dẹp</div>
-        </div>
-        <div class="nav-tab-item" onclick="switchTab('apps')" id="nav-apps">
-            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-            <div>Ứng dụng</div>
-        </div>
-        <div class="nav-tab-item" onclick="switchTab('terminal')" id="nav-terminal">
-            <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-            <div>Debug</div>
-        </div>
-        <div class="nav-tab-item" onclick="switchTab('settings')" id="nav-settings">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <div>Cài đặt</div>
-        </div>
-    </nav>
-
     <script>
         let currentTier = 3;
         let allApps = [];
         let customWhitelist = new Set();
         let telemetryInterval = null;
+        let pendingUpdate = null;
+        let isManualUpdateCheck = false;
 
-        // Initialize
+        // Lifecycle
         window.addEventListener('DOMContentLoaded', () => {
             updatePrivilegeStatus();
             refreshTelemetry();
@@ -1641,39 +1196,145 @@
             telemetryInterval = setInterval(refreshTelemetry, 1500);
             loadWhitelist();
             setTimeout(loadApps, 500);
+
+            // Auto check update 2s after launch
+            setTimeout(() => {
+                if (window.AndroidNative && window.AndroidNative.checkForUpdates) {
+                    window.AndroidNative.checkForUpdates();
+                }
+            }, 2000);
         });
 
-        // Called from Native Java when Shizuku binder status changes
-        window.onPrivilegeChanged = function() {
-            updatePrivilegeStatus();
-            refreshTelemetry();
-            updateBoosterUi();
-        };
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-        function updatePrivilegeStatus() {
-            if (window.AndroidNative && window.AndroidNative.getPrivilegeStatus) {
+            const targetPanel = document.getElementById('tab-' + tabId);
+            const targetNav = document.getElementById('nav-' + tabId);
+
+            if (targetPanel) targetPanel.classList.add('active');
+            if (targetNav) targetNav.classList.add('active');
+
+            if (window.AndroidNative && window.AndroidNative.vibrate) {
+                window.AndroidNative.vibrate(20);
+            }
+        }
+
+        // Tier Selection
+        function selectTier(tier) {
+            currentTier = tier;
+            document.querySelectorAll('.tier-pill-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('tier-btn-1' ? 'tier-btn-' + tier : null);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            if (window.AndroidNative && window.AndroidNative.vibrate) {
+                window.AndroidNative.vibrate(25);
+            }
+        }
+
+        // Telemetry & RAM Gauge
+        function refreshTelemetry() {
+            if (!window.AndroidNative || !window.AndroidNative.getMemoryInfo) return;
+
+            try {
+                const mem = JSON.parse(window.AndroidNative.getMemoryInfo());
+                const total = mem.totalMB || 1;
+                const avail = mem.availMB || 0;
+                const used = Math.max(0, total - avail);
+                const pct = Math.min(100, Math.max(0, Math.round((used / total) * 100)));
+
+                // Update Gauge
+                const usedGb = (used / 1024).toFixed(1);
+                const totalGb = (total / 1024).toFixed(1);
+
+                const numEl = document.getElementById('ram-used-num');
+                if (numEl) numEl.innerText = usedGb;
+
+                const labelEl = document.getElementById('ram-percent-label');
+                if (labelEl) labelEl.innerText = 'ĐÃ DÙNG • ' + pct + '%';
+
+                const ratioEl = document.getElementById('ram-ratio-text');
+                if (ratioEl) ratioEl.innerText = usedGb + ' / ' + totalGb + ' GB';
+
+                // SVG Arc stroke-dashoffset (565 is full circumference)
+                const circle = document.getElementById('gauge-progress');
+                if (circle) {
+                    const offset = 565 - (565 * pct / 100);
+                    circle.style.strokeDashoffset = offset;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+
+            // ZRAM & GPU
+            if (window.AndroidNative.getZramStats) {
                 try {
-                    const status = JSON.parse(window.AndroidNative.getPrivilegeStatus());
-                    const badge = document.getElementById('privilege-badge');
-                    const text = document.getElementById('badge-text');
+                    const zram = JSON.parse(window.AndroidNative.getZramStats());
+                    const ratioEl = document.getElementById('zram-ratio-val');
+                    const savedEl = document.getElementById('zram-saved-val');
 
-                    badge.className = 'badge-chip';
-                    if (status.shizukuPermission) {
-                        badge.classList.add('badge-shizuku');
-                        text.innerText = 'SHIZUKU (UID ' + (status.uid >= 0 ? status.uid : '2000') + ')';
-                    } else if (status.rootAvailable) {
-                        badge.classList.add('badge-root');
-                        text.innerText = 'ROOT (UID 0)';
-                    } else if (status.shizukuAvailable) {
-                        badge.classList.add('badge-shell');
-                        text.innerText = 'CẤP SHIZUKU';
-                    } else {
-                        badge.classList.add('badge-shell');
-                        text.innerText = 'SHELL MODE';
+                    if (ratioEl) ratioEl.innerText = zram.ratio ? zram.ratio.toFixed(2) + 'x' : '--';
+                    if (savedEl) savedEl.innerText = zram.savedMB ? zram.savedMB + ' MB' : '-- MB';
+
+                    const gpuText = document.getElementById('gpu-text');
+                    if (gpuText) {
+                        gpuText.innerText = zram.gpuMhz > 0 ? zram.gpuMhz + ' MHz' : 'Adreno 619';
                     }
                 } catch (e) {
                     console.error(e);
                 }
+            }
+        }
+
+        // Purge Execution
+        function onPurgeClicked() {
+            const btn = document.getElementById('btn-main-boost');
+            const txt = document.getElementById('btn-boost-text');
+            if (btn) btn.disabled = true;
+            if (txt) txt.innerText = 'ĐANG GIẢI PHÓNG BỘ NHỚ...';
+
+            if (window.AndroidNative && window.AndroidNative.vibrate) {
+                window.AndroidNative.vibrate(50);
+            }
+
+            setTimeout(() => {
+                if (window.AndroidNative && window.AndroidNative.executePurge) {
+                    const list = Array.from(customWhitelist);
+                    const resJson = window.AndroidNative.executePurge(currentTier, JSON.stringify(list));
+                    try {
+                        const res = JSON.parse(resJson);
+                        showToastMessage(res.message || '✅ Đã dọn dẹp RAM thành công!');
+                    } catch (e) {
+                        showToastMessage('✅ Tối ưu hoàn tất!');
+                    }
+                }
+                refreshTelemetry();
+                if (btn) btn.disabled = false;
+                if (txt) txt.innerText = 'BUNG HIỆU NĂNG TỨC THÌ';
+            }, 300);
+        }
+
+        // Shizuku Privilege Status
+        function updatePrivilegeStatus() {
+            if (!window.AndroidNative || !window.AndroidNative.getPrivilegeStatus) return;
+            try {
+                const status = JSON.parse(window.AndroidNative.getPrivilegeStatus());
+                const badge = document.getElementById('privilege-badge');
+                const badgeText = document.getElementById('badge-text');
+
+                if (status.shizukuPermission) {
+                    badge.className = 'badge-chip badge-shizuku';
+                    badgeText.innerText = 'SHIZUKU (UID ' + (status.uid || 2000) + ')';
+                } else if (status.rootAvailable) {
+                    badge.className = 'badge-chip badge-root';
+                    badgeText.innerText = 'ROOT SU';
+                } else {
+                    badge.className = 'badge-chip badge-shell';
+                    badgeText.innerText = status.shizukuAvailable ? 'CẤP QUYỀN' : 'STANDARD';
+                }
+            } catch (e) {
+                console.error(e);
             }
         }
 
@@ -1683,340 +1344,28 @@
             }
         }
 
-        function refreshTelemetry() {
-            if (window.AndroidNative && window.AndroidNative.getMemoryInfo) {
-                try {
-                    const stats = JSON.parse(window.AndroidNative.getMemoryInfo());
-                    
-                    // Circular Gauge
-                    const percent = stats.percent;
-                    document.getElementById('ram-percent').innerText = percent + '%';
-                    
-                    const usedGb = (stats.usedMb / 1024).toFixed(1);
-                    const totalGb = (stats.totalMb / 1024).toFixed(1);
-                    document.getElementById('ram-ratio').innerText = usedGb + ' GB / ' + totalGb + ' GB';
+        window.onPrivilegeChanged = function() {
+            updatePrivilegeStatus();
+        };
 
-                    // Circumference is 2 * PI * 90 = 565.48
-                    const circle = document.getElementById('gauge-progress');
-                    const offset = 565.48 - (565.48 * percent / 100);
-                    circle.style.strokeDashoffset = offset;
+        // Extreme Game Booster Toggle
+        function onBoosterToggleChanged() {
+            const toggle = document.getElementById('booster-toggle');
+            if (!window.AndroidNative || !window.AndroidNative.toggleGameBooster) return;
 
-                    // ZRAM Swap
-                    const swapPercent = stats.swapPercent;
-                    const swapUsedGb = (stats.swapUsedMb / 1024).toFixed(1);
-                    const swapTotalGb = (stats.swapTotalMb / 1024).toFixed(1);
-                    document.getElementById('swap-stats').innerText = swapUsedGb + ' GB / ' + swapTotalGb + ' GB (' + swapPercent + '%)';
-                    document.getElementById('swap-progress-bar').style.width = swapPercent + '%';
+            const newState = toggle.checked;
+            if (window.AndroidNative.vibrate) window.AndroidNative.vibrate(40);
 
-                    // Cards
-                    document.getElementById('stat-avail').innerText = stats.availableMb.toLocaleString() + ' MB';
-                    document.getElementById('stat-cached').innerText = (stats.cachedMb + stats.buffersMb).toLocaleString() + ' MB';
-                    document.getElementById('stat-swap-free').innerText = stats.swapFreeMb.toLocaleString() + ' MB';
-
-                    // Z-RAM Compression & Real Savings
-                    const ratio = (stats.zramRatio && stats.zramRatio > 0) ? stats.zramRatio.toFixed(2) : '1.00';
-                    const savedMb = (stats.zramSavedMb !== undefined) ? stats.zramSavedMb : 0;
-                    const pages = stats.zramCompactedPages || 0;
-                    const pagesFormatted = pages > 1000000 ? (pages / 1000000).toFixed(1) + 'M' : pages.toLocaleString();
-
-                    const ratioElem = document.getElementById('zram-ratio-badge');
-                    if (ratioElem) ratioElem.innerText = ratio + 'x';
-
-                    const savedElem = document.getElementById('zram-saved-badge');
-                    if (savedElem) savedElem.innerText = '+' + savedMb.toLocaleString() + ' MB';
-
-                    const pagesElem = document.getElementById('zram-pages-badge');
-                    if (pagesElem) pagesElem.innerText = pagesFormatted;
-
-                    // GPU Telemetry
-                    const gpuText = document.getElementById('gpu-text');
-                    if (gpuText) {
-                        const gpuName = stats.gpuModel ? stats.gpuModel.replace('Adreno', 'Adreno ') : 'GPU';
-                        const gpuBusy = (stats.gpuBusy !== undefined) ? stats.gpuBusy + '%' : '--';
-                        const gpuTemp = (stats.gpuTemp && stats.gpuTemp > 0) ? ' ' + stats.gpuTemp.toFixed(0) + '°C' : '';
-                        gpuText.innerText = gpuName + ' ' + gpuBusy + gpuTemp;
-                    }
-
-                    // Dynamic OEM Card
-                    const oemTitle = document.getElementById('oem-card-title');
-                    const oemStatus = document.getElementById('oem-status');
-                    const oemBtn = document.getElementById('oem-btn');
-                    const swapTitle = document.getElementById('swap-title');
-
-                    const oemName = stats.oemBrand || 'UNIVERSAL ANDROID';
-                    if (oemTitle) oemTitle.innerHTML = '<svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg> ' + oemName.toUpperCase();
-
-                    if (swapTitle) {
-                        swapTitle.innerHTML = '<svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2.2;fill:none;" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg> ' + (stats.virtualRamTech ? stats.virtualRamTech.toUpperCase() : 'Z-RAM POOL');
-                    }
-
-                    if (oemStatus) {
-                        let statusText = (stats.virtualRamTech || 'Virtual RAM') + ': ' + (stats.virtualRamMb ? stats.virtualRamMb.toLocaleString() + ' MB' : 'Active');
-                        if (stats.hasBackingDev && stats.backingDev) {
-                            statusText += ' | Writeback: ' + stats.backingDev.replace('/dev/block/', '');
-                        } else if (stats.chimeraStrategy) {
-                            statusText += ' | Chiến lược: ' + stats.chimeraStrategy;
-                        }
-                        oemStatus.innerText = statusText;
-                    }
-
-                    if (oemBtn) {
-                        if (oemName.toLowerCase().includes('samsung')) {
-                            oemBtn.innerText = 'NÉN CHIMERA';
-                        } else if (oemName.toLowerCase().includes('xiaomi')) {
-                            oemBtn.innerText = 'NÉN HYPEROS';
-                        } else if (oemName.toLowerCase().includes('oppo') || oemName.toLowerCase().includes('coloros')) {
-                            oemBtn.innerText = 'NÉN ATHENA';
-                        } else if (oemName.toLowerCase().includes('vivo')) {
-                            oemBtn.innerText = 'NÉN ORIGINOS';
-                        } else {
-                            oemBtn.innerText = 'NÉN AOSP';
-                        }
-                    }
-
-                    // Dynamic device info in settings
-                    const devInfo = document.getElementById('device-info');
-                    if (devInfo && stats.oemBrand) {
-                        devInfo.innerHTML = `Hệ điều hành: ${escapeHtml(stats.oemBrand)} ${escapeHtml(stats.oemVersion || '')}<br>`
-                            + `GPU: ${escapeHtml(stats.gpuModel || 'Adreno / SoC Graphics')} (${stats.gpuBusy || 0}% tải, ${stats.gpuTemp ? stats.gpuTemp.toFixed(1) + '°C' : 'N/A'})<br>`
-                            + `Cơ chế ảo: ${escapeHtml(stats.virtualRamTech || 'AOSP Compactor')} (${stats.virtualRamMb || 0} MB)<br>`
-                            + `Hiệu năng Z-RAM: Tỉ lệ nén ${ratio}x, đã giải phóng ${savedMb} MB RAM thực.`;
-                    }
-
-                    // Refresh Extreme Performance Booster Telemetry
-                    updateBoosterUi();
-
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-
-        function selectTier(tier) {
-            currentTier = tier;
-            document.querySelectorAll('.tier-pill-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('tier-pill-' + tier).classList.add('active');
-            if (window.AndroidNative && window.AndroidNative.vibrate) {
-                window.AndroidNative.vibrate(20);
-            }
-        }
-
-        function triggerChimera() {
-            if (window.AndroidNative && window.AndroidNative.triggerChimeraReclaim) {
-                if (window.AndroidNative.vibrate) window.AndroidNative.vibrate(50);
-                const banner = document.getElementById('result-banner');
-                banner.classList.remove('show');
-                const res = JSON.parse(window.AndroidNative.triggerChimeraReclaim());
-                refreshTelemetry();
-                const brand = res.brand || 'OEM';
-                const title = document.getElementById('result-title');
-                const details = document.getElementById('result-details');
-                title.innerHTML = '<svg style="width:16px;height:16px;stroke:currentColor;stroke-width:2.4;fill:none;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> <span>' + brand.toUpperCase() + ' RECLAIM HOÀN TẤT!</span>';
-                details.innerHTML = 'Đã ép nén Z-RAM cấp nhân & xả bộ nhớ đệm hệ thống ' + brand + ' trong ' + res.durationMs + 'ms.';
-                banner.classList.add('show');
-            }
-        }
-
-        function startPurge() {
-            const btn = document.getElementById('purge-button');
-            const btnText = document.getElementById('purge-btn-text');
-            const banner = document.getElementById('result-banner');
-
-            btn.classList.add('loading');
-            btnText.innerText = 'ĐANG AOSP COMPACT & ART GC...';
-            banner.classList.remove('show');
-
-            if (window.AndroidNative && window.AndroidNative.vibrate) {
-                window.AndroidNative.vibrate(60);
-            }
-
-            setTimeout(() => {
-                let result = null;
-                if (window.AndroidNative && window.AndroidNative.executePurge) {
-                    const whitelistArr = Array.from(customWhitelist);
-                    const resStr = window.AndroidNative.executePurge(currentTier, JSON.stringify(whitelistArr));
-                    result = JSON.parse(resStr);
-                } else {
-                    result = { freedMb: 520, beforeAvailMb: 850, afterAvailMb: 1370, durationMs: 450, killedAppCount: 12, compactedAppCount: 28, provider: 'shizuku', afterRatio: 5.81, physicalSavedMb: 1198, oemBrand: 'Samsung One UI' };
-                }
-
-                btn.classList.remove('loading');
-                btnText.innerText = 'GIẢI PHÓNG RAM CỰC HẠN';
-
-                if (window.AndroidNative && window.AndroidNative.vibrate) {
-                    window.AndroidNative.vibrate(100);
-                }
-
-                // Show Result
-                const title = document.getElementById('result-title');
-                const details = document.getElementById('result-details');
-                title.innerHTML = '<svg style="width:16px;height:16px;stroke:currentColor;stroke-width:2.4;fill:none;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> <span>ĐÃ GIẢI PHÓNG +' + result.freedMb + ' MB RAM!</span>';
-                details.innerHTML = 'Khả dụng: ' + result.beforeAvailMb + ' MB &rarr; ' + result.afterAvailMb + ' MB'
-                    + '<br>Đã dừng ' + result.killedAppCount + ' app | Nén sâu ' + (result.compactedAppCount || 0) + ' tiến trình | Ép ART SIGUSR1 ' + (result.artGcTriggerCount || 0) + ' GC'
-                    + (result.afterRatio ? '<br>Tỉ lệ nén Z-RAM: ' + Number(result.afterRatio).toFixed(2) + 'x (Tiết kiệm +' + (result.physicalSavedMb || 0) + ' MB RAM thực)' : '')
-                    + '<br>Kênh ' + result.provider.toUpperCase() + ' (' + result.durationMs + 'ms)' + (result.oemBrand ? ' • ' + result.oemBrand : '');
-                banner.classList.add('show');
-
-                refreshTelemetry();
-            }, 300);
-        }
-
-        // Tabs Navigation
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab-item').forEach(el => el.classList.remove('active'));
-
-            document.getElementById('tab-' + tabName).classList.add('active');
-            document.getElementById('nav-' + tabName).classList.add('active');
-
-            if (tabName === 'apps' && allApps.length === 0) {
-                loadApps();
-            }
-        }
-
-        // App Management
-        function loadWhitelist() {
-            if (window.AndroidNative && window.AndroidNative.getWhitelist) {
-                try {
-                    const list = JSON.parse(window.AndroidNative.getWhitelist());
-                    customWhitelist = new Set(list);
-                } catch (e) {}
-            }
-        }
-
-        function saveWhitelist() {
-            if (window.AndroidNative && window.AndroidNative.saveWhitelist) {
-                window.AndroidNative.saveWhitelist(JSON.stringify(Array.from(customWhitelist)));
-            }
-        }
-
-        function loadApps() {
-            if (window.AndroidNative && window.AndroidNative.getInstalledApps) {
-                try {
-                    allApps = JSON.parse(window.AndroidNative.getInstalledApps());
-                    document.getElementById('app-counter').innerText = 'Đã quét ' + allApps.length + ' ứng dụng:';
-                    renderApps(allApps);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-
-        function renderApps(apps) {
-            const container = document.getElementById('app-list');
-            container.innerHTML = '';
-
-            apps.forEach(app => {
-                const item = document.createElement('div');
-                item.className = 'app-row-card';
-
-                const isProtected = app.isProtected || customWhitelist.has(app.package);
-
-                item.innerHTML = `
-                    <div class="app-text-info">
-                        <div class="app-disp-name">${escapeHtml(app.name)}</div>
-                        <div class="app-pkg-line">${escapeHtml(app.package)} (UID: ${app.uid || '?'})</div>
-                        <div class="app-tag-badges">
-                            ${app.isSystem ? '<span class="app-tag app-tag-system">Hệ thống</span>' : '<span class="app-tag" style="background:rgba(0,240,255,0.1);color:#00F0FF;">App</span>'}
-                            ${isProtected ? '<span class="app-tag app-tag-protected">Được bảo vệ</span>' : ''}
-                        </div>
-                    </div>
-                    <label class="shadcn-switch">
-                        <input type="checkbox" ${isProtected ? 'checked' : ''} onchange="toggleWhitelist('${escapeHtml(app.package)}', this.checked)">
-                        <span class="shadcn-slider"></span>
-                    </label>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function toggleWhitelist(pkg, checked) {
-            if (checked) {
-                customWhitelist.add(pkg);
-            } else {
-                customWhitelist.delete(pkg);
-            }
-            saveWhitelist();
-            filterApps();
-            if (window.AndroidNative && window.AndroidNative.vibrate) {
-                window.AndroidNative.vibrate(25);
-            }
-        }
-
-        function filterApps() {
-            const query = (document.getElementById('app-search').value || '').toLowerCase();
-            const filtered = allApps.filter(a => a.name.toLowerCase().includes(query) || a.package.toLowerCase().includes(query));
-            renderApps(filtered);
-        }
-
-        // Terminal / ADB Console
-        function runQuickCmd(cmd) {
-            document.getElementById('term-input').value = cmd;
-            executeCustomCmd();
-        }
-
-        function executeCustomCmd() {
-            const input = document.getElementById('term-input');
-            const cmd = input.value.trim();
-            if (!cmd) return;
-
-            const term = document.getElementById('terminal-out');
-            term.innerHTML += '\n\n$ ' + escapeHtml(cmd) + '\n[Đang thực thi...]';
-            term.scrollTop = term.scrollHeight;
-
-            setTimeout(() => {
-                if (window.AndroidNative && window.AndroidNative.executeCommand) {
-                    const resStr = window.AndroidNative.executeCommand(cmd);
-                    const res = JSON.parse(resStr);
-                    term.innerHTML += '\n' + escapeHtml(res.stdout || res.stderr || '(Lệnh hoàn tất - không có output)');
-                    term.innerHTML += '\n[ExitCode: ' + res.exitCode + ' | ' + res.durationMs + 'ms via ' + res.provider.toUpperCase() + ']';
-                } else {
-                    term.innerHTML += '\n(Chế độ xem trước)';
-                }
-                term.scrollTop = term.scrollHeight;
-            }, 100);
-        }
-
-        // Extreme Performance Max & Game Booster UI Controller
-        function onBoosterToggleChanged(checked) {
-            if (window.AndroidNative && window.AndroidNative.toggleGameBooster) {
-                if (window.AndroidNative.vibrate) window.AndroidNative.vibrate(60);
-                const targetPkg = (document.getElementById('booster-target-pkg').value || '').trim();
-                const success = window.AndroidNative.toggleGameBooster(checked, targetPkg);
-                updateBoosterUi();
-                if (checked) {
-                    showToastMessage(success ? '🚀 Extreme Performance Max: Turbo kích hoạt!' : '⚠️ Kích hoạt thất bại, đã hoàn tác!');
-                } else {
-                    showToastMessage(success ? '✅ Đã khôi phục toàn bộ thiết lập về mặc định OEM!' : '⚠️ Có lỗi khi hoàn tác OEM!');
-                }
-            }
+            const ok = window.AndroidNative.toggleGameBooster(newState);
+            if (!ok) toggle.checked = !newState;
+            updateBoosterUi();
         }
 
         function updateBoosterUi() {
             if (window.AndroidNative && window.AndroidNative.isGameBoosterActive) {
-                try {
-                    const active = window.AndroidNative.isGameBoosterActive();
-                    const card = document.getElementById('booster-card');
-                    const toggle = document.getElementById('booster-toggle');
-                    const pill = document.getElementById('booster-status-pill');
-
-                    if (toggle) toggle.checked = active;
-                    if (active) {
-                        if (card) card.classList.add('active');
-                        if (pill) {
-                            pill.className = 'booster-status-pill active';
-                            pill.innerText = 'TURBO ENGAGED';
-                        }
-                    } else {
-                        if (card) card.classList.remove('active');
-                        if (pill) {
-                            pill.className = 'booster-status-pill';
-                            pill.innerText = 'BALANCED';
-                        }
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
+                const active = window.AndroidNative.isGameBoosterActive();
+                const toggle = document.getElementById('booster-toggle');
+                if (toggle) toggle.checked = active;
             }
 
             if (window.AndroidNative && window.AndroidNative.getPerformanceStatusJson) {
@@ -2036,61 +1385,105 @@
                         const bigGhz = data.bigClusterFreqKHz > 0 ? (data.bigClusterFreqKHz / 1000000).toFixed(2) : '--';
                         big.innerText = bigGhz + ' GHz';
                     }
-                } catch (e) {
-                    console.error(e);
-                }
+                } catch (e) {}
             }
         }
 
-        function onTriggerArtDexopt() {
-            const pkg = (document.getElementById('booster-target-pkg').value || '').trim();
-            if (!pkg) {
-                alert('Vui lòng nhập tên package ứng dụng hoặc game cần tối ưu!');
-                return;
+        // App Whitelist Manager
+        function loadWhitelist() {
+            if (window.AndroidNative && window.AndroidNative.getSavedWhitelistJson) {
+                try {
+                    const arr = JSON.parse(window.AndroidNative.getSavedWhitelistJson());
+                    customWhitelist = new Set(arr);
+                } catch (e) {}
             }
-            if (window.AndroidNative && window.AndroidNative.triggerArtOptimization) {
-                if (window.AndroidNative.vibrate) window.AndroidNative.vibrate(40);
-                showToastMessage('⏳ Đang biên dịch AOT Speed & Layouts cho ' + pkg + '...');
+        }
+
+        function loadApps() {
+            if (!window.AndroidNative || !window.AndroidNative.getInstalledAppsJson) return;
+            try {
+                allApps = JSON.parse(window.AndroidNative.getInstalledAppsJson()) || [];
+                renderApps(allApps);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderApps(list) {
+            const container = document.getElementById('apps-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            list.forEach(app => {
+                const isWhitelisted = customWhitelist.has(app.packageName);
+                const initial = (app.appName || 'A').charAt(0).toUpperCase();
+
+                const card = document.createElement('div');
+                card.className = 'app-item-card';
+                card.innerHTML = `
+                    <div class="app-item-left">
+                        <div class="app-avatar-box">${initial}</div>
+                        <div class="app-info-col">
+                            <div class="app-name-label">${escapeHtml(app.appName)}</div>
+                            <div class="app-pkg-label">${escapeHtml(app.packageName)}</div>
+                        </div>
+                    </div>
+                    <label class="shadcn-switch">
+                        <input type="checkbox" ${isWhitelisted ? 'checked' : ''} onchange="toggleWhitelistApp('${app.packageName}', this.checked)">
+                        <span class="shadcn-slider"></span>
+                    </label>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function onAppSearch(query) {
+            const q = query.toLowerCase().trim();
+            const filtered = allApps.filter(a => 
+                (a.appName && a.appName.toLowerCase().includes(q)) || 
+                (a.packageName && a.packageName.toLowerCase().includes(q))
+            );
+            renderApps(filtered);
+        }
+
+        function toggleWhitelistApp(pkg, enable) {
+            if (enable) customWhitelist.add(pkg);
+            else customWhitelist.delete(pkg);
+
+            if (window.AndroidNative && window.AndroidNative.saveWhitelistJson) {
+                window.AndroidNative.saveWhitelistJson(JSON.stringify(Array.from(customWhitelist)));
+            }
+        }
+
+        // Terminal Shell Exec
+        function runQuickCmd(cmd) {
+            const input = document.getElementById('term-input');
+            if (input) input.value = cmd;
+            executeCustomCmd();
+        }
+
+        function executeCustomCmd() {
+            const input = document.getElementById('term-input');
+            const term = document.getElementById('terminal-out');
+            if (!input || !term) return;
+
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            term.innerText += '\n$ ' + cmd + '\n';
+            term.scrollTop = term.scrollHeight;
+
+            if (window.AndroidNative && window.AndroidNative.runShellCommandDirect) {
                 setTimeout(() => {
-                    const res = window.AndroidNative.triggerArtOptimization(pkg, 'speed');
-                    showToastMessage(res);
-                }, 100);
+                    const out = window.AndroidNative.runShellCommandDirect(cmd);
+                    term.innerText += (out || '(Không có phản hồi)') + '\n';
+                    term.scrollTop = term.scrollHeight;
+                }, 50);
             }
+            input.value = '';
         }
 
-        function onEmergencyResetDefaults() {
-            if (confirm('Khôi phục toàn bộ tham số phần cứng, SSRM, SurfaceFlinger và EAS về mặc định OEM?')) {
-                if (window.AndroidNative && window.AndroidNative.emergencyRestoreDefaults) {
-                    if (window.AndroidNative.vibrate) window.AndroidNative.vibrate(80);
-                    const ok = window.AndroidNative.emergencyRestoreDefaults();
-                    updateBoosterUi();
-                    const verify = window.AndroidNative.verifyBoosterRestoration ? JSON.parse(window.AndroidNative.verifyBoosterRestoration()) : { isClean: true };
-                    const statusBanner = document.getElementById('booster-verify-banner');
-                    if (statusBanner) {
-                        statusBanner.innerText = verify.isClean ? '✅ Xác minh hoàn tất: Toàn bộ thông số đã phục hồi nguyên bản.' : '⚠️ Còn tồn đọng: ' + verify.discrepancies.join(', ');
-                    }
-                    showToastMessage(ok ? '✅ Khôi phục mặc định OEM thành công!' : '⚠️ Có lỗi trong quá trình rollback.');
-                }
-            }
-        }
-
-        function showToastMessage(msg) {
-            if (window.AndroidNative && window.AndroidNative.showToast) {
-                window.AndroidNative.showToast(msg);
-            } else {
-                alert(msg);
-            }
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        // Auto-Update Subsystem
-        let pendingUpdate = null;
-        let isManualUpdateCheck = false;
-
+        // In-App Auto-Updater
         function triggerManualCheckUpdate() {
             isManualUpdateCheck = true;
             const btn = document.getElementById('btn-check-update');
@@ -2101,13 +1494,13 @@
                 btn.disabled = true;
             }
             if (sub) sub.innerText = 'Đang kiểm tra từ máy chủ...';
-            
+
             if (window.AndroidNative && window.AndroidNative.checkForUpdates) {
                 window.AndroidNative.checkForUpdates();
             } else {
                 setTimeout(() => {
                     resetCheckBtn();
-                    if (sub) sub.innerText = 'Phiên bản 1.3.0';
+                    if (sub) sub.innerText = 'Phiên bản 1.0.0 (Bản chính thức)';
                 }, 1000);
             }
         }
@@ -2143,14 +1536,14 @@
                     }
                 }
             } catch (e) {
-                console.error('Error handling update json', e);
+                console.error(e);
             }
         };
 
         window.onNoUpdate = function(version) {
             resetCheckBtn();
             const sub = document.getElementById('update-status-subtitle');
-            if (sub) sub.innerText = 'Phiên bản ' + version + ' • Đã cập nhật';
+            if (sub) sub.innerText = 'Phiên bản ' + version + ' (Đã cập nhật mới nhất)';
             if (isManualUpdateCheck) {
                 showToastMessage('✅ Bạn đang ở phiên bản mới nhất!');
                 isManualUpdateCheck = false;
@@ -2160,7 +1553,7 @@
         window.onUpdateError = function(errMsg) {
             resetCheckBtn();
             const sub = document.getElementById('update-status-subtitle');
-            if (sub) sub.innerText = 'Không thể kiểm tra';
+            if (sub) sub.innerText = 'Phiên bản 1.0.0 (Bản chính thức)';
             if (isManualUpdateCheck) {
                 showToastMessage('⚠️ ' + errMsg);
                 isManualUpdateCheck = false;
@@ -2182,12 +1575,18 @@
             if (modal) modal.style.display = 'none';
         }
 
-        // Auto-check 2s after launch
-        setTimeout(() => {
-            if (window.AndroidNative && window.AndroidNative.checkForUpdates) {
-                window.AndroidNative.checkForUpdates();
+        function showToastMessage(msg) {
+            if (window.AndroidNative && window.AndroidNative.showToast) {
+                window.AndroidNative.showToast(msg);
+            } else {
+                alert(msg);
             }
-        }, 2000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
     </script>
 </body>
 </html>

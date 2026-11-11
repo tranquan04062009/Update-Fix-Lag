@@ -1,10 +1,10 @@
 {
-  "versionCode": 5,
-  "versionName": "1.4.0-PRO",
+  "versionCode": 1,
+  "versionName": "1.0.0",
   "minSupportedVersion": 1,
-  "title": "⚡ PHÁT HIỆN BẢN NÂNG CẤP V1.4.0!",
-  "changelog": "• Giao diện Cyberpunk Glassmorphism OLED siêu mượt\n• Tự động thông báo cập nhật in-app thông minh\n• Tối ưu hóa sâu nhân Linux Kernel & Qualcomm Adreno 619\n• Dọn dẹp RAM Tier 3 giải phóng bộ nhớ tức thì",
-  "downloadUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/download/v1.3.0/ZRamPurgerExtreme.apk",
-  "releasePageUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases",
+  "title": "Z-RAM Purger Extreme v1.0.0 (Official Public Release)",
+  "changelog": "• Ra mắt chính thức phiên bản v1.0.0\n• Toàn bộ cấu trúc giao diện được tái thiết kế theo chuẩn shadcn/ui & Magic UI\n• Tích hợp hệ thống kiểm tra cập nhật thời gian thực qua GitHub Releases API\n• Tối ưu hóa sâu nhân Linux Kernel, ZRAM sysfs compaction và Qualcomm Adreno 619\n• Hỗ trợ Shizuku API UID 2000, AppWidget 1-chạm và Game Booster chuyên nghiệp",
+  "downloadUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/download/v1.0.0/ZRamPurgerExtreme.apk",
+  "releasePageUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/tag/v1.0.0",
   "forceUpdate": false
 }
