@@ -408,6 +408,12 @@ public class GameBoosterManager {
                 PerformanceEngine.migrateBackgroundAppsToLittleCores(context, bgApps, criticalWhitelist);
             }
 
+            // Phase 8: AOSP ADB Master Hardware & Runtime Exploits
+            AospAdbMaster.setPowerHalFixedPerformance(true);
+            AospAdbMaster.setThermalGovernorOverride(true);
+            AospAdbMaster.setWindowBlurDisabled(true);
+            AospAdbMaster.applyDeviceConfigLowRam(true);
+
             // Commit snapshot as APPLIED
             snapshot.state = "APPLIED";
             saveSnapshot(context, snapshot);
@@ -497,6 +503,12 @@ public class GameBoosterManager {
                 }
                 CommandExecutor.execute(sb.toString());
             }
+
+            // 7. Restore AOSP Master Hardware & Runtime parameters
+            AospAdbMaster.setPowerHalFixedPerformance(false);
+            AospAdbMaster.setThermalGovernorOverride(false);
+            AospAdbMaster.setWindowBlurDisabled(false);
+            AospAdbMaster.applyDeviceConfigLowRam(false);
 
             // Stop Booster Foreground Service
             stopBoosterService(context);

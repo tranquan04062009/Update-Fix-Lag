@@ -194,12 +194,15 @@ public class PurgeEngine {
         }
 
         // =========================================================================
-        // Tier 1: Soft Clean (AOSP kill-all, am trim-memory & self-procfs reclaim)
+        // Tier 1: Soft Clean (AOSP kill-all, cache trim & self-procfs reclaim)
         // =========================================================================
         CommandExecutor.execute("am kill-all 2>/dev/null");
 
         // Trigger local app self-reclaim (always succeeds without root)
         triggerSelfProcfsReclaim();
+
+        // AOSP PackageManager cache trimming (1 GB)
+        AospAdbMaster.trimSystemCaches(1073741824L);
 
         // Batch am trim-memory for all target apps in chunks of 50
         List<String> trimBatches = buildBatchTrimCommands(allTargetApps, 50);
@@ -225,18 +228,22 @@ public class PurgeEngine {
             }
             killedCount = targetUserApps.size();
 
-            // Clear system caches & vacuum SQLite
-            CommandExecutor.execute("pm trim-caches 4096M 2>/dev/null");
+            // Clear system caches (2 GB) & enforce Doze on idle apps
+            AospAdbMaster.trimSystemCaches(2147483648L);
+            AospAdbMaster.stepDozeProtectSelf(context);
         }
 
         // =========================================================================
         // Tier 3: Extreme Kernel, Multi-OEM & AOSP Compaction Pipeline
         // =========================================================================
         if (tier >= 3) {
-            // 1. Trigger AOSP Memory Pressure Pulse (forces ART moving compacting GC)
+            // 1. Proactive AOSP DeviceConfig / Phenotype Low-RAM flags
+            AospAdbMaster.applyDeviceConfigLowRam(true);
+
+            // 2. Trigger AOSP Memory Pressure Pulse (forces ART moving compacting GC)
             CommandExecutor.execute("cmd activity memory-factor set CRITICAL 2>/dev/null");
 
-            // 2. Batched Dual AOSP Compaction & ART SIGUSR1 Signal 10
+            // 3. Batched Dual AOSP Compaction & ART SIGUSR1 Signal 10
             List<String> compactBatches = buildBatchCompactionCommands(allTargetApps, 40);
             for (String batchCmd : compactBatches) {
                 CommandExecutor.execute(batchCmd);
@@ -244,31 +251,34 @@ public class PurgeEngine {
             compactedCount = allTargetApps.size();
             artGcCount = allTargetApps.size();
 
-            // 3. System Services Compaction
+            // 4. System Services Compaction & System Idle Maintenance
             CommandExecutor.execute("cmd activity compact system 2>/dev/null");
             CommandExecutor.execute("cmd activity compact-idle 2>/dev/null");
-            CommandExecutor.execute("cmd activity idle-maintenance 2>/dev/null");
+            AospAdbMaster.runIdleMaintenance();
 
-            // 4. OEM-Specific Subsystem Hooks with Graceful Fallback
+            // Wait for all background broadcast dispatches to settle
+            CommandExecutor.execute("am wait-for-broadcast-idle 2>/dev/null");
+
+            // 5. OEM-Specific Subsystem Hooks with Graceful Fallback
             executeOemHooks(oem);
 
-            // 5. In-Memory ZRAM Compaction
+            // 6. In-Memory ZRAM Compaction
             CommandExecutor.execute("echo all > /sys/block/zram0/compact 2>/dev/null || echo 1 > /sys/block/zram0/compact 2>/dev/null");
 
-            // 6. Kernel ZRAM Flash Writeback (RAM Plus / swap backing dev)
+            // 7. Kernel ZRAM Flash Writeback (RAM Plus / swap backing dev)
             CommandExecutor.execute("echo all > /sys/block/zram0/idle 2>/dev/null || echo 1 > /sys/block/zram0/idle 2>/dev/null");
             CommandExecutor.execute("echo idle > /sys/block/zram0/writeback 2>/dev/null");
             CommandExecutor.execute("echo huge > /sys/block/zram0/writeback 2>/dev/null");
 
-            // 7. Allow ART GC Compactor & ZRAM to stabilize
+            // 8. Allow ART GC Compactor & ZRAM to stabilize
             try {
                 Thread.sleep(1200);
             } catch (InterruptedException ignored) {}
 
-            // 8. MANDATORY SAFETY: Reset Memory Pressure factor
+            // 9. MANDATORY SAFETY: Reset Memory Pressure factor
             CommandExecutor.execute("cmd activity memory-factor reset 2>/dev/null");
 
-            // 9. Kernel VM Cache Drop & Order Compaction (if root)
+            // 10. Kernel VM Cache Drop & Order Compaction (if root)
             CommandExecutor.execute("sync && echo 3 > /proc/sys/vm/drop_caches 2>/dev/null");
             CommandExecutor.execute("echo 1 > /proc/sys/vm/compact_memory 2>/dev/null");
         } else {

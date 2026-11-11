@@ -1041,6 +1041,92 @@
             cursor: pointer;
             box-shadow: 0 4px 16px var(--cyan-glow);
         }
+
+        .aosp-quick-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-aosp-action {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-heading);
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-aosp-action:active {
+            transform: scale(0.97);
+            background: rgba(0, 240, 255, 0.08);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-aosp-action svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--cyan-primary);
+            stroke-width: 2.2;
+            flex-shrink: 0;
+            fill: none;
+        }
+
+        .anim-scale-pills {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .anim-scale-pill {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .anim-scale-pill.active {
+            background: rgba(0, 240, 255, 0.12);
+            border-color: var(--cyan-primary);
+            color: var(--cyan-primary);
+        }
+
+        .btn-hibernate {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 5px 8px;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 8px;
+        }
+
+        .btn-hibernate:active {
+            transform: scale(0.94);
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--cyan-primary);
+        }
     </style>
 </head>
 <body>
@@ -1176,6 +1262,18 @@
                 <span id="btn-boost-text">BUNG HIỆU NĂNG TỨC THÌ</span>
             </button>
 
+            <!-- AOSP ADB Master Actions -->
+            <div class="aosp-quick-grid">
+                <button type="button" class="btn-aosp-action" onclick="onTriggerAospIdleMaint()">
+                    <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                    <span>Bảo trì sâu AOSP</span>
+                </button>
+                <button type="button" class="btn-aosp-action" onclick="onTriggerAospTrimCaches()">
+                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>Dọn cache hệ thống</span>
+                </button>
+            </div>
+
             <!-- Extreme Game Booster Card -->
             <div class="bento-card" style="margin-top: 14px;">
                 <div class="booster-head-row">
@@ -1241,11 +1339,12 @@
         <!-- TAB 3: TERMINAL (DEBUG) -->
         <div id="tab-terminal" class="tab-panel">
             <div class="terminal-quick-chips">
+                <div class="term-chip" onclick="runQuickCmd('am idle-maintenance')">idle-maint</div>
+                <div class="term-chip" onclick="runQuickCmd('cmd package trim-caches 2147483648')">trim-caches</div>
+                <div class="term-chip" onclick="runQuickCmd('cmd app_hibernation help')">hibernation</div>
+                <div class="term-chip" onclick="runQuickCmd('cmd game help')">game mode</div>
                 <div class="term-chip" onclick="runQuickCmd('free -m')">free -m</div>
-                <div class="term-chip" onclick="runQuickCmd('ps -A | head -n 30')">ps -A</div>
-                <div class="term-chip" onclick="runQuickCmd('pm trim-caches 4096M')">trim-caches</div>
                 <div class="term-chip" onclick="runQuickCmd('dumpsys meminfo | head -n 25')">meminfo</div>
-                <div class="term-chip" onclick="runQuickCmd('cat /proc/meminfo | head -n 15')">proc/meminfo</div>
             </div>
             <div id="terminal-out" class="terminal-viewport">-- BẢNG ĐIỀU KHIỂN SHELL ADB / SHIZUKU --&#10;Sẵn sàng thực thi lệnh trực tiếp...</div>
             <div class="cmd-bar">
@@ -1265,6 +1364,29 @@
                 <button type="button" id="btn-check-update" class="btn-shadcn-pill" onclick="triggerManualCheckUpdate()">
                     Kiểm tra
                 </button>
+            </div>
+
+            <!-- AOSP Animation Latency Scaler -->
+            <div class="bento-card" style="margin-bottom: 10px;">
+                <div class="setting-title">Tăng tốc chuyển cảnh AOSP</div>
+                <div class="setting-subtitle">Rút ngắn độ trễ khung hình của Window Manager và Animator.</div>
+                <div class="anim-scale-pills">
+                    <div class="anim-scale-pill" id="anim-scale-0" onclick="onSelectAnimScale(0.0)">0.0x (Tắt)</div>
+                    <div class="anim-scale-pill" id="anim-scale-05" onclick="onSelectAnimScale(0.5)">0.5x (Siêu tốc)</div>
+                    <div class="anim-scale-pill" id="anim-scale-1" onclick="onSelectAnimScale(1.0)">1.0x (Mặc định)</div>
+                </div>
+            </div>
+
+            <!-- AOSP Phenotype Low-RAM Tuner -->
+            <div class="clean-setting-row" style="margin-bottom: 10px;">
+                <div class="setting-row-left">
+                    <div class="setting-title">AOSP Phenotype Low-RAM Tuner</div>
+                    <div class="setting-subtitle">Compaction chủ động & Cgroup v2 Freezer (đóng băng ngầm sau 10s).</div>
+                </div>
+                <label class="shadcn-switch">
+                    <input type="checkbox" id="aosp-lowram-toggle" onchange="onAospLowRamToggleChanged(this.checked)">
+                    <span class="shadcn-slider"></span>
+                </label>
             </div>
 
             <!-- Home Widget Card -->
@@ -1383,6 +1505,17 @@
             telemetryInterval = setInterval(refreshTelemetry, 2500);
             loadWhitelist();
             setTimeout(loadApps, 200);
+
+            // Init AOSP settings
+            if (window.AndroidNative && window.AndroidNative.isAospDeviceConfigEnabled) {
+                const lowRamOn = window.AndroidNative.isAospDeviceConfigEnabled();
+                const lToggle = document.getElementById('aosp-lowram-toggle');
+                if (lToggle) lToggle.checked = lowRamOn;
+            }
+            if (window.AndroidNative && window.AndroidNative.getAospAnimationScale) {
+                const scale = window.AndroidNative.getAospAnimationScale();
+                updateAnimScaleUi(scale);
+            }
 
             // Visibility listener to pause background telemetry (Zero Battery Drain / Zero Lag)
             document.addEventListener('visibilitychange', () => {
@@ -1693,10 +1826,16 @@
                             <div class="app-pkg-label">${escapeHtml(pkg)}</div>
                         </div>
                     </div>
-                    <label class="shadcn-switch">
-                        <input type="checkbox" ${isWhitelisted ? 'checked' : ''} onchange="toggleWhitelistApp('${escapeHtml(pkg)}', this.checked)">
-                        <span class="shadcn-slider"></span>
-                    </label>
+                    <div style="display: flex; align-items: center;">
+                        <button type="button" class="btn-hibernate" title="Ngủ đông AOSP" onclick="toggleHibernateApp('${escapeHtml(pkg)}')">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                            <span>Ngủ đông</span>
+                        </button>
+                        <label class="shadcn-switch" title="Loại trừ khỏi dọn dẹp">
+                            <input type="checkbox" ${isWhitelisted ? 'checked' : ''} onchange="toggleWhitelistApp('${escapeHtml(pkg)}', this.checked)">
+                            <span class="shadcn-slider"></span>
+                        </label>
+                    </div>
                 `;
                 container.appendChild(card);
             });
@@ -1858,6 +1997,80 @@
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // --- AOSP ADB Master Exploits Handlers ---
+        function onTriggerAospIdleMaint() {
+            if (!window.AndroidNative || !window.AndroidNative.triggerAospIdleMaintenance) {
+                showToastMessage("AOSP Master chưa sẵn sàng");
+                return;
+            }
+            showToastMessage("⚡ Đang kích hoạt bảo trì sâu AOSP (fstrim, ZRAM evict, compaction)...");
+            setTimeout(() => {
+                try {
+                    window.AndroidNative.triggerAospIdleMaintenance();
+                    showToastMessage("✅ Bảo trì AOSP hoàn tất!");
+                    refreshTelemetry();
+                } catch(e) {
+                    showToastMessage("Đã gửi tín hiệu bảo trì AOSP");
+                }
+            }, 100);
+        }
+
+        function onTriggerAospTrimCaches() {
+            if (!window.AndroidNative || !window.AndroidNative.triggerAospTrimCaches) {
+                showToastMessage("AOSP Master chưa sẵn sàng");
+                return;
+            }
+            showToastMessage("🧹 Đang dọn sạch cache hệ thống 2GB qua AOSP StorageManager...");
+            setTimeout(() => {
+                try {
+                    window.AndroidNative.triggerAospTrimCaches();
+                    showToastMessage("✅ Đã dọn sạch 2GB cache hệ thống thành công!");
+                    refreshTelemetry();
+                } catch(e) {
+                    showToastMessage("Đã dọn dẹp cache hệ thống");
+                }
+            }, 100);
+        }
+
+        function onSelectAnimScale(scale) {
+            if (!window.AndroidNative || !window.AndroidNative.setAospAnimationScale) return;
+            const ok = window.AndroidNative.setAospAnimationScale(scale);
+            updateAnimScaleUi(scale);
+            showToastMessage(ok ? `⚡ Đã đặt tốc độ chuyển cảnh ${scale}x` : "Yêu cầu quyền Shizuku để đổi tốc độ");
+        }
+
+        function updateAnimScaleUi(scale) {
+            document.querySelectorAll('.anim-scale-pill').forEach(el => el.classList.remove('active'));
+            if (scale <= 0.1) {
+                document.getElementById('anim-scale-0')?.classList.add('active');
+            } else if (scale <= 0.6) {
+                document.getElementById('anim-scale-05')?.classList.add('active');
+            } else {
+                document.getElementById('anim-scale-1')?.classList.add('active');
+            }
+        }
+
+        function onAospLowRamToggleChanged(checked) {
+            if (!window.AndroidNative || !window.AndroidNative.toggleAospDeviceConfig) return;
+            const ok = window.AndroidNative.toggleAospDeviceConfig(checked);
+            showToastMessage(checked 
+                ? "⚡ Đã bật AOSP Low-RAM Tuner (Compaction & Cgroup Freezer)" 
+                : "Đã tắt AOSP Low-RAM Tuner");
+        }
+
+        function toggleHibernateApp(pkg) {
+            if (!window.AndroidNative || !window.AndroidNative.hibernateApp) return;
+            showToastMessage(`❄️ Đang đưa ${pkg} vào trạng thái ngủ đông AOSP...`);
+            setTimeout(() => {
+                const ok = window.AndroidNative.hibernateApp(pkg, true);
+                if (ok) {
+                    showToastMessage(`✅ Đã ngủ đông ${pkg}: dừng ngầm & xóa cache`);
+                } else {
+                    showToastMessage(`⚠️ Không thể ngủ đông ${pkg} (cần Shizuku/ADB)`);
+                }
+            }, 50);
         }
     </script>
 </body>

@@ -370,4 +370,55 @@ public class WebAppInterface {
         String name = UpdateManager.getCurrentVersionName(activity);
         return String.format("{\"versionCode\":%d,\"versionName\":\"%s\"}", code, name);
     }
+
+    // --- AOSP ADB Master Exploits & Runtime Tuning ---
+
+    @JavascriptInterface
+    public String triggerAospIdleMaintenance() {
+        CommandExecutor.CommandResult res = AospAdbMaster.runIdleMaintenance();
+        return res.toJson();
+    }
+
+    @JavascriptInterface
+    public String triggerAospTrimCaches() {
+        CommandExecutor.CommandResult res = AospAdbMaster.trimSystemCaches(2147483648L);
+        return res.toJson();
+    }
+
+    @JavascriptInterface
+    public boolean toggleAospDeviceConfig(boolean enable) {
+        boolean success = AospAdbMaster.applyDeviceConfigLowRam(enable);
+        prefs.edit().putBoolean("aosp_device_config_enabled", enable).apply();
+        return success;
+    }
+
+    @JavascriptInterface
+    public boolean isAospDeviceConfigEnabled() {
+        return prefs.getBoolean("aosp_device_config_enabled", false);
+    }
+
+    @JavascriptInterface
+    public boolean setAospAnimationScale(float scale) {
+        return AospAdbMaster.setUiAnimationScale(scale);
+    }
+
+    @JavascriptInterface
+    public float getAospAnimationScale() {
+        return AospAdbMaster.getUiAnimationScale();
+    }
+
+    @JavascriptInterface
+    public boolean hibernateApp(String packageName, boolean hibernate) {
+        return AospAdbMaster.setAppHibernation(packageName, hibernate);
+    }
+
+    @JavascriptInterface
+    public boolean isAppHibernating(String packageName) {
+        return AospAdbMaster.isAppHibernating(packageName);
+    }
+
+    @JavascriptInterface
+    public String compileAppWithLayouts(String packageName) {
+        return AospAdbMaster.compileAppLayoutsAndSpeed(packageName);
+    }
 }
