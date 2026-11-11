@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -16,6 +15,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -25,7 +25,9 @@ import java.net.URL;
 
 public class UpdateManager {
 
-    public static final String UPDATE_MANIFEST_URL = 
+    public static final String GITHUB_RELEASE_API_URL = 
+        "https://api.github.com/repos/tranquan04062009/Update-Fix-Lag/releases/latest";
+    public static final String GITHUB_RAW_FALLBACK_URL = 
         "https://raw.githubusercontent.com/tranquan04062009/Update-Fix-Lag/master/version.json";
 
     public interface UpdateCheckCallback {
@@ -36,80 +38,157 @@ public class UpdateManager {
 
     public static void checkForUpdates(Context context, UpdateCheckCallback callback) {
         new Thread(() -> {
-            HttpURLConnection conn = null;
-            try {
-                int currentCode = getCurrentVersionCode(context);
-                String currentName = getCurrentVersionName(context);
+            String currentName = getCurrentVersionName(context);
+            JSONObject result = fetchLatestReleaseFromGitHub(currentName);
 
-                URL url = new URL(UPDATE_MANIFEST_URL + "?nocache=" + System.currentTimeMillis());
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setConnectTimeout(8000);
-                conn.setReadTimeout(8000);
-                conn.setRequestProperty("User-Agent", "ZRamPurgerExtreme-App/" + currentName);
-                conn.connect();
-
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    reader.close();
-
-                    JSONObject json = new JSONObject(sb.toString());
-                    int remoteCode = json.optInt("versionCode", 0);
-                    String remoteName = json.optString("versionName", "1.0.0");
-                    String downloadUrl = json.optString("downloadUrl", "");
-                    String changelog = json.optString("changelog", "Bản cập nhật tối ưu hóa hiệu năng.");
-                    String title = json.optString("title", "Cập nhật mới");
-
-                    boolean hasUpdate = remoteCode > currentCode;
-
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        if (hasUpdate) {
-                            try {
-                                json.put("currentVersionCode", currentCode);
-                                json.put("currentVersionName", currentName);
-                                json.put("hasUpdate", true);
-                                callback.onUpdateFound(json.toString());
-                            } catch (Exception e) {
-                                callback.onError(e.getMessage());
-                            }
-                        } else {
-                            callback.onNoUpdate(currentName);
-                        }
-                    });
-                } else {
-                    new Handler(Looper.getMainLooper()).post(() -> 
-                        callback.onError("HTTP " + responseCode + " khi tải manifest cập nhật.")
-                    );
-                }
-            } catch (Exception e) {
-                new Handler(Looper.getMainLooper()).post(() -> 
-                    callback.onError("Không thể kết nối đến máy chủ GitHub: " + e.getMessage())
-                );
-            } finally {
-                if (conn != null) {
-                    conn.disconnect();
-                }
+            // If GitHub API failed, try raw fallback
+            if (result == null) {
+                result = fetchRawFallback(currentName);
             }
+
+            final JSONObject finalResult = result;
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (finalResult != null) {
+                    if (finalResult.optBoolean("hasUpdate", false)) {
+                        callback.onUpdateFound(finalResult.toString());
+                    } else {
+                        callback.onNoUpdate(currentName);
+                    }
+                } else {
+                    callback.onError("Không thể kiểm tra máy chủ cập nhật.");
+                }
+            });
         }).start();
+    }
+
+    private static JSONObject fetchLatestReleaseFromGitHub(String currentVersion) {
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(GITHUB_RELEASE_API_URL);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(6000);
+            conn.setReadTimeout(6000);
+            conn.setRequestProperty("User-Agent", "ZRamPurgerExtreme-Client");
+            conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
+            conn.connect();
+
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+
+                JSONObject release = new JSONObject(sb.toString());
+                String tagName = release.optString("tag_name", "");
+                String cleanRemoteVer = tagName.replaceAll("[^0-9.]", "");
+                String releaseTitle = release.optString("name", "Bản cập nhật v" + cleanRemoteVer);
+                String changelog = release.optString("body", "Tối ưu hóa hệ thống và sửa lỗi.");
+
+                String downloadUrl = "";
+                JSONArray assets = release.optJSONArray("assets");
+                if (assets != null && assets.length() > 0) {
+                    for (int i = 0; i < assets.length(); i++) {
+                        JSONObject asset = assets.getJSONObject(i);
+                        String assetName = asset.optString("name", "");
+                        if (assetName.endsWith(".apk")) {
+                            downloadUrl = asset.optString("browser_download_url", "");
+                            break;
+                        }
+                    }
+                    if (downloadUrl.isEmpty()) {
+                        downloadUrl = assets.getJSONObject(0).optString("browser_download_url", "");
+                    }
+                }
+
+                boolean isNewer = isVersionNewer(cleanRemoteVer, currentVersion);
+
+                JSONObject out = new JSONObject();
+                out.put("hasUpdate", isNewer);
+                out.put("versionName", cleanRemoteVer);
+                out.put("title", releaseTitle);
+                out.put("changelog", changelog);
+                out.put("downloadUrl", downloadUrl);
+                return out;
+            }
+        } catch (Exception ignored) {
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+        return null;
+    }
+
+    private static JSONObject fetchRawFallback(String currentVersion) {
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(GITHUB_RAW_FALLBACK_URL + "?t=" + System.currentTimeMillis());
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(6000);
+            conn.setReadTimeout(6000);
+            conn.setRequestProperty("User-Agent", "ZRamPurgerExtreme-Client");
+            conn.connect();
+
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+
+                JSONObject raw = new JSONObject(sb.toString());
+                String remoteVer = raw.optString("versionName", "1.0.0").replaceAll("[^0-9.]", "");
+                boolean isNewer = isVersionNewer(remoteVer, currentVersion);
+
+                JSONObject out = new JSONObject();
+                out.put("hasUpdate", isNewer);
+                out.put("versionName", remoteVer);
+                out.put("title", raw.optString("title", "Cập nhật mới"));
+                out.put("changelog", raw.optString("changelog", ""));
+                out.put("downloadUrl", raw.optString("downloadUrl", ""));
+                return out;
+            }
+        } catch (Exception ignored) {
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+        return null;
+    }
+
+    public static boolean isVersionNewer(String remoteVer, String currentVer) {
+        if (remoteVer == null || remoteVer.isEmpty()) return false;
+        if (currentVer == null || currentVer.isEmpty()) return true;
+
+        try {
+            String[] rParts = remoteVer.split("\\.");
+            String[] cParts = currentVer.split("\\.");
+            int maxLen = Math.max(rParts.length, cParts.length);
+
+            for (int i = 0; i < maxLen; i++) {
+                int r = i < rParts.length ? Integer.parseInt(rParts[i].replaceAll("[^0-9]", "")) : 0;
+                int c = i < cParts.length ? Integer.parseInt(cParts[i].replaceAll("[^0-9]", "")) : 0;
+                if (r > c) return true;
+                if (r < c) return false;
+            }
+        } catch (Exception ignored) {}
+        return false;
     }
 
     public static void startDownloadAndInstall(Context context, String downloadUrl, String versionName) {
         try {
             if (downloadUrl == null || downloadUrl.isEmpty()) {
-                Toast.makeText(context, "⚠️ URL tải về không hợp lệ!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "⚠️ Link tải cập nhật chưa sẵn sàng!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Android 8+ check unknown app sources
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!context.getPackageManager().canRequestPackageInstalls()) {
-                    Toast.makeText(context, "Vui lòng cho phép quyền cài đặt file APK từ nguồn ngoài", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Vui lòng cho phép quyền cài đặt file APK từ ứng dụng", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
                             Uri.parse("package:" + context.getPackageName()));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -119,24 +198,23 @@ public class UpdateManager {
 
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             if (downloadManager == null) {
-                Toast.makeText(context, "Dịch vụ DownloadManager không khả dụng!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Dịch vụ tải về không khả dụng!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String fileName = "ZRamPurgerExtreme_" + versionName + ".apk";
+            String fileName = "ZRamPurgerExtreme_v" + versionName + ".apk";
             Uri uri = Uri.parse(downloadUrl);
 
             DownloadManager.Request request = new DownloadManager.Request(uri);
-            request.setTitle("Z-RAM Purger Extreme v" + versionName);
+            request.setTitle("Z-RAM Extreme v" + versionName);
             request.setDescription("Đang tải bản cập nhật...");
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
             request.setMimeType("application/vnd.android.package-archive");
 
             long downloadId = downloadManager.enqueue(request);
-            Toast.makeText(context, "⚡ Đang tải bản cập nhật v" + versionName + "...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "⚡ Đang tải bản nâng cấp v" + versionName + "...", Toast.LENGTH_SHORT).show();
 
-            // Register complete broadcast receiver
             BroadcastReceiver receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context ctx, Intent intent) {
@@ -152,7 +230,7 @@ public class UpdateManager {
                                 ctx.startActivity(installIntent);
                             }
                         } catch (Exception e) {
-                            Toast.makeText(ctx, "Lỗi khi mở trình cài đặt: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ctx, "Lỗi cài đặt: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         } finally {
                             try {
                                 ctx.unregisterReceiver(this);
@@ -164,14 +242,13 @@ public class UpdateManager {
 
             IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
             if (Build.VERSION.SDK_INT >= 34) {
-                // 2 = Context.RECEIVER_EXPORTED (API 34 compatibility without compile-time SDK dependency)
                 context.registerReceiver(receiver, filter, 2);
             } else {
                 context.registerReceiver(receiver, filter);
             }
 
         } catch (Exception e) {
-            Toast.makeText(context, "Lỗi bắt đầu cập nhật: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Lỗi tải về: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -191,9 +268,9 @@ public class UpdateManager {
     public static String getCurrentVersionName(Context context) {
         try {
             PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return pInfo.versionName != null ? pInfo.versionName : "1.0.0";
+            return pInfo.versionName != null ? pInfo.versionName : "1.3.0";
         } catch (PackageManager.NameNotFoundException e) {
-            return "1.0.0";
+            return "1.3.0";
         }
     }
 }
