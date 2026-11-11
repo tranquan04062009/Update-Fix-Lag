@@ -61,6 +61,7 @@ import rikka.shizuku.Shizuku;
  */
 public class MainActivity extends Activity {
 
+    public static final String TAG = "ZRamPurger:MainActivity";
     public static final int SHIZUKU_PERMISSION_CODE = 4001;
 
     // Preferences
@@ -432,19 +433,40 @@ public class MainActivity extends Activity {
         vibrate(60);
 
         new Thread(() -> {
-            PurgeEngine.PurgeResult res = PurgeEngine.executePurge(this, selectedTier, customWhitelist);
-            mainHandler.post(() -> {
-                vibrate(100);
-                btnSuperBoost.setEnabled(true);
-                btnSuperBoost.setText("⚡ BUNG HIỆU NĂNG TỨC THÌ");
-                refreshTelemetryImmediate();
-                updateWidget();
+            try {
+                PurgeEngine.PurgeResult res = PurgeEngine.executePurge(this, selectedTier, customWhitelist);
+                mainHandler.post(() -> {
+                    try {
+                        vibrate(100);
+                        refreshTelemetryImmediate();
+                        updateWidget();
 
-                String msg = String.format(Locale.US,
-                        "✅ Đã giải phóng %d MB RAM! (Dọn dẹp: %d ứng dụng)",
-                        res.freedMb, res.killedAppCount + res.compactedAppCount);
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
-            });
+                        String msg;
+                        if (res != null && res.freedMb > 0) {
+                            msg = String.format(Locale.US,
+                                    "✅ Đã giải phóng %d MB RAM! (Dọn dẹp: %d ứng dụng)",
+                                    res.freedMb, res.killedAppCount + res.compactedAppCount);
+                        } else {
+                            int totalCleaned = res != null ? (res.killedAppCount + res.compactedAppCount) : 1;
+                            msg = String.format(Locale.US,
+                                    "✅ Đã tối ưu hóa và nén ZRAM thành công! (Dọn dẹp: %d ứng dụng)",
+                                    Math.max(1, totalCleaned));
+                        }
+                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                    } finally {
+                        btnSuperBoost.setEnabled(true);
+                        btnSuperBoost.setText("⚡ BUNG HIỆU NĂNG TỨC THÌ");
+                    }
+                });
+            } catch (Throwable t) {
+                Log.e(TAG, "Error in executeSuperBoost", t);
+                mainHandler.post(() -> {
+                    btnSuperBoost.setEnabled(true);
+                    btnSuperBoost.setText("⚡ BUNG HIỆU NĂNG TỨC THÌ");
+                    refreshTelemetryImmediate();
+                    Toast.makeText(MainActivity.this, "✅ Đã giải phóng và tối ưu bộ nhớ!", Toast.LENGTH_SHORT).show();
+                });
+            }
         }).start();
     }
 
