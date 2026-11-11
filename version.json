@@ -1,0 +1,10 @@
+{
+  "versionCode": 4,
+  "versionName": "1.3.0",
+  "minSupportedVersion": 1,
+  "title": "Z-RAM Purger Extreme v1.3.0",
+  "changelog": "• Giao diện Cyberpunk Glassmorphism OLED hoàn toàn mới\n• Tự động thông báo cập nhật in-app thông minh\n• Hỗ trợ tối ưu sâu Qualcomm Adreno 619 & CPU Kryo 570\n• Dọn dẹp bộ nhớ RAM Tier 3 kết hợp ZRAM Sysfs compaction",
+  "downloadUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/download/v1.3.0/ZRamPurgerExtreme.apk",
+  "releasePageUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases",
+  "forceUpdate": false
+}
