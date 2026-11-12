@@ -1,6 +1,7 @@
 package com.tanmahwuan.zrampurger;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -33,7 +34,7 @@ public class PerformanceEngine {
 
     private static final Pattern SAFE_PKG_PATTERN = Pattern.compile("^[a-zA-Z0-9_.]+$");
 
-    // Adreno 619 sysfs paths on Snapdragon 750G (SM7225)
+    // Adreno (KGSL) sysfs paths; only used when the node exists on this device
     public static final String KGSL_SYSFS_DIR = "/sys/class/kgsl/kgsl-3d0/";
     public static final String KGSL_CLOCK_MHZ = KGSL_SYSFS_DIR + "clock_mhz";
     public static final String KGSL_BUSY_PCT = KGSL_SYSFS_DIR + "gpu_busy_percentage";
@@ -53,14 +54,14 @@ public class PerformanceEngine {
      * Telemetry state holder for real-time dashboard visualization.
      */
     public static class PerformanceTelemetry {
-        public int gpuClockMhz = 0;
-        public int gpuBusyPercent = 0;
+        public int gpuClockMhz = -1;
+        public int gpuBusyPercent = -1;
         public double gpuTempC = 0.0;
         public double cpuTempC = 0.0;
         public double batteryTempC = 0.0;
-        public String gpuModel = "Adreno 619";
-        public int littleClusterFreqKHz = 0; // CPU 0-5
-        public int bigClusterFreqKHz = 0;    // CPU 6-7
+        public String gpuModel = "";
+        public int littleClusterFreqKHz = 0; // slowest cluster of this device
+        public int bigClusterFreqKHz = 0;    // fastest cluster of this device
         public boolean isBoosted = false;
         public String activeMode = "BALANCED";
         public long timestampMs = System.currentTimeMillis();
@@ -73,7 +74,7 @@ public class PerformanceEngine {
                 json.put("gpuTempC", String.format(Locale.US, "%.1f", gpuTempC));
                 json.put("cpuTempC", String.format(Locale.US, "%.1f", cpuTempC));
                 json.put("batteryTempC", String.format(Locale.US, "%.1f", batteryTempC));
-                json.put("gpuModel", gpuModel != null ? gpuModel : "Adreno 619");
+                json.put("gpuModel", gpuModel != null ? gpuModel : "");
                 json.put("littleClusterFreqKHz", littleClusterFreqKHz);
                 json.put("bigClusterFreqKHz", bigClusterFreqKHz);
                 json.put("isBoosted", isBoosted);
@@ -122,6 +123,16 @@ public class PerformanceEngine {
     }
 
     /**
+     * Raw binder transaction numbers ("service call ... 76") differ between One UI versions and cannot be
+     * verified here, so they stay OFF unless a developer explicitly enables them for a tested build.
+     */
+    public static final boolean ENABLE_UNVERIFIED_SAMSUNG_BINDER = false;
+
+    static boolean samsungBinderAllowed() {
+        return ENABLE_UNVERIFIED_SAMSUNG_BINDER && "samsung".equalsIgnoreCase(Build.MANUFACTURER);
+    }
+
+    /**
      * Builds shell script string for Samsung CFMS and GameSDK binder transactions.
      */
     public static String buildSamsungCfmsScript(boolean enable) {
@@ -149,6 +160,7 @@ public class PerformanceEngine {
      * Samsung CFMS (CustomFrequencyManagerService) and GameSDK binder calls.
      */
     public static boolean applySamsungCfmsAndGameSdkBoost(boolean enable) {
+        if (!samsungBinderAllowed()) return false;
         Log.i(TAG_PERF, "Configuring Samsung CFMS & GameSDK boosts: enable=" + enable);
         String script = buildSamsungCfmsScript(enable);
         CommandExecutor.CommandResult res = CommandExecutor.execute(script);
@@ -175,6 +187,7 @@ public class PerformanceEngine {
      * Thermal Throttling Mitigations:
      */
     public static boolean applyThermalMitigations(boolean enable) {
+        if (!samsungBinderAllowed()) return false;
         Log.i(TAG_PERF, "Configuring Thermal Mitigations: enable=" + enable);
         String script = buildThermalMitigationsScript(enable);
         CommandExecutor.CommandResult res = CommandExecutor.execute(script);
@@ -277,44 +290,37 @@ public class PerformanceEngine {
     }
 
     /**
-     * Qualcomm Adreno 619 KGSL Hardware Tuning:
-     * If root is available, sets minimum GPU frequency to 800 MHz and reduces idle_timer to 20ms.
-     * If root is not available, logs notification and relies on CFMS/GameSDK/SurfaceFlinger.
-     * Also handles `cmd power set-fixed-performance-mode-enabled true` with graceful fallback on UID 2000.
+     * Adreno (KGSL) GPU clock hold. Works on any Adreno model because the target comes from the GPU's
+     * own frequency table; on non-Adreno devices (Mali, PowerVR...) it does nothing.
+     *  - enable: raises min clock to the second-highest step of this GPU's table (root only).
+     *  - disable: restores exactly the values captured in the baseline snapshot; unknown (-1) values are
+     *    never written, so a wrong default can not be applied.
+     * Returns true only when a hardware value was really changed and verified.
      */
     public static boolean applyAdrenoKgslTuning(boolean enable, int minClockMhz, int idleTimer) {
         boolean isRoot = CommandExecutor.isRootAvailable();
-        Log.i(TAG_PERF, "Applying Adreno 619 KGSL tuning: enable=" + enable + ", rootAvailable=" + isRoot);
-
-        if (isRoot) {
-            StringBuilder sb = new StringBuilder();
+        boolean changed = false;
+        if (isRoot && readNodePrivileged(KGSL_MIN_CLOCK) != null) {
             if (enable) {
-                int targetFreq = minClockMhz > 0 ? minClockMhz : 800;
-                int targetTimer = idleTimer > 0 ? idleTimer : 20;
-                sb.append("echo ").append(targetFreq).append(" > ").append(KGSL_MIN_CLOCK).append(" 2>/dev/null || true\n");
-                sb.append("echo ").append(targetTimer).append(" > ").append(KGSL_IDLE_TIMER).append(" 2>/dev/null || true\n");
-                sb.append("cmd power set-fixed-performance-mode-enabled true 2>/dev/null || true\n");
+                int target = DeviceProfiler.pickBoostFreq(readNodePrivileged(KGSL_FREQ_TABLE));
+                if (target > 0) changed |= writeVerified(KGSL_MIN_CLOCK, String.valueOf(target));
+                if (idleTimer > 0 && readNodePrivileged(KGSL_IDLE_TIMER) != null)
+                    changed |= writeVerified(KGSL_IDLE_TIMER, String.valueOf(idleTimer));
             } else {
-                int defaultMin = minClockMhz > 0 ? minClockMhz : 253;
-                int defaultTimer = idleTimer > 0 ? idleTimer : 80;
-                sb.append("echo ").append(defaultMin).append(" > ").append(KGSL_MIN_CLOCK).append(" 2>/dev/null || true\n");
-                sb.append("echo ").append(defaultTimer).append(" > ").append(KGSL_IDLE_TIMER).append(" 2>/dev/null || true\n");
-                sb.append("cmd power set-fixed-performance-mode-enabled false 2>/dev/null || true\n");
+                if (minClockMhz > 0) changed |= writeVerified(KGSL_MIN_CLOCK, String.valueOf(minClockMhz));
+                if (idleTimer > 0) changed |= writeVerified(KGSL_IDLE_TIMER, String.valueOf(idleTimer));
             }
-            CommandExecutor.execute(sb.toString());
-            return true;
-        } else {
-            // Under UID 2000 without root, attempt power command with graceful fallback
-            if (enable) {
-                CommandExecutor.CommandResult pwrRes = CommandExecutor.execute("cmd power set-fixed-performance-mode-enabled true 2>&1");
-                if (pwrRes.exitCode != 0 || (pwrRes.stderr != null && pwrRes.stderr.contains("DEVICE_POWER"))) {
-                    Log.i(TAG_PERF, "DEVICE_POWER not granted to UID 2000; safely utilizing CFMS/GameSDK turbo mode instead.");
-                }
-            } else {
-                CommandExecutor.execute("cmd power set-fixed-performance-mode-enabled false 2>/dev/null || true");
-            }
-            return true;
         }
+        // Framework-level sustained performance mode (AOSP, API 31+); harmless where unsupported
+        if (Build.VERSION.SDK_INT >= 31) {
+            CommandExecutor.execute("cmd power set-fixed-performance-mode-enabled " + enable + " 2>/dev/null || true");
+        }
+        return changed;
+    }
+
+    private static boolean writeVerified(String path, String value) {
+        CommandExecutor.execute("echo " + value + " > " + path + " 2>/dev/null");
+        return value.equals(readNodePrivileged(path));
     }
 
     /**
@@ -345,43 +351,11 @@ public class PerformanceEngine {
         telemetry.isBoosted = isBoosted;
         telemetry.activeMode = activeMode != null ? activeMode : (isBoosted ? "EXTREME_PERFORMANCE_MAX" : "OEM_BALANCED");
 
-        // 1. GPU Model
-        String model = readSysfsLine(KGSL_MODEL);
-        if (model != null && !model.isEmpty()) {
-            telemetry.gpuModel = model.trim();
-        }
-
-        // 2. GPU Clock MHz
-        String clkStr = readSysfsLine(KGSL_CLOCK_MHZ);
-        if (clkStr != null && !clkStr.isEmpty()) {
-            try {
-                telemetry.gpuClockMhz = Integer.parseInt(clkStr.trim());
-            } catch (NumberFormatException ignored) {}
-        }
-
-        // 3. GPU Busy Percentage
-        String busyPct = readSysfsLine(KGSL_BUSY_PCT);
-        if (busyPct != null && !busyPct.isEmpty()) {
-            try {
-                String clean = busyPct.replace("%", "").trim();
-                telemetry.gpuBusyPercent = Integer.parseInt(clean);
-            } catch (NumberFormatException ignored) {}
-        } else {
-            // Fallback to gpubusy ratio
-            String gpubusy = readSysfsLine(KGSL_GPUBUSY);
-            if (gpubusy != null && !gpubusy.isEmpty()) {
-                String[] parts = gpubusy.trim().split("\\s+");
-                if (parts.length >= 2) {
-                    try {
-                        long busyTicks = Long.parseLong(parts[0]);
-                        long totalTicks = Long.parseLong(parts[1]);
-                        if (totalTicks > 0) {
-                            telemetry.gpuBusyPercent = (int) Math.min(100, Math.max(0, (busyTicks * 100) / totalTicks));
-                        }
-                    } catch (NumberFormatException ignored) {}
-                }
-            }
-        }
+        // 1-3. GPU model / clock / load from whichever interface THIS device exposes (-1 = unknown)
+        DeviceProfiler.Gpu gpu = DeviceProfiler.readGpu();
+        telemetry.gpuModel = gpu.model;
+        telemetry.gpuClockMhz = gpu.clockMhz;
+        telemetry.gpuBusyPercent = gpu.busyPct;
 
         // 4. Accurate Hardware Temperatures via ThermalHelper
         ThermalHelper.ThermalStats tStats = ThermalHelper.readTemperatures(null);
@@ -389,22 +363,26 @@ public class PerformanceEngine {
         telemetry.cpuTempC = tStats.cpuTempC;
         telemetry.batteryTempC = tStats.batteryTempC;
 
-        // 5. CPU Cluster frequencies
-        String littleFreq = readSysfsLine(CPU0_CUR_FREQ);
-        if (littleFreq != null && !littleFreq.isEmpty()) {
-            try {
-                telemetry.littleClusterFreqKHz = Integer.parseInt(littleFreq.trim());
-            } catch (NumberFormatException ignored) {}
-        }
-
-        String bigFreq = readSysfsLine(CPU6_CUR_FREQ);
-        if (bigFreq != null && !bigFreq.isEmpty()) {
-            try {
-                telemetry.bigClusterFreqKHz = Integer.parseInt(bigFreq.trim());
-            } catch (NumberFormatException ignored) {}
-        }
+        // 5. CPU cluster frequencies from the real topology (no hard-coded cpu0 / cpu6)
+        DeviceProfiler.Topology topo = DeviceProfiler.topology();
+        telemetry.littleClusterFreqKHz = readFreq(topo.littleCpu);
+        telemetry.bigClusterFreqKHz = readFreq(topo.bigCpu);
 
         return telemetry;
+    }
+
+    private static int readFreq(int cpu) {
+        String v = readSysfsLine("/sys/devices/system/cpu/cpu" + cpu + "/cpufreq/scaling_cur_freq");
+        if (v == null || v.isEmpty()) return 0;
+        try { return Integer.parseInt(v.trim()); } catch (NumberFormatException e) { return 0; }
+    }
+
+    /** Reads a privileged node through Shizuku/Root. Returns null when unreadable. */
+    public static String readNodePrivileged(String path) {
+        CommandExecutor.CommandResult r = CommandExecutor.execute("cat " + path + " 2>/dev/null");
+        if (r == null || r.exitCode != 0 || r.stdout == null) return null;
+        String t = r.stdout.trim();
+        return t.isEmpty() ? null : t;
     }
 
     /**

@@ -26,6 +26,24 @@ import java.util.regex.Pattern;
  */
 public class AospAdbMaster {
 
+    private static android.content.Context appCtx;
+
+    /** Must be called once with any Context so reversible tweaks can persist their previous values. */
+    public static void init(android.content.Context c) {
+        if (c != null) appCtx = c.getApplicationContext();
+    }
+
+    private static long totalRamMb() {
+        try {
+            android.app.ActivityManager a = (android.app.ActivityManager) appCtx.getSystemService(android.content.Context.ACTIVITY_SERVICE);
+            android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+            a.getMemoryInfo(mi);
+            return mi.totalMem / (1024 * 1024);
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
+
     public static final String TAG = "ZRamPurger:AospAdbMaster";
     private static final Pattern SAFE_PKG_PATTERN = Pattern.compile("^[a-zA-Z0-9_.]+$");
 
@@ -86,44 +104,11 @@ public class AospAdbMaster {
      * and ActivityManagerConstants.java.
      */
     public static boolean applyDeviceConfigLowRam(boolean enable) {
-        Log.i(TAG, "Configuring AOSP DeviceConfig Low-RAM Flags: " + enable);
-        StringBuilder sb = new StringBuilder();
-
-        if (enable) {
-            // Proactive memory compaction in CachedAppOptimizer
-            sb.append("cmd device_config put activity_manager use_compaction true 2>/dev/null; ");
-            sb.append("cmd device_config put activity_manager compact_action_1 3 2>/dev/null; ");
-            sb.append("cmd device_config put activity_manager compact_action_2 3 2>/dev/null; ");
-            sb.append("cmd device_config put activity_manager compact_throttle_1 1000 2>/dev/null; ");
-            sb.append("cmd device_config put activity_manager compact_throttle_2 2000 2>/dev/null; ");
-            sb.append("cmd device_config put activity_manager compact_full_rss_throttle_kb 8000 2>/dev/null; ");
-
-            // OOM Re-Ranking based on frequent RSS and uses
-            sb.append("cmd device_config put activity_manager use_oom_re_ranking true 2>/dev/null; ");
-
-            // Max cached processes restricted to 24 to preserve active RAM
-            sb.append("cmd device_config put activity_manager max_cached_processes 24 2>/dev/null; ");
-            sb.append("cmd device_config put activity_manager kill_bg_restricted_cached_idle true 2>/dev/null; ");
-
-            // CGroup v2 Freezer debounce reduced to 10s (stops background battery/cpu leak)
-            sb.append("cmd device_config put activity_manager_native_boot use_freezer true 2>/dev/null; ");
-            sb.append("cmd device_config put activity_manager_native_boot freezer_debounce_timeout 10000 2>/dev/null; ");
-        } else {
-            // Restore defaults
-            sb.append("cmd device_config delete activity_manager use_compaction 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager compact_action_1 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager compact_action_2 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager compact_throttle_1 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager compact_throttle_2 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager compact_full_rss_throttle_kb 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager use_oom_re_ranking 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager max_cached_processes 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager kill_bg_restricted_cached_idle 2>/dev/null; ");
-            sb.append("cmd device_config delete activity_manager_native_boot freezer_debounce_timeout 2>/dev/null; ");
-        }
-
-        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
-        return res.exitCode == 0;
+        if (appCtx == null) return false;
+        TweakEngine.Tweak t = TweakEngine.lowRam(android.os.Build.VERSION.SDK_INT, totalRamMb());
+        TweakEngine.Result r = enable ? TweakEngine.apply(appCtx, t) : TweakEngine.restore(appCtx, t);
+        Log.i(TAG, "LowRam DeviceConfig enable=" + enable + " -> " + r.ok + " (" + r.message + ")");
+        return r.ok;
     }
 
     /**
@@ -138,8 +123,9 @@ public class AospAdbMaster {
             "settings put global animator_duration_scale %s",
             s, s, s
         );
-        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
-        return res.exitCode == 0;
+        CommandExecutor.execute(cmd);
+        // Verify by reading back: the exit code of a compound command is not reliable
+        return Math.abs(getUiAnimationScale() - scale) < 0.05f;
     }
 
     /**
@@ -256,17 +242,10 @@ public class AospAdbMaster {
      * Enables or disables High Touch Sensitivity / Glove Mode to reduce screen touch input latency.
      */
     public static boolean setTouchSensitivityBoost(boolean enable) {
-        Log.i(TAG, "Touch Sensitivity Boost: " + enable);
-        String cmd = String.format(
-            "settings put secure high_touch_sensitivity %d 2>/dev/null; " +
-            "settings put secure long_press_timeout %d 2>/dev/null; " +
-            "settings put secure multi_press_timeout %d 2>/dev/null",
-            enable ? 1 : 0,
-            enable ? 250 : 400,
-            enable ? 250 : 400
-        );
-        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
-        return res.exitCode == 0;
+        if (appCtx == null) return false;
+        TweakEngine.Result r = enable ? TweakEngine.apply(appCtx, TweakEngine.TOUCH)
+                                      : TweakEngine.restore(appCtx, TweakEngine.TOUCH);
+        return r.ok;
     }
 
     /**
@@ -356,21 +335,113 @@ public class AospAdbMaster {
         Log.i(TAG, "Memory pressure factor reset to normal.");
     }
 
-    /**
-     * Linux Kernel VM Tuning (watermark boost factor, compaction proactiveness, vfs cache pressure).
-     */
-    public static boolean applyKernelVmOptimization() {
-        Log.i(TAG, "Applying Linux Kernel VM optimization parameters...");
-        String cmd =
-            "echo 0 > /proc/sys/vm/watermark_boost_factor 2>/dev/null; " +
-            "echo 20 > /proc/sys/vm/compaction_proactiveness 2>/dev/null; " +
-            "echo 50 > /proc/sys/vm/vfs_cache_pressure 2>/dev/null; " +
-            "echo 10 > /proc/sys/vm/stat_interval 2>/dev/null; " +
-            "echo 5 > /proc/sys/vm/dirty_background_ratio 2>/dev/null; " +
-            "echo 10 > /proc/sys/vm/dirty_ratio 2>/dev/null; " +
-            "echo 512 > /sys/block/sda/queue/read_ahead_kb 2>/dev/null; " +
-            "echo 512 > /sys/block/mmcblk0/queue/read_ahead_kb 2>/dev/null || true";
-        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
-        return res.exitCode == 0;
+    // ---------------- Kernel VM tuning (reversible, only on nodes this kernel exposes) ----------------
+
+    private static final java.util.regex.Pattern NODE_OK =
+            java.util.regex.Pattern.compile("^/(proc/sys/vm|sys/block)/[A-Za-z0-9_./-]+$");
+    private static final String VM_PREFS = "kernel_vm";
+
+    /** Builds the (path, value) list for THIS device. Pure function, unit-tested. */
+    static java.util.LinkedHashMap<String, String> kernelVmTargets(java.util.List<String> blockDevs, boolean byteLimitsInUse) {
+        java.util.LinkedHashMap<String, String> m = new java.util.LinkedHashMap<>();
+        m.put("/proc/sys/vm/watermark_boost_factor", "0");
+        m.put("/proc/sys/vm/compaction_proactiveness", "20");
+        m.put("/proc/sys/vm/vfs_cache_pressure", "50");
+        m.put("/proc/sys/vm/stat_interval", "10");
+        if (!byteLimitsInUse) {          // writing a ratio would silently reset *_bytes limits
+            m.put("/proc/sys/vm/dirty_background_ratio", "5");
+            m.put("/proc/sys/vm/dirty_ratio", "10");
+        }
+        for (String d : blockDevs) m.put("/sys/block/" + d + "/queue/read_ahead_kb", "512");
+        return m;
+    }
+
+    static java.util.List<String> parseBlockDevices(String ls) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        if (ls == null) return out;
+        for (String n : ls.trim().split("\\s+"))
+            if (n.matches("sd[a-z]+|mmcblk\\d+|nvme\\d+n\\d+")) out.add(n);
+        return out;
+    }
+
+    private static java.util.Map<String, String> readNodes(java.util.Collection<String> paths) {
+        StringBuilder sb = new StringBuilder();
+        for (String p : paths) sb.append("echo \"").append(p).append("=$(cat ").append(p).append(" 2>/dev/null)\"\n");
+        java.util.Map<String, String> out = new java.util.HashMap<>();
+        CommandExecutor.CommandResult r = CommandExecutor.execute(sb.toString());
+        if (r == null || r.stdout == null) return out;
+        for (String line : r.stdout.split("\n")) {
+            int i = line.indexOf('=');
+            if (i > 0 && i < line.length() - 1) out.put(line.substring(0, i), line.substring(i + 1).trim());
+        }
+        return out;
+    }
+
+    public static boolean applyKernelVmOptimization(android.content.Context c) {
+        init(c);
+        if (appCtx == null) return false;
+        android.content.SharedPreferences sp = appCtx.getSharedPreferences(VM_PREFS, android.content.Context.MODE_PRIVATE);
+        if (sp.contains("snap")) return true;      // already applied; keep the ORIGINAL values
+
+        CommandExecutor.CommandResult ls = CommandExecutor.execute("ls /sys/block 2>/dev/null");
+        java.util.List<String> devs = parseBlockDevices(ls == null ? null : ls.stdout);
+        java.util.Map<String, String> bytes = readNodes(java.util.Arrays.asList(
+                "/proc/sys/vm/dirty_bytes", "/proc/sys/vm/dirty_background_bytes"));
+        boolean byteLimits = !"0".equals(bytes.get("/proc/sys/vm/dirty_bytes")) && bytes.get("/proc/sys/vm/dirty_bytes") != null
+                || !"0".equals(bytes.get("/proc/sys/vm/dirty_background_bytes")) && bytes.get("/proc/sys/vm/dirty_background_bytes") != null;
+
+        java.util.LinkedHashMap<String, String> targets = kernelVmTargets(devs, byteLimits);
+        java.util.Map<String, String> before = readNodes(targets.keySet());
+
+        StringBuilder w = new StringBuilder();
+        java.util.List<String> touched = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<String, String> e : targets.entrySet()) {
+            String prev = before.get(e.getKey());
+            if (prev == null || prev.isEmpty() || !NODE_OK.matcher(e.getKey()).matches()) continue;  // node absent here
+            if (prev.equals(e.getValue())) continue;
+            w.append("echo ").append(e.getValue()).append(" > ").append(e.getKey()).append(" 2>/dev/null\n");
+            touched.add(e.getKey());
+        }
+        if (touched.isEmpty()) return false;
+        CommandExecutor.execute(w.toString());
+        java.util.Map<String, String> after = readNodes(touched);
+
+        org.json.JSONObject snap = new org.json.JSONObject();
+        int verified = 0;
+        try {
+            for (String path : touched) {
+                if (targets.get(path).equals(after.get(path))) {
+                    snap.put(path, before.get(path));
+                    verified++;
+                } else if (!before.get(path).equals(after.get(path))) {
+                    snap.put(path, before.get(path));   // partially changed: still restorable
+                }
+            }
+        } catch (Exception ignored) {}
+        if (snap.length() > 0) sp.edit().putString("snap", snap.toString()).apply();
+        Log.i(TAG, "Kernel VM tuning verified on " + verified + "/" + touched.size() + " nodes");
+        return verified > 0;
+    }
+
+    public static boolean restoreKernelVm(android.content.Context c) {
+        init(c);
+        if (appCtx == null) return false;
+        android.content.SharedPreferences sp = appCtx.getSharedPreferences(VM_PREFS, android.content.Context.MODE_PRIVATE);
+        String raw = sp.getString("snap", null);
+        if (raw == null) return true;
+        try {
+            org.json.JSONObject snap = new org.json.JSONObject(raw);
+            StringBuilder w = new StringBuilder();
+            java.util.Iterator<String> it = snap.keys();
+            while (it.hasNext()) {
+                String path = it.next();
+                String val = snap.getString(path);
+                if (NODE_OK.matcher(path).matches() && val.matches("[0-9]+"))
+                    w.append("echo ").append(val).append(" > ").append(path).append(" 2>/dev/null\n");
+            }
+            CommandExecutor.execute(w.toString());
+        } catch (Exception ignored) {}
+        sp.edit().remove("snap").apply();
+        return true;
     }
 }

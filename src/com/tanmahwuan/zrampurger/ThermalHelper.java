@@ -40,8 +40,8 @@ public class ThermalHelper {
         public double gpuTempC = 0.0;
         public double batteryTempC = 0.0;
         public double socTempC = 0.0;
-        public String cpuSensor = "Qualcomm Kryo 570";
-        public String gpuSensor = "Qualcomm Adreno 619";
+        public String cpuSensor = "";
+        public String gpuSensor = "";
         public String thermalStatus = "NORMAL";
 
         public String toJson() {

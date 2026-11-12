@@ -204,6 +204,7 @@ public class MainActivity extends Activity {
 
         prefs = getSharedPreferences("zram_prefs", Context.MODE_PRIVATE);
         mainHandler = new Handler(Looper.getMainLooper());
+        AospAdbMaster.init(this);
 
         loadSavedWhitelist();
         initViews();
@@ -390,7 +391,11 @@ public class MainActivity extends Activity {
                     }
                     isBoosterUpdating = false;
                     updateWidget();
-                    Toast.makeText(MainActivity.this, isChecked ? "🚀 Đã bật chế độ Tăng tốc trò chơi!" : "Đã trở về chế độ mặc định", Toast.LENGTH_SHORT).show();
+                    String blocked = GameBoosterManager.lastBlockReason;
+                    String msg;
+                    if (!ok) msg = (isChecked && blocked != null) ? blocked : "Không thể thực hiện — cần quyền Shizuku/Root";
+                    else msg = isChecked ? "Đã bật chế độ Tăng tốc trò chơi" : "Đã trở về chế độ mặc định";
+                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                 });
             }).start();
         });
@@ -807,12 +812,8 @@ public class MainActivity extends Activity {
             }).start();
         });
 
-        // Device Info
-        String devInfo = String.format(
-                "Thiết bị: %s (%s)\nBộ xử lý: Qualcomm Snapdragon 750G 5G\nHệ điều hành: Android %s\nTrạng thái bộ nhớ: Đang hoạt động tối ưu",
-                Build.MODEL, Build.DEVICE, Build.VERSION.RELEASE
-        );
-        tvSettingsDeviceInfo.setText(devInfo);
+        // Device info + diagnosis + AOSP tweaks (real, per-device data)
+        PerfPanel.attach(this, (android.widget.LinearLayout) findViewById(R.id.ll_perf_panel), tvSettingsDeviceInfo, mainHandler);
     }
 
     private void setAnimScale(float scale) {
@@ -910,8 +911,8 @@ public class MainActivity extends Activity {
 
             // Game Booster Telemetry
             tvBoosterGpuClk.setText((perf.gpuClockMhz > 0 ? perf.gpuClockMhz : "--") + " MHz");
-            tvBoosterGpuLoad.setText(perf.gpuBusyPercent + " %");
-            tvBoosterGpuTemp.setText(String.format(Locale.US, "%.1f °C", thermal.gpuTempC));
+            tvBoosterGpuLoad.setText((perf.gpuBusyPercent >= 0 ? String.valueOf(perf.gpuBusyPercent) : "--") + " %");
+            tvBoosterGpuTemp.setText(thermal.gpuTempC > 0 ? String.format(Locale.US, "%.1f °C", thermal.gpuTempC) : "-- °C");
 
             if (perf.bigClusterFreqKHz > 0) {
                 tvBoosterCpuBig.setText(String.format(Locale.US, "%.2f GHz", perf.bigClusterFreqKHz / 1000000.0));

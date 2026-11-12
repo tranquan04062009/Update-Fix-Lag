@@ -156,6 +156,7 @@ public class PurgeEngine {
             } catch (Throwable ignored) {}
         }
 
+        whitelist.addAll(DeviceProfiler.dynamicProtectedPackages(context));
         return Collections.unmodifiableSet(whitelist);
     }
 

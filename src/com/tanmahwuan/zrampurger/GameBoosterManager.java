@@ -73,9 +73,9 @@ public class GameBoosterManager {
         public boolean fixedPerformanceMode = false;
         public boolean lowPowerMode = false;
         public boolean adaptivePowerSaver = true;
-        public int kgslMinClockMhz = 253;
-        public int kgslMaxClockMhz = 430;
-        public int kgslIdleTimer = 80;
+        public int kgslMinClockMhz = -1;
+        public int kgslMaxClockMhz = -1;
+        public int kgslIdleTimer = -1;
 
         // Flags indicating subsystems intervened
         public boolean sdhmsModified = false;
@@ -212,9 +212,9 @@ public class GameBoosterManager {
 
                 JSONObject kgslObj = root.optJSONObject("kgslState");
                 if (kgslObj != null) {
-                    snap.kgslMinClockMhz = kgslObj.optInt("kgslMinClockMhz", 253);
-                    snap.kgslMaxClockMhz = kgslObj.optInt("kgslMaxClockMhz", 430);
-                    snap.kgslIdleTimer = kgslObj.optInt("kgslIdleTimer", 80);
+                    snap.kgslMinClockMhz = kgslObj.optInt("kgslMinClockMhz", -1);
+                    snap.kgslMaxClockMhz = kgslObj.optInt("kgslMaxClockMhz", -1);
+                    snap.kgslIdleTimer = kgslObj.optInt("kgslIdleTimer", -1);
                 }
 
                 JSONObject flagsObj = root.optJSONObject("subsystemFlags");
@@ -323,21 +323,21 @@ public class GameBoosterManager {
         }
 
         // 4. Capture KGSL Sysfs parameters
-        String minClock = PerformanceEngine.readSysfsLine(PerformanceEngine.KGSL_MIN_CLOCK);
+        String minClock = PerformanceEngine.readNodePrivileged(PerformanceEngine.KGSL_MIN_CLOCK);
         if (minClock != null) {
             try {
                 snap.kgslMinClockMhz = Integer.parseInt(minClock.trim());
             } catch (NumberFormatException ignored) {}
         }
 
-        String maxClock = PerformanceEngine.readSysfsLine(PerformanceEngine.KGSL_MAX_CLOCK);
+        String maxClock = PerformanceEngine.readNodePrivileged(PerformanceEngine.KGSL_MAX_CLOCK);
         if (maxClock != null) {
             try {
                 snap.kgslMaxClockMhz = Integer.parseInt(maxClock.trim());
             } catch (NumberFormatException ignored) {}
         }
 
-        String timer = PerformanceEngine.readSysfsLine(PerformanceEngine.KGSL_IDLE_TIMER);
+        String timer = PerformanceEngine.readNodePrivileged(PerformanceEngine.KGSL_IDLE_TIMER);
         if (timer != null) {
             try {
                 snap.kgslIdleTimer = Integer.parseInt(timer.trim());
@@ -351,8 +351,42 @@ public class GameBoosterManager {
     /**
      * Activates Extreme Performance Max / Game Booster mode.
      */
+    /** Set when the booster refuses to start (e.g. device too hot); shown to the user. */
+    public static volatile String lastBlockReason;
+
+    /** Parses lines "package 10" / "package ACTIVE (10)" into package -> bucket number. */
+    static Map<String, Integer> parseBucketLines(String out) {
+        Map<String, Integer> m = new HashMap<>();
+        if (out == null) return m;
+        java.util.regex.Pattern num = java.util.regex.Pattern.compile("(\\d+)");
+        for (String line : out.split("\n")) {
+            String[] parts = line.trim().split("\\s+", 2);
+            if (parts.length < 2) continue;
+            java.util.regex.Matcher mt = num.matcher(parts[1]);
+            if (mt.find()) m.put(parts[0], Integer.parseInt(mt.group(1)));
+        }
+        return m;
+    }
+
+    /** Records the CURRENT standby bucket of each package so it can be restored exactly. */
+    private static Map<String, Integer> captureBuckets(List<String> pkgs) {
+        if (pkgs.isEmpty()) return new HashMap<>();
+        StringBuilder sb = new StringBuilder();
+        for (String pkg : pkgs) {
+            sb.append("echo \"").append(pkg).append(" $(cmd activity get-standby-bucket --user 0 ").append(pkg).append(" 2>/dev/null)\"\n");
+        }
+        CommandExecutor.CommandResult r = CommandExecutor.execute(sb.toString());
+        return parseBucketLines(r == null ? null : r.stdout);
+    }
+
     public static synchronized boolean applyPerformanceBoost(Context context, String targetPackage) {
         Log.i(TAG, ">>> INITIATING EXTREME PERFORMANCE MAX ACTIVATION <<<");
+        AospAdbMaster.init(context);
+        lastBlockReason = ThermalGuard.blockReason(context);
+        if (lastBlockReason != null) {
+            Log.w(TAG, "Booster refused: " + lastBlockReason);
+            return false;
+        }
 
         List<String> targets = new ArrayList<>();
         if (targetPackage != null && !targetPackage.trim().isEmpty()) {
@@ -389,23 +423,29 @@ public class GameBoosterManager {
                 PerformanceEngine.triggerArtCompilation(targetPackage, "speed-profile");
             }
 
-            // Phase 7: EAS migration of background apps away from Big cores 6-7
+            // Phase 7: lower background priority of THIRD-PARTY apps only, and only those whose
+            // previous standby bucket was captured (so it can be restored exactly).
             if (context != null) {
-                Set<String> criticalWhitelist = PurgeEngine.getCriticalWhitelist(context);
+                Set<String> protectedPkgs = new HashSet<>(PurgeEngine.getCriticalWhitelist(context));
+                protectedPkgs.addAll(DeviceProfiler.dynamicProtectedPackages(context));
                 List<String> bgApps = new ArrayList<>();
-                // Query installed packages if possible
                 try {
                     android.content.pm.PackageManager pm = context.getPackageManager();
-                    List<android.content.pm.ApplicationInfo> apps = pm.getInstalledApplications(0);
-                    for (android.content.pm.ApplicationInfo app : apps) {
-                        if (!criticalWhitelist.contains(app.packageName) &&
-                                (targetPackage == null || !app.packageName.equals(targetPackage))) {
-                            bgApps.add(app.packageName);
-                            if (bgApps.size() >= 30) break; // Limit batch size for responsiveness
-                        }
+                    for (android.content.pm.ApplicationInfo app : pm.getInstalledApplications(0)) {
+                        if ((app.flags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0) continue;
+                        if (protectedPkgs.contains(app.packageName)) continue;
+                        if (targetPackage != null && app.packageName.equals(targetPackage)) continue;
+                        if (!PerformanceEngine.isValidPackageName(app.packageName)) continue;
+                        bgApps.add(app.packageName);
+                        if (bgApps.size() >= 30) break;
                     }
                 } catch (Throwable ignored) {}
-                PerformanceEngine.migrateBackgroundAppsToLittleCores(context, bgApps, criticalWhitelist);
+                Map<String, Integer> buckets = captureBuckets(bgApps);
+                List<String> restorable = new ArrayList<>();
+                for (String pkg : bgApps) if (buckets.containsKey(pkg)) restorable.add(pkg);
+                snapshot.appStandbyBuckets.putAll(buckets);
+                saveSnapshot(context, snapshot);
+                PerformanceEngine.migrateBackgroundAppsToLittleCores(context, restorable, protectedPkgs);
             }
 
             // Phase 8: AOSP ADB Master Hardware & Runtime Exploits
@@ -416,7 +456,7 @@ public class GameBoosterManager {
             AospAdbMaster.setTouchSensitivityBoost(true);
             AospAdbMaster.setSurfaceFlingerZeroLatency(true);
             AospAdbMaster.setLowLatencyNetworking(true);
-            AospAdbMaster.applyKernelVmOptimization();
+            AospAdbMaster.applyKernelVmOptimization(context);
             if (targetPackage != null && PerformanceEngine.isValidPackageName(targetPackage)) {
                 AospAdbMaster.setGameInterventions(targetPackage, 60, 0.85f);
             }
@@ -443,6 +483,7 @@ public class GameBoosterManager {
      */
     public static synchronized boolean restoreOemState(Context context) {
         Log.i(TAG, ">>> INITIATING TRANSACTIONAL OEM STATE ROLLBACK <<<");
+        AospAdbMaster.init(context);
 
         StateSnapshot snapshot = loadSnapshot(context);
         if (snapshot == null) {
@@ -519,6 +560,7 @@ public class GameBoosterManager {
             AospAdbMaster.setTouchSensitivityBoost(false);
             AospAdbMaster.setSurfaceFlingerZeroLatency(false);
             AospAdbMaster.setLowLatencyNetworking(false);
+            AospAdbMaster.restoreKernelVm(context);
 
             // Stop Booster Foreground Service
             stopBoosterService(context);

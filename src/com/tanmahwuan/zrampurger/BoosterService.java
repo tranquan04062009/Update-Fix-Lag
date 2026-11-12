@@ -9,7 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.widget.Toast;
 import android.util.Log;
 
 /**
@@ -24,6 +27,19 @@ public class BoosterService extends Service {
     public static final String TAG = "ZRamPurger:BoosterService";
     public static final String CHANNEL_ID = "extreme_booster_channel";
     public static final int NOTIFICATION_ID = 5001;
+
+    private final Handler watchdog = new Handler(Looper.getMainLooper());
+    private final Runnable thermalCheck = new Runnable() {
+        @Override public void run() {
+            if (ThermalGuard.mustStop(BoosterService.this)) {
+                Toast.makeText(BoosterService.this, "Máy quá nóng — đã tự tắt Tăng tốc để bảo vệ thiết bị", Toast.LENGTH_LONG).show();
+                final android.content.Context app = getApplicationContext();
+                new Thread(() -> GameBoosterManager.restoreOemState(app)).start();
+            } else {
+                watchdog.postDelayed(this, 15000);
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -63,12 +79,15 @@ public class BoosterService extends Service {
                 .build();
 
         startForeground(NOTIFICATION_ID, notification);
+        watchdog.removeCallbacks(thermalCheck);
+        watchdog.postDelayed(thermalCheck, 15000);
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         Log.i(TAG, "BoosterService onDestroy triggered.");
+        watchdog.removeCallbacks(thermalCheck);
         stopForeground(true);
         super.onDestroy();
     }
