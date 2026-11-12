@@ -1,0 +1,1292 @@
+[
+  {
+    "name": "device/google/accessory/adk2012_demo",
+    "url": "https://android.googlesource.com/device/google/accessory/adk2012_demo/",
+    "status": "OK",
+    "latest_commit": "Merge \"[firmware] add missing knock-knock code\""
+  },
+  {
+    "name": "device/google_car",
+    "url": "https://android.googlesource.com/device/google_car/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/akita-kernel",
+    "url": "https://android.googlesource.com/device/google/akita-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge 2024-06 Release (ab/AP2A.240605.024) to aosp-main-future"
+  },
+  {
+    "name": "device/google/akita",
+    "url": "https://android.googlesource.com/device/google/akita/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/accessory/adk2012",
+    "url": "https://android.googlesource.com/device/google/accessory/adk2012/",
+    "status": "OK",
+    "latest_commit": "Import the app."
+  },
+  {
+    "name": "device/google/accessory/demokit",
+    "url": "https://android.googlesource.com/device/google/accessory/demokit/",
+    "status": "OK",
+    "latest_commit": "Updating ADK 1.0 demokit code to work with Arduino 1.0"
+  },
+  {
+    "name": "device/google/barbet",
+    "url": "https://android.googlesource.com/device/google/barbet/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q3 to AOSP main"
+  },
+  {
+    "name": "device/google/akita-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/akita-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/accessory/arduino",
+    "url": "https://android.googlesource.com/device/google/accessory/arduino/",
+    "status": "OK",
+    "latest_commit": "Fixing ADK version 1.0 libraries to work with Arduino SDK 1.0"
+  },
+  {
+    "name": "device/google/akita-kernels/5.15",
+    "url": "https://android.googlesource.com/device/google/akita-kernels/5.15/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/barbet-kernel",
+    "url": "https://android.googlesource.com/device/google/barbet-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge SQ3A.220705.003 to aosp-master - DO NOT MERGE"
+  },
+  {
+    "name": "device/google/akita-sepolicy",
+    "url": "https://android.googlesource.com/device/google/akita-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Empty merge ab/12770256 into aosp-main-future"
+  },
+  {
+    "name": "device/google/bluejay-kernel",
+    "url": "https://android.googlesource.com/device/google/bluejay-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR3 to AOSP main"
+  },
+  {
+    "name": "device/google/atv",
+    "url": "https://android.googlesource.com/device/google/atv/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/barbet-sepolicy",
+    "url": "https://android.googlesource.com/device/google/barbet-sepolicy/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Empty merge of Android 24Q2 Release (ab/11526283) to aosp-main-future am: 39a7aada76 -s ours"
+  },
+  {
+    "name": "device/google/bluejay",
+    "url": "https://android.googlesource.com/device/google/bluejay/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/bluejay-kernels/5.10",
+    "url": "https://android.googlesource.com/device/google/bluejay-kernels/5.10/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/bluejay-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/bluejay-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/bluejay-sepolicy",
+    "url": "https://android.googlesource.com/device/google/bluejay-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Empty merge ab/12770256 into aosp-main-future"
+  },
+  {
+    "name": "device/google/bonito",
+    "url": "https://android.googlesource.com/device/google/bonito/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove etancohen@google.com from rro_overlays/WifiOverlay/OWNERS"
+  },
+  {
+    "name": "device/google/bramble",
+    "url": "https://android.googlesource.com/device/google/bramble/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove chasewu@google.com from vibrator/OWNERS"
+  },
+  {
+    "name": "device/google/comet",
+    "url": "https://android.googlesource.com/device/google/comet/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/bonito-sepolicy",
+    "url": "https://android.googlesource.com/device/google/bonito-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Remove the obsoleted tracking denial am: 2ec9a35774"
+  },
+  {
+    "name": "device/google/bramble-sepolicy",
+    "url": "https://android.googlesource.com/device/google/bramble-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Remove dumpstate from the denylist."
+  },
+  {
+    "name": "device/google/caimito-sepolicy",
+    "url": "https://android.googlesource.com/device/google/caimito-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/common/etm",
+    "url": "https://android.googlesource.com/device/google/common/etm/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/comet-sepolicy",
+    "url": "https://android.googlesource.com/device/google/comet-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/bramble-kernel",
+    "url": "https://android.googlesource.com/device/google/bramble-kernel/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge Android R QPR1"
+  },
+  {
+    "name": "device/google/caimito",
+    "url": "https://android.googlesource.com/device/google/caimito/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/caimito-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/caimito-kernels/6.1/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/bonito-kernel",
+    "url": "https://android.googlesource.com/device/google/bonito-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge SP2A.220505.002"
+  },
+  {
+    "name": "device/google/coral",
+    "url": "https://android.googlesource.com/device/google/coral/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove etancohen@google.com from rro_overlays/WifiOverlay/OWNERS"
+  },
+  {
+    "name": "device/google/coral-kernel",
+    "url": "https://android.googlesource.com/device/google/coral-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR2 to AOSP main"
+  },
+  {
+    "name": "device/google/contexthub",
+    "url": "https://android.googlesource.com/device/google/contexthub/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove dimitrysh@google.com from OWNERS am: c5561347f8"
+  },
+  {
+    "name": "device/google/coral-sepolicy",
+    "url": "https://android.googlesource.com/device/google/coral-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Mark ab/11976889 as merged in aosp-main-future"
+  },
+  {
+    "name": "device/google/crosshatch",
+    "url": "https://android.googlesource.com/device/google/crosshatch/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove etancohen@google.com from rro_overlays/WifiOverlay/OWNERS"
+  },
+  {
+    "name": "device/google/debugcable",
+    "url": "https://android.googlesource.com/device/google/debugcable/",
+    "status": "OK",
+    "latest_commit": "USB debug cable design documents"
+  },
+  {
+    "name": "device/google/cuttlefish_kernel",
+    "url": "https://android.googlesource.com/device/google/cuttlefish_kernel/",
+    "status": "OK",
+    "latest_commit": "Remove cuttlefish_kernel am: eb92dc9dc2"
+  },
+  {
+    "name": "device/google/crosshatch-kernel",
+    "url": "https://android.googlesource.com/device/google/crosshatch-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 12"
+  },
+  {
+    "name": "device/google/cuttlefish_common",
+    "url": "https://android.googlesource.com/device/google/cuttlefish_common/",
+    "status": "OK",
+    "latest_commit": "Merge \"Removing all cuttlefish_common content\""
+  },
+  {
+    "name": "device/google/dragon",
+    "url": "https://android.googlesource.com/device/google/dragon/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove tbao@google.com from recovery/OWNERS"
+  },
+  {
+    "name": "device/google/cuttlefish_vmm",
+    "url": "https://android.googlesource.com/device/google/cuttlefish_vmm/",
+    "status": "OK",
+    "latest_commit": "Rebuild gfxstream prebuilts with host tracing enabled"
+  },
+  {
+    "name": "device/google/cuttlefish_prebuilts",
+    "url": "https://android.googlesource.com/device/google/cuttlefish_prebuilts/",
+    "status": "OK",
+    "latest_commit": "Update bootloader, u-boot tools to builds 13197479"
+  },
+  {
+    "name": "device/google/dragon-kernel",
+    "url": "https://android.googlesource.com/device/google/dragon-kernel/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE: Merge Oreo MR1 into master"
+  },
+  {
+    "name": "device/google/comet-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/comet-kernels/6.1/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/felix",
+    "url": "https://android.googlesource.com/device/google/felix/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/felix-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/felix-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/felix-kernels/5.10",
+    "url": "https://android.googlesource.com/device/google/felix-kernels/5.10/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/cuttlefish",
+    "url": "https://android.googlesource.com/device/google/cuttlefish/",
+    "status": "OK",
+    "latest_commit": "Merge \"Convert PRODUCT_COPY_FILES for init.rc to Android.bp\" into main"
+  },
+  {
+    "name": "device/google/felix-sepolicy",
+    "url": "https://android.googlesource.com/device/google/felix-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Empty merge ab/12770256 into aosp-main-future"
+  },
+  {
+    "name": "device/google/gs101",
+    "url": "https://android.googlesource.com/device/google/gs101/",
+    "status": "OK",
+    "latest_commit": "oem-iptables-init.sh not used any more"
+  },
+  {
+    "name": "device/google/gs101-sepolicy",
+    "url": "https://android.googlesource.com/device/google/gs101-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/fuchsia",
+    "url": "https://android.googlesource.com/device/google/fuchsia/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove brettw@google.com from OWNERS"
+  },
+  {
+    "name": "device/google/gs201-sepolicy",
+    "url": "https://android.googlesource.com/device/google/gs201-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/gs201",
+    "url": "https://android.googlesource.com/device/google/gs201/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/crosshatch-sepolicy",
+    "url": "https://android.googlesource.com/device/google/crosshatch-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge Android 12 QPR1"
+  },
+  {
+    "name": "device/google/lynx-sepolicy",
+    "url": "https://android.googlesource.com/device/google/lynx-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Empty merge ab/12770256 into aosp-main-future"
+  },
+  {
+    "name": "device/google/lynx-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/lynx-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/lynx-kernels/5.10",
+    "url": "https://android.googlesource.com/device/google/lynx-kernels/5.10/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/felix-kernel",
+    "url": "https://android.googlesource.com/device/google/felix-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR3 to AOSP main"
+  },
+  {
+    "name": "device/google/marlin",
+    "url": "https://android.googlesource.com/device/google/marlin/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove alanstokes@google.com from sepolicy/OWNERS"
+  },
+  {
+    "name": "device/google/lynx-kernel",
+    "url": "https://android.googlesource.com/device/google/lynx-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR3 to AOSP main"
+  },
+  {
+    "name": "device/google/gs-common",
+    "url": "https://android.googlesource.com/device/google/gs-common/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/muskie",
+    "url": "https://android.googlesource.com/device/google/muskie/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove klyubin@google.com from sepolicy/OWNERS"
+  },
+  {
+    "name": "device/google/lynx",
+    "url": "https://android.googlesource.com/device/google/lynx/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/marlin-kernel",
+    "url": "https://android.googlesource.com/device/google/marlin-kernel/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge QP1A.191005.007 into master"
+  },
+  {
+    "name": "device/google/pantah-kernel",
+    "url": "https://android.googlesource.com/device/google/pantah-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR3 to AOSP main"
+  },
+  {
+    "name": "device/google/pantah-kernels/5.10",
+    "url": "https://android.googlesource.com/device/google/pantah-kernels/5.10/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/pantah",
+    "url": "https://android.googlesource.com/device/google/pantah/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/pantah-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/pantah-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/pantah-sepolicy",
+    "url": "https://android.googlesource.com/device/google/pantah-sepolicy/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Mark ab/11976889 as merged in aosp-main-future am: 8156b05ef8 -s ours"
+  },
+  {
+    "name": "device/google/phantasm",
+    "url": "https://android.googlesource.com/device/google/phantasm/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "device/google/raviole-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/raviole-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/raviole",
+    "url": "https://android.googlesource.com/device/google/raviole/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/raviole-kernels/5.10",
+    "url": "https://android.googlesource.com/device/google/raviole-kernels/5.10/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/redbull",
+    "url": "https://android.googlesource.com/device/google/redbull/",
+    "status": "OK",
+    "latest_commit": "Change TARGET_RECOVERY_UI_LIB to use fully qualified names in redbull"
+  },
+  {
+    "name": "device/google/redfin-kernel",
+    "url": "https://android.googlesource.com/device/google/redfin-kernel/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge Android R QPR1"
+  },
+  {
+    "name": "device/google/sdv_display_safety",
+    "url": "https://android.googlesource.com/device/google/sdv_display_safety/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/redbull-sepolicy",
+    "url": "https://android.googlesource.com/device/google/redbull-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q3 to AOSP main"
+  },
+  {
+    "name": "device/google/redfin-sepolicy",
+    "url": "https://android.googlesource.com/device/google/redfin-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Remove dumpstate from the denylist. am: 2cc2081263"
+  },
+  {
+    "name": "device/google/sdv",
+    "url": "https://android.googlesource.com/device/google/sdv/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/shusky",
+    "url": "https://android.googlesource.com/device/google/shusky/",
+    "status": "OK",
+    "latest_commit": "Merge \"Attestation values for aosp_husky\" into main"
+  },
+  {
+    "name": "device/google/redfin",
+    "url": "https://android.googlesource.com/device/google/redfin/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove tstrudel@google.com from OWNERS"
+  },
+  {
+    "name": "device/google/shusky-kernels/5.15",
+    "url": "https://android.googlesource.com/device/google/shusky-kernels/5.15/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/shusky-kernel",
+    "url": "https://android.googlesource.com/device/google/shusky-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR3 to AOSP main"
+  },
+  {
+    "name": "device/google/redbull-kernel",
+    "url": "https://android.googlesource.com/device/google/redbull-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q3 to AOSP main"
+  },
+  {
+    "name": "device/google/shusky-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/shusky-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/shusky-sepolicy",
+    "url": "https://android.googlesource.com/device/google/shusky-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Add sepolicy related to RA9530 am: db0953db64"
+  },
+  {
+    "name": "device/google/sunfish-sepolicy",
+    "url": "https://android.googlesource.com/device/google/sunfish-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Mark ab/11976889 as merged in aosp-main-future"
+  },
+  {
+    "name": "device/google/taimen",
+    "url": "https://android.googlesource.com/device/google/taimen/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove klyubin@google.com from sepolicy/OWNERS"
+  },
+  {
+    "name": "device/google/sunfish",
+    "url": "https://android.googlesource.com/device/google/sunfish/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove etancohen@google.com from rro_overlays/WifiOverlay/OWNERS"
+  },
+  {
+    "name": "device/google/sunfish-kernel",
+    "url": "https://android.googlesource.com/device/google/sunfish-kernel/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove chiucharles@google.com from OWNERS"
+  },
+  {
+    "name": "device/google/tangorpro-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/tangorpro-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/tangorpro",
+    "url": "https://android.googlesource.com/device/google/tangorpro/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/tangorpro-sepolicy",
+    "url": "https://android.googlesource.com/device/google/tangorpro-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/tegu-kernels/6.1",
+    "url": "https://android.googlesource.com/device/google/tegu-kernels/6.1/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/tangorpro-kernels/5.10",
+    "url": "https://android.googlesource.com/device/google/tangorpro-kernels/5.10/",
+    "status": "OK",
+    "latest_commit": "Merge 24Q4 into AOSP main"
+  },
+  {
+    "name": "device/google/tegu",
+    "url": "https://android.googlesource.com/device/google/tegu/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/trout",
+    "url": "https://android.googlesource.com/device/google/trout/",
+    "status": "OK",
+    "latest_commit": "Fix trout audio failures"
+  },
+  {
+    "name": "device/google/vrservices",
+    "url": "https://android.googlesource.com/device/google/vrservices/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Merge Android 12 am: 0ebf3c13bf -s ours am: cb14cbeaa4 -s ours am: ec1d5c9a11 -s ours am: 4cec2305ab -s ours am: ea7ef0f630 -s ours"
+  },
+  {
+    "name": "device/google/wahoo",
+    "url": "https://android.googlesource.com/device/google/wahoo/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove etancohen@google.com from rro_overlays/WifiOverlay/OWNERS"
+  },
+  {
+    "name": "device/google/tegu-sepolicy",
+    "url": "https://android.googlesource.com/device/google/tegu-sepolicy/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "device/google/tangorpro-kernel",
+    "url": "https://android.googlesource.com/device/google/tangorpro-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR3 to AOSP main"
+  },
+  {
+    "name": "device/google/wahoo-kernel",
+    "url": "https://android.googlesource.com/device/google/wahoo-kernel/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge RP1A.201005.006"
+  },
+  {
+    "name": "device/google/zuma",
+    "url": "https://android.googlesource.com/device/google/zuma/",
+    "status": "OK",
+    "latest_commit": "Revert \"Revert \"init.zuma.rc: Disable util-awareness for mids and bigs\"\" am: 69b275d019"
+  },
+  {
+    "name": "device/google/zumapro",
+    "url": "https://android.googlesource.com/device/google/zumapro/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/raviole-kernel",
+    "url": "https://android.googlesource.com/device/google/raviole-kernel/",
+    "status": "OK",
+    "latest_commit": "Merge Android 14 QPR3 to AOSP main"
+  },
+  {
+    "name": "device/google/zumapro-sepolicy",
+    "url": "https://android.googlesource.com/device/google/zumapro-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "device/google/zuma-sepolicy",
+    "url": "https://android.googlesource.com/device/google/zuma-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Allow hal_power_default to access sysfs_scsi_devices_0000 am: c9d21c380f"
+  },
+  {
+    "name": "platform/art",
+    "url": "https://android.googlesource.com/platform/art/",
+    "status": "OK",
+    "latest_commit": "Log moving-space end of previous compaction when corruption detected"
+  },
+  {
+    "name": "platform/build/abfs",
+    "url": "https://android.googlesource.com/platform/build/abfs/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "platform/bionic",
+    "url": "https://android.googlesource.com/platform/bionic/",
+    "status": "OK",
+    "latest_commit": "Merge \"Fix bionic unit tests with HWASan after Fortify+HWASan workaround.\" into main"
+  },
+  {
+    "name": "kernel/configs",
+    "url": "https://android.googlesource.com/kernel/configs/",
+    "status": "OK",
+    "latest_commit": "Merge \"Update kernel-lifetimes.xml with releases through 2024-11\" into main"
+  },
+  {
+    "name": "platform/build",
+    "url": "https://android.googlesource.com/platform/build/",
+    "status": "OK",
+    "latest_commit": "Merge \"Add warning for modifying the vendor api level.\" into main"
+  },
+  {
+    "name": "platform/build/kati",
+    "url": "https://android.googlesource.com/platform/build/kati/",
+    "status": "OK",
+    "latest_commit": "Remove test_per_src from build/kati"
+  },
+  {
+    "name": "platform/build/bazel_common_rules",
+    "url": "https://android.googlesource.com/platform/build/bazel_common_rules/",
+    "status": "OK",
+    "latest_commit": "copy_to_dist_dir: Add wipe_destdir alias for wipe_dist_dir am: 28eca62e31"
+  },
+  {
+    "name": "platform/build/orchestrator",
+    "url": "https://android.googlesource.com/platform/build/orchestrator/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] RESTRICT AUTOMERGE Move java_api_library modules to f/b/api/StubLibraries.bp am: 4e19705c5d am: f6465e5b8f am: 26969bbc9e -s ours"
+  },
+  {
+    "name": "platform/build/docker",
+    "url": "https://android.googlesource.com/platform/build/docker/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "platform/build/blueprint",
+    "url": "https://android.googlesource.com/platform/build/blueprint/",
+    "status": "OK",
+    "latest_commit": "Combine the to and from build actions cachses."
+  },
+  {
+    "name": "platform/build/pesto",
+    "url": "https://android.googlesource.com/platform/build/pesto/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove hzalek@google.com from OWNERS am: ac0fb68e55"
+  },
+  {
+    "name": "platform/build/bazel",
+    "url": "https://android.googlesource.com/platform/build/bazel/",
+    "status": "OK",
+    "latest_commit": "Remove bp2build and queryview am: bdedf8e921 am: c7ed98c64b"
+  },
+  {
+    "name": "platform/build/trunk_release",
+    "url": "https://android.googlesource.com/platform/build/trunk_release/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "platform/build/soong",
+    "url": "https://android.googlesource.com/platform/build/soong/",
+    "status": "OK",
+    "latest_commit": "Merge \"Remove PRODUCT_SHIPPING_VENDOR_API_LEVEL variable\" into main"
+  },
+  {
+    "name": "platform/build/release",
+    "url": "https://android.googlesource.com/platform/build/release/",
+    "status": "OK",
+    "latest_commit": "Merge \"aconfig: add flag to guard fingerprint in rust\" into main"
+  },
+  {
+    "name": "platform/external/perfetto",
+    "url": "https://android.googlesource.com/platform/external/perfetto/",
+    "status": "OK",
+    "latest_commit": "Merge \"df: Add DataFrame implementation and tests\" into main"
+  },
+  {
+    "name": "platform/frameworks/base",
+    "url": "https://android.googlesource.com/platform/frameworks/base/",
+    "status": "OK",
+    "latest_commit": "Merge \"Remove Redundant Variable for getStatusBarHeightForRotation\" into main"
+  },
+  {
+    "name": "platform/external/skia",
+    "url": "https://android.googlesource.com/platform/external/skia/",
+    "status": "OK",
+    "latest_commit": "Merge \"Merge 25Q1 (ab/BP1A.250305.020) to AOSP main\" into main"
+  },
+  {
+    "name": "platform/frameworks/opt/bitmap",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/bitmap/",
+    "status": "OK",
+    "latest_commit": "Merge sc-mainline-prod"
+  },
+  {
+    "name": "platform/frameworks/opt/bluetooth",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/bluetooth/",
+    "status": "OK",
+    "latest_commit": "Remove frameworks/opt/bluetooth"
+  },
+  {
+    "name": "platform/frameworks/native",
+    "url": "https://android.googlesource.com/platform/frameworks/native/",
+    "status": "OK",
+    "latest_commit": "Merge \"Add capability to send tls server port\" into main"
+  },
+  {
+    "name": "platform/frameworks/opt/car/setupwizard",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/car/setupwizard/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove jinjian@google.com from OWNERS am: 21b8490ad8"
+  },
+  {
+    "name": "platform/frameworks/opt/carddav",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/carddav/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "platform/frameworks/opt/com.google.android",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/com.google.android/",
+    "status": "OK",
+    "latest_commit": "Manual import as of 19564"
+  },
+  {
+    "name": "platform/frameworks/opt/chips",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/chips/",
+    "status": "OK",
+    "latest_commit": "Merge \"chips: fix force close when tapping recipient chip\" into main am: 5a312e4a1f"
+  },
+  {
+    "name": "platform/frameworks/opt/datetimepicker",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/datetimepicker/",
+    "status": "OK",
+    "latest_commit": "Merge \"DO NOT MERGE - Merge pie-platform-release (PPRL.190505.001) into master.\""
+  },
+  {
+    "name": "platform/frameworks/opt/com.google.android.googlelogin",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/com.google.android.googlelogin/",
+    "status": "OK",
+    "latest_commit": "Manual import as of 19564"
+  },
+  {
+    "name": "platform/frameworks/opt/calendar",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/calendar/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Mark 24Q4 as merged in aosp-main-future am: 07f94882a5 -s ours"
+  },
+  {
+    "name": "platform/frameworks/opt/colorpicker",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/colorpicker/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Merge \"Merge 24Q3 to AOSP main\" into main am: 962ff6817a -s ours am: 6b08f8ce3a -s ours"
+  },
+  {
+    "name": "platform/frameworks/opt/car/services",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/car/services/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/frameworks/opt/emoji",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/emoji/",
+    "status": "OK",
+    "latest_commit": "Remove EmojiFactory."
+  },
+  {
+    "name": "platform/frameworks/opt/gamedevicets",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/gamedevicets/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "platform/frameworks/opt/inputconnectioncommon",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/inputconnectioncommon/",
+    "status": "OK",
+    "latest_commit": "Merge remote-tracking branch 'goog/stage-aosp-master' into HEAD"
+  },
+  {
+    "name": "platform/frameworks/opt/localepicker",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/localepicker/",
+    "status": "OK",
+    "latest_commit": "Removing upstream flag as it is now the default. am: aa0c17a33e"
+  },
+  {
+    "name": "platform/frameworks/opt/mailcommon",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/mailcommon/",
+    "status": "OK",
+    "latest_commit": "am d35644e4: (-s ours) am 15ecba0f: (-s ours) Import translations. DO NOT MERGE"
+  },
+  {
+    "name": "platform/frameworks/opt/setupwizard",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/setupwizard/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Mark ab/11976889 as merged in aosp-main-future am: e933e43e58 -s ours"
+  },
+  {
+    "name": "platform/frameworks/opt/timezonepicker",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/timezonepicker/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Merge \"Merge 24Q3 to AOSP main\" into main am: 0824ad497b -s ours am: ce8f2420bf -s ours"
+  },
+  {
+    "name": "platform/frameworks/opt/mms",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/mms/",
+    "status": "OK",
+    "latest_commit": "Move mms lib (mms-common) code into telephony (telephony-common) (2/2)"
+  },
+  {
+    "name": "platform/frameworks/opt/net/lowpan",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/net/lowpan/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove rquattle@google.com from OWNERS"
+  },
+  {
+    "name": "platform/frameworks/opt/sherpa",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/sherpa/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "platform/frameworks/opt/net/voip",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/net/voip/",
+    "status": "OK",
+    "latest_commit": "Empty merge ab/12770256 into aosp-main-future"
+  },
+  {
+    "name": "platform/frameworks/opt/net/ethernet",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/net/ethernet/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Merge Android 12 QPR3 ab/8391262 am: 715bfe63d7 -s ours am: 85d2768300 -s ours am: c277b08f4f -s ours am: 9f5079c455 -s ours am: 8849c5ef2a -s ours"
+  },
+  {
+    "name": "platform/frameworks/opt/net/ims",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/net/ims/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/frameworks/opt/photoviewer",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/photoviewer/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Empty merge of Android 24Q2 Release (ab/11526283) to aosp-main-future am: 7c73bfee49 -s ours"
+  },
+  {
+    "name": "platform/frameworks/opt/inputmethodcommon",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/inputmethodcommon/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge pi-dev@5234907 into stage-aosp-master"
+  },
+  {
+    "name": "platform/frameworks/opt/tv/tvsystem",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/tv/tvsystem/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Mark ab/11976889 as merged in aosp-main-future am: 463d048d79 -s ours"
+  },
+  {
+    "name": "platform/frameworks/opt/vcard",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/vcard/",
+    "status": "OK",
+    "latest_commit": "Merge \"Revert^2 \"Optimize vcard export performance\"\" into main"
+  },
+  {
+    "name": "platform/frameworks/opt/net/ike",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/net/ike/",
+    "status": "OK",
+    "latest_commit": "Merge \"Do not do NAT detection when using IPv6 address\""
+  },
+  {
+    "name": "platform/frameworks/opt/gamesdk",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/gamesdk/",
+    "status": "OK",
+    "latest_commit": "Release a new alpha version for AGDK components."
+  },
+  {
+    "name": "platform/frameworks/opt/telephony",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/telephony/",
+    "status": "OK",
+    "latest_commit": "Merge \"Temporarily ignore tests using reflection on NetworkAgent\" into main"
+  },
+  {
+    "name": "platform/frameworks/opt/net/wifi",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/net/wifi/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/frameworks/opt/widget",
+    "url": "https://android.googlesource.com/platform/frameworks/opt/widget/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "platform/hardware/google/graphics/gs201",
+    "url": "https://android.googlesource.com/platform/hardware/google/graphics/gs201/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/google/display/common",
+    "url": "https://android.googlesource.com/platform/hardware/google/display/common/",
+    "status": "ERR",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "platform/hardware/google/atv/refDesignRcu/telink",
+    "url": "https://android.googlesource.com/platform/hardware/google/atv/refDesignRcu/telink/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "platform/hardware/google/gfxstream",
+    "url": "https://android.googlesource.com/platform/hardware/google/gfxstream/",
+    "status": "OK",
+    "latest_commit": "Merge \"Remove duplicate interop support variable\" into main"
+  },
+  {
+    "name": "platform/hardware/google/graphics/gs101",
+    "url": "https://android.googlesource.com/platform/hardware/google/graphics/gs101/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/google",
+    "url": "https://android.googlesource.com/platform/hardware/google/",
+    "status": "OK",
+    "latest_commit": "Initial empty repository"
+  },
+  {
+    "name": "platform/hardware/google/camera",
+    "url": "https://android.googlesource.com/platform/hardware/google/camera/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/google/aemu",
+    "url": "https://android.googlesource.com/platform/hardware/google/aemu/",
+    "status": "OK",
+    "latest_commit": "Remove extraneous gfxstream dep and add lz4 repo rule"
+  },
+  {
+    "name": "platform/hardware/google/atv/refDesignRcu/atmosic",
+    "url": "https://android.googlesource.com/platform/hardware/google/atv/refDesignRcu/atmosic/",
+    "status": "OK",
+    "latest_commit": "Android TV Ref RCU SDK"
+  },
+  {
+    "name": "platform/hardware/google/apf",
+    "url": "https://android.googlesource.com/platform/hardware/google/apf/",
+    "status": "OK",
+    "latest_commit": "APFv6.1: allow [e]PKTDATACOPY to copy up to 511 bytes"
+  },
+  {
+    "name": "platform/hardware/google/gchips",
+    "url": "https://android.googlesource.com/platform/hardware/google/gchips/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/google/av",
+    "url": "https://android.googlesource.com/platform/hardware/google/av/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove krocard@google.com from OWNERS am: ddbf74c398"
+  },
+  {
+    "name": "platform/hardware/google/atv/refDesignRcu/realtek",
+    "url": "https://android.googlesource.com/platform/hardware/google/atv/refDesignRcu/realtek/",
+    "status": "OK",
+    "latest_commit": "Google RTK SDK"
+  },
+  {
+    "name": "platform/hardware/google/graphics/zuma",
+    "url": "https://android.googlesource.com/platform/hardware/google/graphics/zuma/",
+    "status": "OK",
+    "latest_commit": "libhwc2.1: OperationRateManager: save target operation rate am: abd1d92d70"
+  },
+  {
+    "name": "platform/hardware/google/easel",
+    "url": "https://android.googlesource.com/platform/hardware/google/easel/",
+    "status": "OK",
+    "latest_commit": "Fix license texts. am: 0f1e4c0309 am: 0ec63194dc am: 26c5703de6 am: 511ce8f8f5"
+  },
+  {
+    "name": "platform/hardware/google/graphics/common",
+    "url": "https://android.googlesource.com/platform/hardware/google/graphics/common/",
+    "status": "OK",
+    "latest_commit": "Merge \"Convert libExynosHWCService and hwcomposer.$(TARGET_BOARD_PLATFORM) to soong\" into main"
+  },
+  {
+    "name": "platform/hardware/google/pixel-sepolicy",
+    "url": "https://android.googlesource.com/platform/hardware/google/pixel-sepolicy/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/qcom/audio",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/audio/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Merge \"DO NOT MERGE - Merge Android 13\" am: ec38a5436d -s ours am: 953b37c10b -s ours am: f1ba81100e -s ours am: 0f854714be -s ours"
+  },
+  {
+    "name": "platform/hardware/qcom/bootctrl",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/bootctrl/",
+    "status": "OK",
+    "latest_commit": "Stricter stat when checking for blockdevices am: a63198f058 am: 1ef04a46bd am: 15546c3790 am: 4543612847 am: ef85a8ac82"
+  },
+  {
+    "name": "platform/hardware/google/pixel",
+    "url": "https://android.googlesource.com/platform/hardware/google/pixel/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/qcom/bt",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/bt/",
+    "status": "OK",
+    "latest_commit": "Merge \"[owners] Remove tstrudel@google.com from OWNERS\" into main"
+  },
+  {
+    "name": "platform/hardware/google/trusty",
+    "url": "https://android.googlesource.com/platform/hardware/google/trusty/",
+    "status": "OK",
+    "latest_commit": "Add desktop/OWNERS"
+  },
+  {
+    "name": "platform/hardware/google/graphics/zumapro",
+    "url": "https://android.googlesource.com/platform/hardware/google/graphics/zumapro/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/qcom/gps",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/gps/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Mark ab/7061308 as merged in stage. am: 09d3141ded -s ours am: cc33041d7f -s ours am: 779b568180 -s ours"
+  },
+  {
+    "name": "platform/hardware/qcom/data/ipacfg-mgr",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/data/ipacfg-mgr/",
+    "status": "OK",
+    "latest_commit": "Replace is-board-platform[-in-list] with is-board-platform[-in-list]2 am: 252aaa27d8 am: 848f1cf3d7 am: 2dfc3c0323 am: 6dbe2cec11 am: 4ee43bfe33"
+  },
+  {
+    "name": "platform/hardware/qcom/keymaster",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/keymaster/",
+    "status": "OK",
+    "latest_commit": "Merge \"[LSC] Add LOCAL_LICENSE_KINDS to hardware/qcom/keymaster\" am: c432d8cdc4 am: 02a1a7c5ed am: d4eb26054d am: b51a11f231"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8994",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8994/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to msm8994: GPL=RESTRICTED am: ebe7f25619 am: 97ca4802cd am: 2382e5032d am: 78f6750ef2 am: 537529d734"
+  },
+  {
+    "name": "platform/hardware/qcom/display",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/display/",
+    "status": "OK",
+    "latest_commit": "Merge \"Deleted clang property in Android.bp files\" am: d4d41c78f5 am: e11490cd68 am: cfb15510ed am: 4f7d38b549 am: fdee5986ff am: 339d1330cc"
+  },
+  {
+    "name": "platform/hardware/qcom/camera",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/camera/",
+    "status": "OK",
+    "latest_commit": "Merge \"Correct comment spelling error.\" into main am: 68d35252e6"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8960",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8960/",
+    "status": "OK",
+    "latest_commit": "Merge \"Add METADATA to msm8960: GPL=RESTRICTED\" am: 2aa4e417ed am: a303db56cb am: e83f58adeb am: f9d53208cd am: 5b64b6044e"
+  },
+  {
+    "name": "platform/hardware/qcom/media",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/media/",
+    "status": "OK",
+    "latest_commit": "Merge \"Replace is-board-platform[-in-list] with is-board-platform[-in-list]2\" am: 46138bfe3e am: 5c0efe0e17 am: 308bc9262a am: 27510dde36 am: 17a9af650f"
+  },
+  {
+    "name": "platform/hardware/google/interfaces",
+    "url": "https://android.googlesource.com/platform/hardware/google/interfaces/",
+    "status": "OK",
+    "latest_commit": "Merge 25Q1 (ab/BP1A.250305.020) to AOSP main"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8996",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8996/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to msm8996: GPL=RESTRICTED am: cc08ad0888 am: 55eb52e84c am: 8bcee4db7d am: 0e12c57769 am: ddf88516d4"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8x26",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8x26/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to msm8x26: GPL=RESTRICTED am: 17396438c3 am: e928db4ba6 am: 0eebab6ae4 am: d7b30c4022 am: 506d5e473c"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8x74",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8x74/",
+    "status": "OK",
+    "latest_commit": "msm8x74: update kernel headers"
+  },
+  {
+    "name": "platform/hardware/qcom/neuralnetworks/hvxservice",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/neuralnetworks/hvxservice/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to hvxservice: Apache2+BSD=NOTICE am: b73ab95a60 am: 6b303dd7f4 am: 62227964e2"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8998",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8998/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to msm8998: GPL=RESTRICTED am: f4ee290278 am: 430d166b84 am: a0721a1d9a"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8x84",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8x84/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to msm8x84: GPL=RESTRICTED am: 90c998820b am: 4b42d5d7a9 am: 390474f91a am: 59b52b8aa0 am: f99272e3fe"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8x09",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8x09/",
+    "status": "OK",
+    "latest_commit": "[owners] Remove mbouyack@google.com from OWNERS"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm710/display",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm710/display/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge pie-platform-release (PPRL.190505.001) into master."
+  },
+  {
+    "name": "platform/hardware/qcom/sdm710/vr",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm710/vr/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge pi-platform-release (PPRL.190505.001) into stage-aosp-master"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm845/bt",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm845/bt/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Fix include path for system/bt am: d3297acc4c am: 882c97ec4e -s ours am: b0193e1323 -s ours am: 982e9ef1a9 -s ours am: 9226c23b0b -s ours"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm710/media",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm710/media/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge pi-platform-release (PPRL.190505.001) into stage-aosp-master"
+  },
+  {
+    "name": "platform/hardware/qcom/msm8x27",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/msm8x27/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to msm8x27: GPL=RESTRICTED am: b4ac8a86e4 am: c083c96257 am: fc87019c57 am: 91a3b5e77f am: f6e7cfe3af"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm710/thermal",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm710/thermal/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge pi-platform-release (PPRL.190505.001) into stage-aosp-master"
+  },
+  {
+    "name": "platform/hardware/qcom/power",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/power/",
+    "status": "OK",
+    "latest_commit": "Merge \"[LSC] Add LOCAL_LICENSE_KINDS to hardware/qcom/power\" am: 85b0278433 am: a8acaf7e30 am: a5fe814b6a am: 22b93362f7"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm710/data/ipacfg-mgr",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm710/data/ipacfg-mgr/",
+    "status": "OK",
+    "latest_commit": "DO NOT MERGE - Merge pi-platform-release (PPRL.190505.001) into stage-aosp-master"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm710/gps",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm710/gps/",
+    "status": "OK",
+    "latest_commit": "Add libprocessgroup dependency to set_sched_policy users"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm845/data/ipacfg-mgr",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm845/data/ipacfg-mgr/",
+    "status": "OK",
+    "latest_commit": "Replace is-board-platform[-in-list] with is-board-platform[-in-list]2 am: dbcf1fe358 am: d9623f5b5f am: f710cedb36 am: 3e8b803d83 am: 85a9222155"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm845/vr",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm845/vr/",
+    "status": "OK",
+    "latest_commit": "Add METADATA to vr: Apache2+BSD=NOTICE am: 74146288e2 am: 1e564be447 am: f06889aadb am: 6dbda60ebe am: e12f6e0b94"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm845/display",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm845/display/",
+    "status": "OK",
+    "latest_commit": "Deleted clang property in Android.bp files am: 8d171d2bbc am: 9807e44e0e am: d78b909951 am: 050e5247f9 am: 1c24534fc7"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm845/media",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm845/media/",
+    "status": "OK",
+    "latest_commit": "Replace is-board-platform[-in-list] with is-board-platform[-in-list]2 am: 9e36b43573 am: df6d1d9312 am: 72225af0be am: 507c5fb10e am: b95df1b813"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm845/thermal",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm845/thermal/",
+    "status": "OK",
+    "latest_commit": "Replace is-board-platform[-in-list] with is-board-platform[-in-list]2 am: 38a0e2bf84 am: 751df30b68 am: f4b41e82fb am: 3d245f94db am: 2709d46bd2"
+  },
+  {
+    "name": "platform/hardware/qcom/sdm845/gps",
+    "url": "https://android.googlesource.com/platform/hardware/qcom/sdm845/gps/",
+    "status": "OK",
+    "latest_commit": "[automerger skipped] Merge Android 12 am: 322af5c163 -s ours am: a0d9d9707d -s ours am: dbf3e7e46b -s ours am: 14f58b5aab -s ours am: af93140796 -s ours"
+  }
+]

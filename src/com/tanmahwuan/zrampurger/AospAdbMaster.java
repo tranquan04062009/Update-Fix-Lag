@@ -100,11 +100,32 @@ public class AospAdbMaster {
     }
 
     /**
+     * Freezes DeviceConfig (Phenotype) sync persistently across reboots.
+     * Mined from AOSP DeviceConfigService.java:
+     * "persistent: Sync is disabled, this state will survive a reboot."
+     * Prevents Google Play Services or OEM background services from wiping performance tweaks.
+     */
+    public static boolean setDeviceConfigSyncDisabledPersistent(boolean disabled) {
+        String mode = disabled ? "persistent" : "none";
+        Log.i(TAG, "Setting DeviceConfig sync mode: " + mode);
+        CommandExecutor.CommandResult res = CommandExecutor.execute("cmd device_config set_sync_disabled_for_tests " + mode + " 2>&1");
+        return res.exitCode == 0;
+    }
+
+    public static boolean isDeviceConfigSyncDisabledPersistent() {
+        CommandExecutor.CommandResult res = CommandExecutor.execute("cmd device_config get_sync_disabled_for_tests 2>/dev/null");
+        return res.stdout != null && res.stdout.trim().equalsIgnoreCase("persistent");
+    }
+
+    /**
      * Applies proactive low-RAM DeviceConfig (Phenotype) flags extracted from CachedAppOptimizer.java
      * and ActivityManagerConstants.java.
      */
     public static boolean applyDeviceConfigLowRam(boolean enable) {
         if (appCtx == null) return false;
+        if (enable) {
+            setDeviceConfigSyncDisabledPersistent(true);
+        }
         TweakEngine.Tweak t = TweakEngine.lowRam(android.os.Build.VERSION.SDK_INT, totalRamMb());
         TweakEngine.Result r = enable ? TweakEngine.apply(appCtx, t) : TweakEngine.restore(appCtx, t);
         Log.i(TAG, "LowRam DeviceConfig enable=" + enable + " -> " + r.ok + " (" + r.message + ")");
@@ -251,27 +272,44 @@ public class AospAdbMaster {
     /**
      * Optimizes SurfaceFlinger and HWUI frame presentation pipeline:
      * - latch_unsignaled: eliminates fence wait latency for instant frame latching
+     * - enable_layer_caching: caches static GPU layers to prevent redundant redraws
+     * - predict_hwc_composition_strategy: preemptively schedules hardware composer overlays
+     * - enable_gl_backpressure 0: eliminates GPU backpressure stuttering during touch gestures
+     * - prime_shader_cache: pre-primes shaders to eliminate jank when opening windows
+     * - set_idle_timer_ms 0: prevents display refresh rate downclocking during interaction
      * - render_thread_priority: sets RenderThread to RT priority (-20)
      * - early phase offsets: minimizes touch-to-display latency
      * - disable-blur: disables expensive Gaussian blur passes
+     * - looper_stats disable: eliminates binder looper profiling overhead
      */
     public static boolean setSurfaceFlingerZeroLatency(boolean enable) {
         Log.i(TAG, "SurfaceFlinger Zero Latency Pipeline: " + enable);
         StringBuilder sb = new StringBuilder();
         if (enable) {
             sb.append("setprop debug.sf.latch_unsignaled 1 2>/dev/null; ");
+            sb.append("setprop debug.sf.enable_layer_caching 1 2>/dev/null; ");
+            sb.append("setprop debug.sf.predict_hwc_composition_strategy 1 2>/dev/null; ");
+            sb.append("setprop debug.sf.enable_gl_backpressure 0 2>/dev/null; ");
+            sb.append("setprop debug.sf.set_idle_timer_ms 0 2>/dev/null; ");
+            sb.append("setprop debug.sf.prime_shader_cache.solid_layers 1 2>/dev/null; ");
+            sb.append("setprop debug.sf.prime_shader_cache.image_layers 1 2>/dev/null; ");
             sb.append("setprop debug.sf.early_phase_offset_ns 500000 2>/dev/null; ");
             sb.append("setprop debug.sf.early_app_phase_offset_ns 500000 2>/dev/null; ");
             sb.append("setprop debug.sf.early_gl_phase_offset_ns 3000000 2>/dev/null; ");
             sb.append("setprop debug.sf.high_fps_early_phase_offset_ns 500000 2>/dev/null; ");
             sb.append("setprop debug.sf.high_fps_early_gl_phase_offset_ns 3000000 2>/dev/null; ");
             sb.append("setprop debug.hwui.render_thread_priority -20 2>/dev/null; ");
+            sb.append("setprop debug.hwui.use_hint_manager true 2>/dev/null; ");
+            sb.append("setprop debug.hwui.target_cpu_time_percent 100 2>/dev/null; ");
             sb.append("setprop debug.hwui.fps_divisor 1 2>/dev/null; ");
             sb.append("cmd window disable-blur 1 2>/dev/null; ");
+            sb.append("cmd looper_stats disable 2>/dev/null; ");
         } else {
             sb.append("setprop debug.sf.latch_unsignaled 0 2>/dev/null; ");
+            sb.append("setprop debug.sf.enable_gl_backpressure 1 2>/dev/null; ");
             sb.append("setprop debug.hwui.render_thread_priority 0 2>/dev/null; ");
             sb.append("cmd window disable-blur 0 2>/dev/null; ");
+            sb.append("cmd looper_stats enable 2>/dev/null; ");
         }
         CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
         return res.exitCode == 0;

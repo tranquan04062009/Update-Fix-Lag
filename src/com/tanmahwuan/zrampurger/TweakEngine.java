@@ -35,7 +35,7 @@ public class TweakEngine {
 
         boolean valid() {
             return SAFE.matcher(ns).matches() && SAFE.matcher(key).matches() && SAFE.matcher(value).matches()
-                    && ("settings".equals(kind) || "device_config".equals(kind));
+                    && ("settings".equals(kind) || "device_config".equals(kind) || "device_config_sync".equals(kind));
         }
     }
 
@@ -118,6 +118,37 @@ public class TweakEngine {
         if (!p.supportsAdaptiveBattery()) standby.unsupportedReason = "Cần Android 9 trở lên";
         list.add(standby);
 
+        // Khóa cố định cài đặt hệ thống (AOSP DeviceConfig persistent)
+        Tweak freeze = new Tweak("freeze_sync",
+                "Cố định cài đặt tối ưu",
+                "Khóa vĩnh viễn các tinh chỉnh hiệu năng để dịch vụ nền không thể tự động khôi phục về mặc định.",
+                new Op("device_config_sync", "sync", "mode", "persistent"));
+        if (p.sdk < 29) freeze.unsupportedReason = "Cần Android 10 trở lên";
+        list.add(freeze);
+
+        // Cơ chế chống nghẽn bộ nhớ thông minh (AOSP LMKD Native)
+        Tweak lmkd = new Tweak("lmkd_tune",
+                "Chống nghẽn RAM tức thì",
+                "Phát hiện sớm áp lực bộ nhớ và ưu tiên giải phóng các tiến trình phụ ngốn RAM.",
+                new Op("device_config", "lmkd_native", "thrashing_limit", "50"),
+                new Op("device_config", "lmkd_native", "thrashing_limit_decay", "10"),
+                new Op("device_config", "lmkd_native", "psi_partial_stall_ms", "100"),
+                new Op("device_config", "lmkd_native", "kill_heaviest_task", "true"));
+        if (p.sdk < 29) lmkd.unsupportedReason = "Cần Android 10 trở lên";
+        list.add(lmkd);
+
+        // Bộ nén RAM chủ động (AOSP Memory Compaction & App Freezer)
+        Tweak compaction = new Tweak("compaction",
+                "Bộ nén RAM chủ động",
+                "Tăng tốc độ nén bộ nhớ ứng dụng nền để luôn giải phóng không gian trống cho tác vụ hiện tại.",
+                new Op("device_config", "activity_manager", "use_compaction", "true"),
+                new Op("device_config", "activity_manager", "compact_throttle_1", "100"),
+                new Op("device_config", "activity_manager", "compact_full_delta_rss_throttle_kb", "2048"),
+                new Op("device_config", "activity_manager_native_boot", "use_freezer", "true"),
+                new Op("device_config", "activity_manager_native_boot", "freezer_debounce_timeout", "1000"));
+        if (p.sdk < 29) compaction.unsupportedReason = "Cần Android 10 trở lên";
+        list.add(compaction);
+
         return list;
     }
 
@@ -140,21 +171,33 @@ public class TweakEngine {
     }
 
     private static String getCmd(Op op) {
-        return "settings".equals(op.kind)
-                ? "settings get " + op.ns + " " + op.key
-                : "cmd device_config get " + op.ns + " " + op.key;
+        if ("settings".equals(op.kind)) {
+            return "settings get " + op.ns + " " + op.key;
+        } else if ("device_config_sync".equals(op.kind)) {
+            return "cmd device_config get_sync_disabled_for_tests";
+        } else {
+            return "cmd device_config get " + op.ns + " " + op.key;
+        }
     }
 
     private static String putCmd(Op op, String value) {
-        return "settings".equals(op.kind)
-                ? "settings put " + op.ns + " " + op.key + " " + value
-                : "cmd device_config put " + op.ns + " " + op.key + " " + value;
+        if ("settings".equals(op.kind)) {
+            return "settings put " + op.ns + " " + op.key + " " + value;
+        } else if ("device_config_sync".equals(op.kind)) {
+            return "cmd device_config set_sync_disabled_for_tests " + value;
+        } else {
+            return "cmd device_config put " + op.ns + " " + op.key + " " + value;
+        }
     }
 
     private static String deleteCmd(Op op) {
-        return "settings".equals(op.kind)
-                ? "settings delete " + op.ns + " " + op.key
-                : "cmd device_config delete " + op.ns + " " + op.key;
+        if ("settings".equals(op.kind)) {
+            return "settings delete " + op.ns + " " + op.key;
+        } else if ("device_config_sync".equals(op.kind)) {
+            return "cmd device_config set_sync_disabled_for_tests none";
+        } else {
+            return "cmd device_config delete " + op.ns + " " + op.key;
+        }
     }
 
     private static Val read(Op op) {
@@ -191,6 +234,9 @@ public class TweakEngine {
                 o.put("prev", before.v == null ? JSONObject.NULL : before.v);
                 snap.put(o);
 
+                if ("device_config".equals(op.kind)) {
+                    AospAdbMaster.setDeviceConfigSyncDisabledPersistent(true);
+                }
                 CommandExecutor.execute(putCmd(op, op.value));
                 Val after = read(op);
                 if (!after.ok || after.v == null || !op.value.equals(after.v)) {
