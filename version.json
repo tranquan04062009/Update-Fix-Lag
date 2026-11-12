@@ -1,6 +1,6 @@
 {
   "versionCode": 2,
-  "versionName": "1.0.1",
+  "versionName": "1.0.2",
   "minSupportedVersion": 1,
   "title": "Bản cập nhật v1.0.1",
   "changelog": "• Cập nhật các tinh chỉnh giảm giật lag mới\n• Bổ sung tùy chọn cài đặt tối ưu độ trễ và khung hình\n• Khắc phục lỗi nút bung hiệu năng và tối ưu độ ổn định hệ thống",
