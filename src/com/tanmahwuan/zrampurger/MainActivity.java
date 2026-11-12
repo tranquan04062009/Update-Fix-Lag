@@ -226,6 +226,13 @@ public class MainActivity extends Activity {
 
         updatePrivilegeBadge();
         refreshTelemetryImmediate();
+
+        // Tự động kiểm tra bản cập nhật mới trong nền khi vào ứng dụng (sau 2s để UI ổn định)
+        mainHandler.postDelayed(() -> {
+            if (!isFinishing() && !isDestroyed()) {
+                checkAppUpdates(false);
+            }
+        }, 2000);
     }
 
     private void initViews() {
@@ -721,51 +728,7 @@ public class MainActivity extends Activity {
     private void setupSettingsTab() {
         tvSettingsVersionSub.setText(String.format("Phiên bản %s (Bản chính thức)", UpdateManager.getCurrentVersionName(this)));
 
-        btnSettingsCheckUpdate.setOnClickListener(v -> {
-            Toast.makeText(this, "Đang kiểm tra bản cập nhật...", Toast.LENGTH_SHORT).show();
-            btnSettingsCheckUpdate.setEnabled(false);
-            UpdateManager.checkForUpdates(this, new UpdateManager.UpdateCheckCallback() {
-                @Override
-                public void onUpdateFound(String updateJson) {
-                    mainHandler.post(() -> {
-                        btnSettingsCheckUpdate.setEnabled(true);
-                        try {
-                            JSONObject obj = new JSONObject(updateJson);
-                            String ver = obj.optString("versionName", "1.0.1");
-                            String url = obj.optString("downloadUrl", "");
-                            String notes = obj.optString("changelog", obj.optString("releaseNotes", "Bản cập nhật tối ưu mới"));
-
-                            new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
-                                    .setTitle("Cập nhật v" + ver + " có sẵn!")
-                                    .setMessage(notes)
-                                    .setPositiveButton("Tải & Cài đặt", (dialog, which) -> {
-                                        UpdateManager.startDownloadAndInstall(MainActivity.this, url, ver);
-                                    })
-                                    .setNegativeButton("Để sau", null)
-                                    .show();
-                        } catch (Exception e) {
-                            Toast.makeText(MainActivity.this, "Có bản cập nhật mới!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onNoUpdate(String currentVersion) {
-                    mainHandler.post(() -> {
-                        btnSettingsCheckUpdate.setEnabled(true);
-                        Toast.makeText(MainActivity.this, "✅ Bạn đang ở phiên bản mới nhất (v" + currentVersion + ")", Toast.LENGTH_SHORT).show();
-                    });
-                }
-
-                @Override
-                public void onError(String message) {
-                    mainHandler.post(() -> {
-                        btnSettingsCheckUpdate.setEnabled(true);
-                        Toast.makeText(MainActivity.this, "⚠️ " + message, Toast.LENGTH_SHORT).show();
-                    });
-                }
-            });
-        });
+        btnSettingsCheckUpdate.setOnClickListener(v -> checkAppUpdates(true));
 
         // Animation scales
         pillAnim0.setOnClickListener(v -> setAnimScale(0.0f));
@@ -835,6 +798,68 @@ public class MainActivity extends Activity {
 
         pillAnim1.setBackgroundResource(scale > 0.6f ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
         pillAnim1.setTextColor(scale > 0.6f ? Color.parseColor("#2DD4B0") : Color.parseColor("#A3ABBB"));
+    }
+
+    private void checkAppUpdates(boolean isManual) {
+        if (isManual) {
+            Toast.makeText(this, "Đang kiểm tra bản cập nhật...", Toast.LENGTH_SHORT).show();
+            if (btnSettingsCheckUpdate != null) btnSettingsCheckUpdate.setEnabled(false);
+        }
+
+        UpdateManager.checkForUpdates(this, new UpdateManager.UpdateCheckCallback() {
+            @Override
+            public void onUpdateFound(String updateJson) {
+                mainHandler.post(() -> {
+                    if (btnSettingsCheckUpdate != null) btnSettingsCheckUpdate.setEnabled(true);
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+                    try {
+                        JSONObject obj = new JSONObject(updateJson);
+                        String ver = obj.optString("versionName", "1.0.1");
+                        String url = obj.optString("downloadUrl", "");
+                        String notes = obj.optString("changelog", obj.optString("releaseNotes", "Bản cập nhật tối ưu mới"));
+
+                        if (tvSettingsVersionSub != null) {
+                            tvSettingsVersionSub.setText("Có bản cập nhật mới: v" + ver);
+                        }
+
+                        new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                                .setTitle("Cập nhật v" + ver + " có sẵn!")
+                                .setMessage(notes)
+                                .setPositiveButton("Tải & Cài đặt", (dialog, which) -> {
+                                    UpdateManager.startDownloadAndInstall(MainActivity.this, url, ver);
+                                })
+                                .setNegativeButton("Để sau", null)
+                                .show();
+                    } catch (Exception e) {
+                        if (isManual) {
+                            Toast.makeText(MainActivity.this, "Có bản cập nhật mới!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onNoUpdate(String currentVersion) {
+                mainHandler.post(() -> {
+                    if (btnSettingsCheckUpdate != null) btnSettingsCheckUpdate.setEnabled(true);
+                    if (isManual) {
+                        Toast.makeText(MainActivity.this, "✅ Bạn đang ở phiên bản mới nhất (v" + currentVersion + ")", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                mainHandler.post(() -> {
+                    if (btnSettingsCheckUpdate != null) btnSettingsCheckUpdate.setEnabled(true);
+                    if (isManual) {
+                        Toast.makeText(MainActivity.this, "⚠️ " + message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     // --- REAL-TIME HARDWARE & MEMORY TELEMETRY ---
