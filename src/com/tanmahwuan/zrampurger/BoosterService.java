@@ -59,7 +59,7 @@ public class BoosterService extends Service {
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .setCategory(Notification.CATEGORY_SERVICE)
-                .setColor(Color.parseColor("#00F0FF"))
+                .setColor(Color.parseColor("#2DD4B0"))
                 .build();
 
         startForeground(NOTIFICATION_ID, notification);

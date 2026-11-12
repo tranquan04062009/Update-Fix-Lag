@@ -11,364 +11,230 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="80dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="100dp">
 
-        <!-- HERO RAM GAUGE CARD -->
+        <!-- HERO: RAM -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:background="@drawable/bg_card_bento">
+            android:padding="20dp"
+            android:background="@drawable/bg_card_hero">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
-
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="BỘ NHỚ RAM TỔNG THỂ"
-                    android:textColor="#94A3B8"
-                    android:textSize="11.5sp"
+                    android:text="BỘ NHỚ RAM"
+                    android:textColor="#A3ABBB"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
+                    android:letterSpacing="0.08" />
                 <TextView
-                    android:id="@+id/tv_gauge_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="● TRỰC TIẾP"
-                    android:textColor="#00F0FF"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
+            android:id="@+id/tv_gauge_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="● Trực tiếp"
+            android:textColor="#2DD4B0"
+            android:textSize="11sp"
+            android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="bottom"
-                android:layout_marginTop="8dp">
+            <TextView
+            android:id="@+id/tv_ram_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--%"
+            android:textColor="#FFFFFF"
+            android:textSize="56sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:letterSpacing="-0.02" />
+            <TextView
+            android:id="@+id/tv_ram_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Khả dụng: -- GB / -- GB"
+            android:textColor="#A3ABBB"
+            android:textSize="13sp"
+            android:layout_marginTop="2dp" />
 
-                <TextView
-                    android:id="@+id/tv_ram_percent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="--%"
-                    android:textColor="#FFFFFF"
-                    android:textSize="36sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_ram_subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginBottom="6dp"
-                    android:text="Khả dụng: -- GB / -- GB"
-                    android:textColor="#94A3B8"
-                    android:textSize="12.5sp" />
-            </LinearLayout>
-
-            <!-- Custom Progress Bar -->
             <ProgressBar
                 android:id="@+id/progress_ram"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:layout_marginTop="12dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="18dp"
                 android:max="100"
                 android:progress="0"
                 android:progressDrawable="@drawable/bg_progress_ram" />
         </LinearLayout>
 
-        <!-- BENTO ROW 1: RAM KHẢ DỤNG & ZRAM -->
+        <!-- ROW 1 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp">
-
-            <!-- Card 1: RAM Khả dụng -->
+            android:layout_marginTop="12dp">
+            
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:padding="14dp"
-                android:layout_marginEnd="5dp"
+                android:padding="16dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/bg_card_bento">
-
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RAM KHẢ DỤNG"
-                    android:textColor="#94A3B8"
-                    android:textSize="10.5sp"
-                    android:textStyle="bold" />
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RAM KHẢ DỤNG"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06" />
                 <TextView
-                    android:id="@+id/tv_avail_ram"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-- GB"
-                    android:textColor="#00F0FF"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="4dp" />
-
+            android:id="@+id/tv_avail_ram"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-- GB"
+            android:textColor="#2DD4B0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp" />
                 <TextView
-                    android:id="@+id/tv_used_ram"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đang dùng: -- GB"
-                    android:textColor="#64748B"
-                    android:textSize="10.5sp"
-                    android:layout_marginTop="2dp" />
+            android:id="@+id/tv_used_ram"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đang dùng: -- GB"
+            android:textColor="#A3ABBB"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
             </LinearLayout>
-
-            <!-- Card 2: ZRAM Stats -->
+            
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:padding="14dp"
-                android:layout_marginStart="5dp"
+                android:padding="16dp"
+                android:layout_marginStart="6dp"
                 android:background="@drawable/bg_card_bento">
-
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ZRAM NÉN ĐA TẦNG"
-                    android:textColor="#94A3B8"
-                    android:textSize="10.5sp"
-                    android:textStyle="bold" />
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NÉN ZRAM"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06" />
                 <TextView
-                    android:id="@+id/tv_zram_ratio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="--x"
-                    android:textColor="#A855F7"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="4dp" />
-
+            android:id="@+id/tv_zram_ratio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--x"
+            android:textColor="#8B7CFF"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp" />
                 <TextView
-                    android:id="@+id/tv_zram_saved"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tiết kiệm: -- MB"
-                    android:textColor="#64748B"
-                    android:textSize="10.5sp"
-                    android:layout_marginTop="2dp" />
+            android:id="@+id/tv_zram_saved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tiết kiệm: -- MB"
+            android:textColor="#A3ABBB"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- BENTO ROW 2: HARDWARE TEMPERATURES (CPU, GPU, PIN) -->
+        <!-- ROW 2 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp">
-
-            <!-- Card 3: CPU & GPU Temp -->
+            android:layout_marginTop="12dp">
+            
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:padding="14dp"
-                android:layout_marginEnd="5dp"
+                android:padding="16dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/bg_card_bento">
-
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="NHIỆT ĐỘ SOC"
-                    android:textColor="#94A3B8"
-                    android:textSize="10.5sp"
-                    android:textStyle="bold" />
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NHIỆT ĐỘ CPU"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06" />
                 <TextView
-                    android:id="@+id/tv_cpu_temp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CPU: -- °C"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="4dp" />
-
+            android:id="@+id/tv_cpu_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CPU: -- °C"
+            android:textColor="#F3F5F9"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp" />
                 <TextView
-                    android:id="@+id/tv_gpu_temp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="GPU: -- °C"
-                    android:textColor="#94A3B8"
-                    android:textSize="10.5sp"
-                    android:layout_marginTop="2dp" />
+            android:id="@+id/tv_gpu_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPU: -- °C"
+            android:textColor="#A3ABBB"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
             </LinearLayout>
-
-            <!-- Card 4: Battery Temp -->
+            
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:padding="14dp"
-                android:layout_marginStart="5dp"
+                android:padding="16dp"
+                android:layout_marginStart="6dp"
                 android:background="@drawable/bg_card_bento">
-
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="NHIỆT ĐỘ PIN"
-                    android:textColor="#94A3B8"
-                    android:textSize="10.5sp"
-                    android:textStyle="bold" />
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NHIỆT ĐỘ PIN"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06" />
                 <TextView
-                    android:id="@+id/tv_battery_temp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-- °C"
-                    android:textColor="#10B981"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="4dp" />
-
+            android:id="@+id/tv_battery_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-- °C"
+            android:textColor="#34D399"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp" />
                 <TextView
-                    android:id="@+id/tv_thermal_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Trạng thái: Tối ưu"
-                    android:textColor="#64748B"
-                    android:textSize="10.5sp"
-                    android:layout_marginTop="2dp" />
+            android:id="@+id/tv_thermal_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nhiệt độ: Mát mẻ"
+            android:textColor="#A3ABBB"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- TIER INTENSITY SELECTOR -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="14dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card_bento">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CƯỜNG ĐỘ TỐI ƯU HÓA"
-                android:textColor="#94A3B8"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp">
-
-                <TextView
-                    android:id="@+id/pill_tier_1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_chip_pill"
-                    android:text="Tiêu chuẩn\nTiết kiệm"
-                    android:textColor="#94A3B8"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/pill_tier_2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_chip_pill"
-                    android:text="Cân bằng\nTự động"
-                    android:textColor="#94A3B8"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/pill_tier_3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:background="@drawable/bg_chip_pill_active"
-                    android:text="Chuyên sâu\nTối đa"
-                    android:textColor="#00F0FF"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- PRIMARY SUPER BOOST BUTTON -->
-        <Button
-            android:id="@+id/btn_super_boost"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_btn_boost"
-            android:text="⚡ BUNG HIỆU NĂNG TỨC THÌ"
-            android:textColor="#050811"
-            android:textSize="14.5sp"
-            android:textStyle="bold" />
-
-        <!-- SYSTEM QUICK ACTIONS ROW -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp">
-
-            <Button
-                android:id="@+id/btn_aosp_idle_maint"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/bg_btn_secondary"
-                android:text="⚡ Tối ưu hệ thống"
-                android:textColor="#FFFFFF"
-                android:textSize="11.5sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btn_aosp_trim_caches"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_weight="1"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/bg_btn_secondary"
-                android:text="🧹 Dọn bộ nhớ đệm"
-                android:textColor="#FFFFFF"
-                android:textSize="11.5sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- EXTREME GAME BOOSTER CARD -->
+        <!-- TIER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -376,36 +242,142 @@
             android:padding="16dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/bg_card_bento">
+            <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CƯỜNG ĐỘ DỌN DẸP"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+                <TextView
+                    android:id="@+id/pill_tier_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip_pill"
+                    android:text="Nhẹ\nCache &amp; nền"
+                    android:textColor="#A3ABBB"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/pill_tier_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip_pill"
+                    android:text="Cân bằng\nIdle &amp; Standby"
+                    android:textColor="#A3ABBB"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/pill_tier_3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:background="@drawable/bg_chip_pill_active"
+                    android:text="Mạnh\nToàn diện"
+                    android:textColor="#2DD4B0"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- PRIMARY ACTION -->
+        <Button
+            android:id="@+id/btn_super_boost"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_btn_boost"
+            android:stateListAnimator="@null"
+            android:text="Giải phóng RAM"
+            android:textAllCaps="false"
+            android:textColor="#04201B"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- QUICK ACTIONS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+            <Button
+                android:id="@+id/btn_aosp_idle_maint"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_btn_secondary"
+                android:stateListAnimator="@null"
+                android:text="Tối ưu hệ thống"
+                android:textAllCaps="false"
+                android:textColor="#F3F5F9"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+            <Button
+                android:id="@+id/btn_aosp_trim_caches"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_btn_secondary"
+                android:stateListAnimator="@null"
+                android:text="Dọn bộ nhớ đệm"
+                android:textAllCaps="false"
+                android:textColor="#F3F5F9"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- GAME BOOSTER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_card_bento">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
-
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Extreme Game Booster"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Game Booster"
+            android:textColor="#F3F5F9"
+            android:textSize="16sp"
+            android:textStyle="bold" />
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tăng tốc GPU &amp; Ưu tiên đồ họa"
-                        android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:layout_marginTop="2dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ưu tiên GPU và hiệu năng đồ họa"
+            android:textColor="#6B7385"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
                 </LinearLayout>
-
                 <Switch
                     android:id="@+id/switch_game_booster"
                     style="@style/ShadcnSwitch"
@@ -414,175 +386,172 @@
                     android:showText="false"
                     android:textOn=""
                     android:textOff=""
-                    android:switchMinWidth="48dp"
+                    android:switchMinWidth="52dp"
                     android:thumbTextPadding="0dp"
                     android:splitTrack="false"
                     android:track="@drawable/switch_track"
                     android:thumb="@drawable/switch_thumb" />
             </LinearLayout>
 
-            <!-- Hardware Telemetry Grid -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="14dp">
-
+                android:layout_marginTop="16dp">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp"
+                    android:padding="12dp"
+                    android:layout_marginEnd="6dp"
                     android:background="@drawable/bg_chip_pill">
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="GPU XUNG"
-                        android:textColor="#64748B"
-                        android:textSize="9.5sp"
-                        android:textStyle="bold" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPU XUNG"
+            android:textColor="#6B7385"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
                     <TextView
-                        android:id="@+id/tv_booster_gpu_clk"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-- MHz"
-                        android:textColor="#00F0FF"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="2dp" />
+            android:id="@+id/tv_booster_gpu_clk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-- MHz"
+            android:textColor="#F3F5F9"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="3dp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:layout_marginStart="4dp"
+                    android:padding="12dp"
+                    android:layout_marginStart="6dp"
                     android:background="@drawable/bg_chip_pill">
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="GPU TẢI"
-                        android:textColor="#64748B"
-                        android:textSize="9.5sp"
-                        android:textStyle="bold" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPU TẢI"
+            android:textColor="#6B7385"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
                     <TextView
-                        android:id="@+id/tv_booster_gpu_load"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-- %"
-                        android:textColor="#00F0FF"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/bg_chip_pill">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="GPU NHIỆT"
-                        android:textColor="#64748B"
-                        android:textSize="9.5sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/tv_booster_gpu_temp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-- °C"
-                        android:textColor="#00F0FF"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/bg_chip_pill">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CPU BIG"
-                        android:textColor="#64748B"
-                        android:textSize="9.5sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/tv_booster_cpu_big"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-- GHz"
-                        android:textColor="#00F0FF"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="2dp" />
+            android:id="@+id/tv_booster_gpu_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-- %"
+            android:textColor="#F3F5F9"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="3dp" />
                 </LinearLayout>
             </LinearLayout>
-
-            <!-- Target Game Compilation Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="12dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_chip_pill">
+                    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPU NHIỆT"
+            android:textColor="#6B7385"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+                    <TextView
+            android:id="@+id/tv_booster_gpu_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-- °C"
+            android:textColor="#F3F5F9"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="3dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_chip_pill">
+                    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CPU LÕI LỚN"
+            android:textColor="#6B7385"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+                    <TextView
+            android:id="@+id/tv_booster_cpu_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-- GHz"
+            android:textColor="#F3F5F9"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="3dp" />
+                </LinearLayout>
+            </LinearLayout>
 
+            <!-- Compile target -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp">
                 <EditText
                     android:id="@+id/et_target_game_pkg"
                     android:layout_width="0dp"
-                    android:layout_height="38dp"
+                    android:layout_height="44dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_chip_pill"
-                    android:hint="Gói game (vd: com.dts.freefireth)..."
-                    android:textColorHint="#475569"
-                    android:textColor="#FFFFFF"
-                    android:textSize="11.5sp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
+                    android:hint="Gói game, ví dụ com.dts.freefireth"
+                    android:textColorHint="#5A6275"
+                    android:textColor="#F3F5F9"
+                    android:textSize="12.5sp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     android:singleLine="true" />
-
                 <Button
                     android:id="@+id/btn_trigger_aot"
                     android:layout_width="wrap_content"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="6dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_btn_secondary"
-                    android:text="TĂNG TỐC"
-                    android:textColor="#00F0FF"
-                    android:textSize="11sp"
+                    android:stateListAnimator="@null"
+                    android:text="Tăng tốc"
+                    android:textAllCaps="false"
+                    android:textColor="#2DD4B0"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp" />
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp" />
             </LinearLayout>
 
-            <!-- Reset Link -->
             <TextView
                 android:id="@+id/tv_emergency_rollback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="12dp"
-                android:text="↺ Khôi phục cài đặt mặc định"
-                android:textColor="#64748B"
-                android:textSize="11sp"
-                android:padding="6dp" />
+                android:layout_marginTop="10dp"
+                android:text="Khôi phục cài đặt mặc định"
+                android:textColor="#6B7385"
+                android:textSize="12sp"
+                android:padding="8dp" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

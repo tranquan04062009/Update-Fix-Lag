@@ -2,8 +2,8 @@
 <resources>
     <style name="AppTheme" parent="@android:style/Theme.NoTitleBar">
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:statusBarColor">#07090E</item>
-        <item name="android:navigationBarColor">#07090E</item>
+        <item name="android:statusBarColor">#0A0C10</item>
+        <item name="android:navigationBarColor">#0A0C10</item>
     </style>
 
     <style name="ShadcnSwitch">

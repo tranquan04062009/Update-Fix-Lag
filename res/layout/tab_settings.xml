@@ -11,10 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingTop="10dp"
-        android:paddingBottom="80dp">
+        android:paddingBottom="100dp">
 
         <!-- VERSION & UPDATE CARD -->
         <LinearLayout
@@ -44,7 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Phiên bản 1.0.0 (Bản chính thức)"
-                    android:textColor="#94A3B8"
+                    android:textColor="#A3ABBB"
                     android:textSize="11.5sp"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
@@ -55,11 +55,11 @@
                 android:layout_height="36dp"
                 android:background="@drawable/bg_btn_secondary"
                 android:text="Kiểm tra"
-                android:textColor="#00F0FF"
+                android:textColor="#2DD4B0"
                 android:textSize="11.5sp"
                 android:textStyle="bold"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
         </LinearLayout>
 
         <!-- ANIMATION SPEED SCALER -->
@@ -83,7 +83,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tối ưu hóa thời gian phản hồi và chuyển cảnh mượt mà giữa các ứng dụng."
-                android:textColor="#94A3B8"
+                android:textColor="#A3ABBB"
                 android:textSize="11.5sp"
                 android:layout_marginTop="2dp" />
 
@@ -102,7 +102,7 @@
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_chip_pill"
                     android:text="Tắt hiệu ứng"
-                    android:textColor="#94A3B8"
+                    android:textColor="#A3ABBB"
                     android:textSize="11.5sp" />
 
                 <TextView
@@ -114,7 +114,7 @@
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_chip_pill_active"
                     android:text="0.5x (Nhanh)"
-                    android:textColor="#00F0FF"
+                    android:textColor="#2DD4B0"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
 
@@ -126,7 +126,7 @@
                     android:gravity="center"
                     android:background="@drawable/bg_chip_pill"
                     android:text="1.0x (Mặc định)"
-                    android:textColor="#94A3B8"
+                    android:textColor="#A3ABBB"
                     android:textSize="11.5sp" />
             </LinearLayout>
         </LinearLayout>
@@ -160,7 +160,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tự động thu hồi RAM và đóng băng các ứng dụng không hoạt động."
-                    android:textColor="#94A3B8"
+                    android:textColor="#A3ABBB"
                     android:textSize="11.5sp"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
@@ -209,7 +209,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tăng tốc độ quét màn hình cảm ứng và giảm độ trễ phản hồi khi chạm."
-                    android:textColor="#94A3B8"
+                    android:textColor="#A3ABBB"
                     android:textSize="11.5sp"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
@@ -258,7 +258,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Loại bỏ độ trễ vẽ bề mặt và tối ưu hiệu suất mượt mà cho toàn hệ thống."
-                    android:textColor="#94A3B8"
+                    android:textColor="#A3ABBB"
                     android:textSize="11.5sp"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
@@ -299,7 +299,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Nhấn giữ ngoài màn hình chính → chọn Widgets → thêm Z-RAM Extreme để dọn dẹp RAM 1-chạm cực nhanh mà không cần mở ứng dụng!"
-                android:textColor="#94A3B8"
+                android:textColor="#A3ABBB"
                 android:textSize="12sp"
                 android:lineSpacingExtra="3dp"
                 android:layout_marginTop="4dp" />
@@ -327,7 +327,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thiết bị: Samsung Galaxy A42 5G (SM-A426N)\nBộ xử lý: Qualcomm Snapdragon 750G 5G\nHệ điều hành: Android 13\nTrạng thái bộ nhớ: Đang hoạt động tối ưu"
-                android:textColor="#94A3B8"
+                android:textColor="#A3ABBB"
                 android:textSize="12sp"
                 android:lineSpacingExtra="4dp"
                 android:layout_marginTop="6dp" />

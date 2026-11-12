@@ -313,13 +313,29 @@ public class MainActivity extends Activity {
         tabSettingsView.setVisibility("settings".equals(tab) ? View.VISIBLE : View.GONE);
 
         // Update Nav Colors
-        tvNavLabelDashboard.setTextColor("dashboard".equals(tab) ? Color.parseColor("#00F0FF") : Color.parseColor("#64748B"));
-        tvNavLabelApps.setTextColor("apps".equals(tab) ? Color.parseColor("#00F0FF") : Color.parseColor("#64748B"));
-        tvNavLabelTerminal.setTextColor("terminal".equals(tab) ? Color.parseColor("#00F0FF") : Color.parseColor("#64748B"));
-        tvNavLabelSettings.setTextColor("settings".equals(tab) ? Color.parseColor("#00F0FF") : Color.parseColor("#64748B"));
+        tvNavLabelDashboard.setTextColor("dashboard".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
+        tvNavLabelApps.setTextColor("apps".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
+        tvNavLabelTerminal.setTextColor("terminal".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
+        tvNavLabelSettings.setTextColor("settings".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
+
+        styleNavItem(R.id.nav_item_dashboard, R.id.tv_nav_icon_dashboard, "dashboard".equals(tab));
+        styleNavItem(R.id.nav_item_apps, R.id.tv_nav_icon_apps, "apps".equals(tab));
+        styleNavItem(R.id.nav_item_terminal, R.id.tv_nav_icon_terminal, "terminal".equals(tab));
+        styleNavItem(R.id.nav_item_settings, R.id.tv_nav_icon_settings, "settings".equals(tab));
 
         if ("apps".equals(tab) && !appsLoaded) {
             loadInstalledAppsAsync();
+        }
+    }
+
+    private void styleNavItem(int itemId, int iconId, boolean active) {
+        View item = findViewById(itemId);
+        View icon = findViewById(iconId);
+        if (item != null) {
+            item.setBackgroundResource(active ? R.drawable.bg_nav_active : 0);
+        }
+        if (icon instanceof ImageView) {
+            ((ImageView) icon).setColorFilter(Color.parseColor(active ? "#2DD4B0" : "#6B7385"));
         }
     }
 
@@ -418,18 +434,18 @@ public class MainActivity extends Activity {
     private void selectTier(int tier) {
         selectedTier = tier;
         pillTier1.setBackgroundResource(tier == 1 ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
-        pillTier1.setTextColor(tier == 1 ? Color.parseColor("#00F0FF") : Color.parseColor("#94A3B8"));
+        pillTier1.setTextColor(tier == 1 ? Color.parseColor("#2DD4B0") : Color.parseColor("#A3ABBB"));
 
         pillTier2.setBackgroundResource(tier == 2 ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
-        pillTier2.setTextColor(tier == 2 ? Color.parseColor("#00F0FF") : Color.parseColor("#94A3B8"));
+        pillTier2.setTextColor(tier == 2 ? Color.parseColor("#2DD4B0") : Color.parseColor("#A3ABBB"));
 
         pillTier3.setBackgroundResource(tier == 3 ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
-        pillTier3.setTextColor(tier == 3 ? Color.parseColor("#00F0FF") : Color.parseColor("#94A3B8"));
+        pillTier3.setTextColor(tier == 3 ? Color.parseColor("#2DD4B0") : Color.parseColor("#A3ABBB"));
     }
 
     private void executeSuperBoost() {
         btnSuperBoost.setEnabled(false);
-        btnSuperBoost.setText("⚡ ĐANG BUNG HIỆU NĂNG TỨC THÌ...");
+        btnSuperBoost.setText("Đang giải phóng…");
         vibrate(60);
 
         new Thread(() -> {
@@ -455,14 +471,14 @@ public class MainActivity extends Activity {
                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                     } finally {
                         btnSuperBoost.setEnabled(true);
-                        btnSuperBoost.setText("⚡ BUNG HIỆU NĂNG TỨC THÌ");
+                        btnSuperBoost.setText("Giải phóng RAM");
                     }
                 });
             } catch (Throwable t) {
                 Log.e(TAG, "Error in executeSuperBoost", t);
                 mainHandler.post(() -> {
                     btnSuperBoost.setEnabled(true);
-                    btnSuperBoost.setText("⚡ BUNG HIỆU NĂNG TỨC THÌ");
+                    btnSuperBoost.setText("Giải phóng RAM");
                     refreshTelemetryImmediate();
                     Toast.makeText(MainActivity.this, "✅ Đã giải phóng và tối ưu bộ nhớ!", Toast.LENGTH_SHORT).show();
                 });
@@ -599,11 +615,11 @@ public class MainActivity extends Activity {
             if (isWhitelisted) {
                 holder.btnWhitelist.setText("🔒 Đã khóa");
                 holder.btnWhitelist.setBackgroundResource(R.drawable.bg_chip_pill_active);
-                holder.btnWhitelist.setTextColor(Color.parseColor("#00F0FF"));
+                holder.btnWhitelist.setTextColor(Color.parseColor("#2DD4B0"));
             } else {
                 holder.btnWhitelist.setText("🔓 Khóa");
                 holder.btnWhitelist.setBackgroundResource(R.drawable.bg_btn_secondary);
-                holder.btnWhitelist.setTextColor(Color.parseColor("#94A3B8"));
+                holder.btnWhitelist.setTextColor(Color.parseColor("#A3ABBB"));
             }
 
             holder.btnWhitelist.setOnClickListener(v -> {
@@ -811,13 +827,13 @@ public class MainActivity extends Activity {
 
     private void updateAnimScaleUi(float scale) {
         pillAnim0.setBackgroundResource(scale <= 0.1f ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
-        pillAnim0.setTextColor(scale <= 0.1f ? Color.parseColor("#00F0FF") : Color.parseColor("#94A3B8"));
+        pillAnim0.setTextColor(scale <= 0.1f ? Color.parseColor("#2DD4B0") : Color.parseColor("#A3ABBB"));
 
         pillAnim05.setBackgroundResource(scale > 0.1f && scale <= 0.6f ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
-        pillAnim05.setTextColor(scale > 0.1f && scale <= 0.6f ? Color.parseColor("#00F0FF") : Color.parseColor("#94A3B8"));
+        pillAnim05.setTextColor(scale > 0.1f && scale <= 0.6f ? Color.parseColor("#2DD4B0") : Color.parseColor("#A3ABBB"));
 
         pillAnim1.setBackgroundResource(scale > 0.6f ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
-        pillAnim1.setTextColor(scale > 0.6f ? Color.parseColor("#00F0FF") : Color.parseColor("#94A3B8"));
+        pillAnim1.setTextColor(scale > 0.6f ? Color.parseColor("#2DD4B0") : Color.parseColor("#A3ABBB"));
     }
 
     // --- REAL-TIME HARDWARE & MEMORY TELEMETRY ---
@@ -883,13 +899,13 @@ public class MainActivity extends Activity {
 
             if ("CRITICAL".equals(thermal.thermalStatus)) {
                 tvThermalStatus.setText("Nhiệt độ: Nóng");
-                tvThermalStatus.setTextColor(Color.parseColor("#EF4444"));
+                tvThermalStatus.setTextColor(Color.parseColor("#F4566A"));
             } else if ("WARM".equals(thermal.thermalStatus)) {
                 tvThermalStatus.setText("Nhiệt độ: Ấm");
-                tvThermalStatus.setTextColor(Color.parseColor("#F59E0B"));
+                tvThermalStatus.setTextColor(Color.parseColor("#F5A524"));
             } else {
                 tvThermalStatus.setText("Nhiệt độ: Mát mẻ");
-                tvThermalStatus.setTextColor(Color.parseColor("#10B981"));
+                tvThermalStatus.setTextColor(Color.parseColor("#34D399"));
             }
 
             // Game Booster Telemetry
@@ -913,15 +929,15 @@ public class MainActivity extends Activity {
 
         if (shizukuPerm) {
             tvHeaderPrivilege.setBackgroundResource(R.drawable.bg_badge_shizuku);
-            tvHeaderPrivilege.setTextColor(Color.parseColor("#00F0FF"));
+            tvHeaderPrivilege.setTextColor(Color.parseColor("#2DD4B0"));
             tvHeaderPrivilege.setText("● SHIZUKU SẴN SÀNG");
         } else if (rootAvail) {
             tvHeaderPrivilege.setBackgroundResource(R.drawable.bg_badge_root);
-            tvHeaderPrivilege.setTextColor(Color.parseColor("#10B981"));
+            tvHeaderPrivilege.setTextColor(Color.parseColor("#34D399"));
             tvHeaderPrivilege.setText("● ROOT SẴN SÀNG");
         } else {
             tvHeaderPrivilege.setBackgroundResource(R.drawable.bg_badge_shell);
-            tvHeaderPrivilege.setTextColor(Color.parseColor("#94A3B8"));
+            tvHeaderPrivilege.setTextColor(Color.parseColor("#A3ABBB"));
             tvHeaderPrivilege.setText("CẤP QUYỀN");
         }
     }

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#00F0FF</color>
-    <color name="primary_variant">#0284C7</color>
-    <color name="background">#07090E</color>
-    <color name="surface">#0F172A</color>
-    <color name="text_primary">#F8FAFC</color>
-    <color name="text_secondary">#94A3B8</color>
-    <color name="accent_purple">#A855F7</color>
-    <color name="accent_green">#10B981</color>
-    <color name="accent_red">#EF4444</color>
-    <color name="widget_card_bg">#1E2235</color>
-    <color name="widget_btn_bg">#00F0FF</color>
-    <color name="widget_btn_text">#050811</color>
+    <color name="primary">#2DD4B0</color>
+    <color name="primary_variant">#1C9E8A</color>
+    <color name="background">#0A0C10</color>
+    <color name="surface">#141821</color>
+    <color name="text_primary">#F3F5F9</color>
+    <color name="text_secondary">#A3ABBB</color>
+    <color name="accent_purple">#8B7CFF</color>
+    <color name="accent_green">#34D399</color>
+    <color name="accent_red">#F4566A</color>
+    <color name="widget_card_bg">#141821</color>
+    <color name="widget_btn_bg">#2DD4B0</color>
+    <color name="widget_btn_text">#04201B</color>
 </resources>
