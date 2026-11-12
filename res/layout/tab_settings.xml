@@ -43,7 +43,7 @@
                     android:id="@+id/tv_settings_version_sub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Phiên bản 1.0.0 (Bản chính thức)"
+                    android:text="Phiên bản 1.0.1 (Bản chính thức)"
                     android:textColor="#A3ABBB"
                     android:textSize="11.5sp"
                     android:layout_marginTop="2dp" />

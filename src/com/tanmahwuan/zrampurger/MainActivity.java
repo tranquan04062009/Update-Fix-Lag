@@ -731,9 +731,9 @@ public class MainActivity extends Activity {
                         btnSettingsCheckUpdate.setEnabled(true);
                         try {
                             JSONObject obj = new JSONObject(updateJson);
-                            String ver = obj.optString("versionName", "1.0.0");
+                            String ver = obj.optString("versionName", "1.0.1");
                             String url = obj.optString("downloadUrl", "");
-                            String notes = obj.optString("releaseNotes", "Bản cập nhật tối ưu mới");
+                            String notes = obj.optString("changelog", obj.optString("releaseNotes", "Bản cập nhật tối ưu mới"));
 
                             new AlertDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
                                     .setTitle("Cập nhật v" + ver + " có sẵn!")
