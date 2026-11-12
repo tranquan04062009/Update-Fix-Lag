@@ -116,8 +116,46 @@ public class MainActivity extends Activity {
     private TextView tvBoosterGpuTemp;
     private TextView tvBoosterCpuBig;
     private EditText etTargetGamePkg;
+    private Button btnPickGamePkg;
     private Button btnTriggerAot;
     private TextView tvEmergencyRollback;
+
+    // Views - Game Manager Service Resolution & FPS
+    private Button btnSelectResolution;
+    private Button btnSelectFps;
+    private Button btnApplyGameResolution;
+    private Button btnResetGameResolution;
+    private TextView tvGameResolutionStatus;
+
+    private float selectedDownscale = 0.8f;
+    private int selectedFps = 120;
+
+    private static final String[] RESOLUTION_LABELS = {
+            "100% (Gốc - Mặc định)",
+            "90% (0.9 - Giảm nhẹ tải GPU)",
+            "85% (0.85 - Độ nét cao)",
+            "80% (0.8 - Khuyên dùng mượt mà)",
+            "75% (0.75 - Tiết kiệm 44% pixel)",
+            "70% (0.7 - Tăng FPS rõ rệt)",
+            "65% (0.65 - Giảm sâu tải đồ họa)",
+            "60% (0.6 - Siêu nhẹ)",
+            "50% (0.5 - Tối đa khung hình)"
+    };
+    private static final float[] RESOLUTION_VALUES = {
+            1.0f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.5f
+    };
+
+    private static final String[] FPS_LABELS = {
+            "Mặc định (Không giới hạn)",
+            "120 FPS (Tối đa mượt)",
+            "90 FPS (Tần số quét cao)",
+            "60 FPS (Chuẩn ổn định)",
+            "45 FPS (Tiết kiệm pin)",
+            "30 FPS (Khóa ổn định)"
+    };
+    private static final int[] FPS_VALUES = {
+            0, 120, 90, 60, 45, 30
+    };
 
     // Views - Apps Tab
     private EditText etSearchApps;
@@ -277,8 +315,15 @@ public class MainActivity extends Activity {
         tvBoosterGpuTemp = findViewById(R.id.tv_booster_gpu_temp);
         tvBoosterCpuBig = findViewById(R.id.tv_booster_cpu_big);
         etTargetGamePkg = findViewById(R.id.et_target_game_pkg);
+        btnPickGamePkg = findViewById(R.id.btn_pick_game_pkg);
         btnTriggerAot = findViewById(R.id.btn_trigger_aot);
         tvEmergencyRollback = findViewById(R.id.tv_emergency_rollback);
+
+        btnSelectResolution = findViewById(R.id.btn_select_resolution);
+        btnSelectFps = findViewById(R.id.btn_select_fps);
+        btnApplyGameResolution = findViewById(R.id.btn_apply_game_resolution);
+        btnResetGameResolution = findViewById(R.id.btn_reset_game_resolution);
+        tvGameResolutionStatus = findViewById(R.id.tv_game_resolution_status);
 
         // Apps Views
         etSearchApps = findViewById(R.id.et_search_apps);
@@ -424,6 +469,106 @@ public class MainActivity extends Activity {
             }).start();
         });
 
+        btnPickGamePkg.setOnClickListener(v -> showAppPickerDialog());
+
+        if (btnSelectResolution != null) {
+            btnSelectResolution.setOnClickListener(v -> {
+                int currentIdx = 3; // 80% default
+                for (int i = 0; i < RESOLUTION_VALUES.length; i++) {
+                    if (Math.abs(RESOLUTION_VALUES[i] - selectedDownscale) < 0.01f) {
+                        currentIdx = i;
+                        break;
+                    }
+                }
+                new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                        .setTitle("Chọn tỷ lệ độ phân giải game")
+                        .setSingleChoiceItems(RESOLUTION_LABELS, currentIdx, (dialog, which) -> {
+                            selectedDownscale = RESOLUTION_VALUES[which];
+                            String shortLabel = RESOLUTION_LABELS[which].split(" - ")[0];
+                            btnSelectResolution.setText(shortLabel + " ▼");
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
+            });
+        }
+
+        if (btnSelectFps != null) {
+            btnSelectFps.setOnClickListener(v -> {
+                int currentIdx = 1; // 120 FPS default
+                for (int i = 0; i < FPS_VALUES.length; i++) {
+                    if (FPS_VALUES[i] == selectedFps) {
+                        currentIdx = i;
+                        break;
+                    }
+                }
+                new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                        .setTitle("Chọn tốc độ khung hình mục tiêu")
+                        .setSingleChoiceItems(FPS_LABELS, currentIdx, (dialog, which) -> {
+                            selectedFps = FPS_VALUES[which];
+                            String shortLabel = (selectedFps > 0) ? (selectedFps + " FPS") : "Mặc định";
+                            btnSelectFps.setText(shortLabel + " ▼");
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
+            });
+        }
+
+        if (btnApplyGameResolution != null) {
+            btnApplyGameResolution.setOnClickListener(v -> {
+                String pkg = etTargetGamePkg.getText().toString().trim();
+                if (pkg.isEmpty() || !AospAdbMaster.isValidPackageName(pkg)) {
+                    Toast.makeText(this, "Vui lòng chọn hoặc nhập tên gói game/ứng dụng", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                btnApplyGameResolution.setEnabled(false);
+                Toast.makeText(this, "⚡ Đang áp dụng phân giải cho " + pkg + "...", Toast.LENGTH_SHORT).show();
+                new Thread(() -> {
+                    boolean ok = AospAdbMaster.setGameResolutionAndFps(pkg, selectedDownscale, selectedFps);
+                    mainHandler.post(() -> {
+                        btnApplyGameResolution.setEnabled(true);
+                        if (ok) {
+                            String scaleText = (selectedDownscale >= 1.0f) ? "100%" : (int)(selectedDownscale * 100) + "%";
+                            String fpsText = (selectedFps > 0) ? (selectedFps + " FPS") : "Mặc định";
+                            if (tvGameResolutionStatus != null) {
+                                tvGameResolutionStatus.setText("Đang áp dụng: " + scaleText + " | " + fpsText + " (Performance)");
+                            }
+                            Toast.makeText(MainActivity.this, "✅ Đã áp dụng phân giải " + scaleText + " cho " + pkg, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Không thể áp dụng — cần quyền Shizuku/ADB", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }).start();
+            });
+        }
+
+        if (btnResetGameResolution != null) {
+            btnResetGameResolution.setOnClickListener(v -> {
+                String pkg = etTargetGamePkg.getText().toString().trim();
+                if (pkg.isEmpty() || !AospAdbMaster.isValidPackageName(pkg)) {
+                    Toast.makeText(this, "Vui lòng chọn hoặc nhập tên gói game/ứng dụng", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                btnResetGameResolution.setEnabled(false);
+                Toast.makeText(this, "🔄 Đang khôi phục độ phân giải mặc định...", Toast.LENGTH_SHORT).show();
+                new Thread(() -> {
+                    boolean ok = AospAdbMaster.resetGameResolution(pkg);
+                    mainHandler.post(() -> {
+                        btnResetGameResolution.setEnabled(true);
+                        if (ok) {
+                            if (tvGameResolutionStatus != null) {
+                                tvGameResolutionStatus.setText("Đã khôi phục mặc định — Độ phân giải gốc 100%");
+                            }
+                            Toast.makeText(MainActivity.this, "✅ Đã trở về độ phân giải mặc định (100%)", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Không thể khôi phục — cần quyền Shizuku/ADB", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }).start();
+            });
+        }
+
         tvEmergencyRollback.setOnClickListener(v -> {
             new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
                     .setTitle("Xác nhận khôi phục")
@@ -441,6 +586,68 @@ public class MainActivity extends Activity {
                     .setNegativeButton("Hủy", null)
                     .show();
         });
+    }
+
+    private void showAppPickerDialog() {
+        Toast.makeText(this, "Đang tải danh sách ứng dụng...", Toast.LENGTH_SHORT).show();
+        new Thread(() -> {
+            PackageManager pm = getPackageManager();
+            Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            List<android.content.pm.ResolveInfo> resolveInfos = pm.queryIntentActivities(mainIntent, 0);
+
+            class AppPickItem {
+                final String label;
+                final String pkg;
+                AppPickItem(String l, String p) { this.label = l; this.pkg = p; }
+            }
+
+            List<AppPickItem> items = new ArrayList<>();
+            Set<String> seen = new HashSet<>();
+            for (android.content.pm.ResolveInfo ri : resolveInfos) {
+                if (ri.activityInfo != null && ri.activityInfo.packageName != null) {
+                    String p = ri.activityInfo.packageName;
+                    if (seen.add(p)) {
+                        CharSequence l = ri.loadLabel(pm);
+                        String name = (l != null && l.length() > 0) ? l.toString() : p;
+                        items.add(new AppPickItem(name, p));
+                    }
+                }
+            }
+
+            Collections.sort(items, (a, b) -> a.label.compareToIgnoreCase(b.label));
+
+            String[] displayNames = new String[items.size()];
+            for (int i = 0; i < items.size(); i++) {
+                displayNames[i] = items.get(i).label + "\n(" + items.get(i).pkg + ")";
+            }
+
+            mainHandler.post(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                        .setTitle("Chọn game / ứng dụng")
+                        .setItems(displayNames, (dialog, which) -> {
+                            String selectedPkg = items.get(which).pkg;
+                            etTargetGamePkg.setText(selectedPkg);
+                            Toast.makeText(MainActivity.this, "Đã chọn: " + items.get(which).label, Toast.LENGTH_SHORT).show();
+                            refreshGameResolutionStatus(selectedPkg);
+                        })
+                        .setNegativeButton("Đóng", null)
+                        .show();
+            });
+        }).start();
+    }
+
+    private void refreshGameResolutionStatus(String pkg) {
+        if (tvGameResolutionStatus == null || !AospAdbMaster.isValidPackageName(pkg)) return;
+        new Thread(() -> {
+            String status = AospAdbMaster.getGameResolutionStatus(pkg);
+            mainHandler.post(() -> {
+                if (!isFinishing() && !isDestroyed() && tvGameResolutionStatus != null) {
+                    tvGameResolutionStatus.setText(status);
+                }
+            });
+        }).start();
     }
 
     private void selectTier(int tier) {
@@ -816,7 +1023,7 @@ public class MainActivity extends Activity {
                     }
                     try {
                         JSONObject obj = new JSONObject(updateJson);
-                        String ver = obj.optString("versionName", "1.0.1");
+                        String ver = obj.optString("versionName", "1.0.2");
                         String url = obj.optString("downloadUrl", "");
                         String notes = obj.optString("changelog", obj.optString("releaseNotes", "Bản cập nhật tối ưu mới"));
 

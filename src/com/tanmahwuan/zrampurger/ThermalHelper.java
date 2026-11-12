@@ -140,8 +140,8 @@ public class ThermalHelper {
             }
         }
 
-        // Priority 2: sysfs thermal zones gpuss-0-usr, gpuss-1-usr, gpu-usr
-        Double tzVal = readSysfsThermalByType("gpuss-0-usr", "gpuss-1-usr", "gpu-usr", "gpuss");
+        // Priority 2: sysfs thermal zones gpuss, gpu-usr, mali, mtk
+        Double tzVal = readSysfsThermalByType("gpuss-0-usr", "gpuss-1-usr", "gpu-usr", "gpuss", "gpu", "mali_thermal", "mali", "mtktsgpu");
         if (tzVal != null && tzVal > 0.0 && tzVal < 120.0) {
             return tzVal;
         }
@@ -150,7 +150,7 @@ public class ThermalHelper {
     }
 
     /**
-     * Reads CPU Temperature across Qualcomm Kryo CPU clusters.
+     * Reads CPU Temperature across Qualcomm Kryo, MediaTek, Exynos, Tensor CPU clusters.
      */
     public static double readCpuTemperature(Context context) {
         // Priority 1: HardwarePropertiesManager if available
@@ -176,8 +176,8 @@ public class ThermalHelper {
             } catch (Throwable ignored) {}
         }
 
-        // Priority 2: cpuss / cpu-1 (Big cores) / cpu-0 (Little cores) in /sys/class/thermal
-        Double cpuss = readSysfsThermalByType("cpuss-0-usr", "cpuss-1-usr", "cpu-1-0-usr", "cpu-0-0-usr", "cpu");
+        // Priority 2: Universal CPU thermal zones across Qualcomm, MediaTek Dimensity, Samsung Exynos, Google Tensor
+        Double cpuss = readSysfsThermalByType("cpuss-0-usr", "cpuss-1-usr", "cpu-1-0-usr", "cpu-0-0-usr", "cpu", "mtktscpu", "soc_therm", "exynos-therm", "krait");
         if (cpuss != null && cpuss > 0.0 && cpuss < 120.0) {
             return cpuss;
         }
@@ -186,10 +186,10 @@ public class ThermalHelper {
     }
 
     /**
-     * Reads SoC / PMIC ambient temperature.
+     * Reads SoC / PMIC ambient temperature across multi-OEM platforms.
      */
     public static double readSocTemperature() {
-        Double soc = readSysfsThermalByType("xo-therm-usr", "pm6350_tz", "quiet-therm-usr", "aoss-0-usr");
+        Double soc = readSysfsThermalByType("xo-therm-usr", "pm6350_tz", "quiet-therm-usr", "aoss-0-usr", "soc", "ambient", "board", "mtktsbattery");
         return soc != null ? soc : 0.0;
     }
 

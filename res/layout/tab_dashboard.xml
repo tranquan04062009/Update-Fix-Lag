@@ -519,18 +519,31 @@
                     android:layout_height="44dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_chip_pill"
-                    android:hint="Gói game, ví dụ com.dts.freefireth"
+                    android:hint="Gói game / ứng dụng"
                     android:textColorHint="#5A6275"
                     android:textColor="#F3F5F9"
-                    android:textSize="12.5sp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
+                    android:textSize="12sp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="8dp"
                     android:singleLine="true" />
+                <Button
+                    android:id="@+id/btn_pick_game_pkg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_chip_pill"
+                    android:stateListAnimator="@null"
+                    android:text="Chọn game"
+                    android:textAllCaps="false"
+                    android:textColor="#F3F5F9"
+                    android:textSize="12sp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
                 <Button
                     android:id="@+id/btn_trigger_aot"
                     android:layout_width="wrap_content"
                     android:layout_height="44dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="6dp"
                     android:background="@drawable/bg_btn_secondary"
                     android:stateListAnimator="@null"
                     android:text="Tăng tốc"
@@ -538,9 +551,163 @@
                     android:textColor="#2DD4B0"
                     android:textSize="13sp"
                     android:textStyle="bold"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp" />
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp" />
             </LinearLayout>
+
+            <!-- GAMEMANAGERSERVICE RESOLUTION & FPS CONTROLS -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#1F2430"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="14dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ĐỘ PHÂN GIẢI (GAMEMANAGERSERVICE)"
+                    android:textColor="#6B7385"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.06" />
+                <TextView
+                    android:id="@+id/tv_game_resolution_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="AOSP NATIVE"
+                    android:textColor="#2DD4B0"
+                    android:textSize="9.5sp"
+                    android:textStyle="bold"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:background="@drawable/bg_badge_shizuku" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tùy chỉnh tỷ lệ render nội bộ của game qua GameManagerService để giảm tải GPU, tăng khung hình mượt mà."
+                android:textColor="#A3ABBB"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp" />
+
+            <!-- Row: Select Resolution & Select FPS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+                
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="6dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TỶ LỆ PHÂN GIẢI"
+                        android:textColor="#6B7385"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
+                    <Button
+                        android:id="@+id/btn_select_resolution"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_chip_pill"
+                        android:stateListAnimator="@null"
+                        android:text="80% (Khuyên dùng) ▼"
+                        android:textAllCaps="false"
+                        android:textColor="#F3F5F9"
+                        android:textSize="12sp"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="6dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KHUNG HÌNH (FPS)"
+                        android:textColor="#6B7385"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
+                    <Button
+                        android:id="@+id/btn_select_fps"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_chip_pill"
+                        android:stateListAnimator="@null"
+                        android:text="120 FPS ▼"
+                        android:textAllCaps="false"
+                        android:textColor="#F3F5F9"
+                        android:textSize="12sp"
+                        android:gravity="center" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row: Apply Resolution & Reset to Default -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <Button
+                    android:id="@+id/btn_apply_game_resolution"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_btn_secondary"
+                    android:stateListAnimator="@null"
+                    android:text="Áp dụng phân giải"
+                    android:textAllCaps="false"
+                    android:textColor="#2DD4B0"
+                    android:textSize="12.5sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btn_reset_game_resolution"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_chip_pill"
+                    android:stateListAnimator="@null"
+                    android:text="Về mặc định (100%)"
+                    android:textAllCaps="false"
+                    android:textColor="#FF8080"
+                    android:textSize="12.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Status Indicator -->
+            <TextView
+                android:id="@+id/tv_game_resolution_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Chưa can thiệp — Độ phân giải gốc 100%"
+                android:textColor="#6B7385"
+                android:textSize="11.5sp" />
 
             <TextView
                 android:id="@+id/tv_emergency_rollback"

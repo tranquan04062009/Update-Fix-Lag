@@ -1,10 +1,10 @@
 {
-  "versionCode": 2,
-  "versionName": "1.0.1",
+  "versionCode": 3,
+  "versionName": "1.0.2",
   "minSupportedVersion": 1,
-  "title": "Bản cập nhật v1.0.1",
-  "changelog": "• Cập nhật các tinh chỉnh giảm giật lag mới\n• Bổ sung tùy chọn cài đặt tối ưu độ trễ và khung hình\n• Khắc phục lỗi nút bung hiệu năng và tối ưu độ ổn định hệ thống",
-  "downloadUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/download/v1.0.1/ZRamPurgerExtreme.apk",
-  "releasePageUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/tag/v1.0.1",
+  "title": "Bản cập nhật v1.0.2",
+  "changelog": "• Thêm tùy chỉnh độ phân giải game (GameManagerService)\n• Hỗ trợ tùy chỉnh tỷ lệ render 50% - 100% và FPS mục tiêu\n• Thêm nút chọn game nhanh và khôi phục về độ phân giải mặc định\n• Nâng cấp các tinh chỉnh giảm lag No-Root ADB",
+  "downloadUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/download/v1.0.2/ZRamPurgerExtreme.apk",
+  "releasePageUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/tag/v1.0.2",
   "forceUpdate": false
 }

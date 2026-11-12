@@ -456,9 +456,13 @@ public class GameBoosterManager {
             AospAdbMaster.setTouchSensitivityBoost(true);
             AospAdbMaster.setSurfaceFlingerZeroLatency(true);
             AospAdbMaster.setLowLatencyNetworking(true);
+            AospAdbMaster.setAngleVulkanBackend(true);
+            AospAdbMaster.setZeroTelemetryLogSuppression(true);
+            AospAdbMaster.setZeroLatencyTouchInput(true);
             AospAdbMaster.applyKernelVmOptimization(context);
+            CommandExecutor.execute("cmd jobscheduler cancel-all 2>/dev/null; cmd activity set-freeze-cached-apps true 2>/dev/null; ");
             if (targetPackage != null && PerformanceEngine.isValidPackageName(targetPackage)) {
-                AospAdbMaster.setGameInterventions(targetPackage, 60, 0.85f);
+                AospAdbMaster.setGameInterventions(targetPackage, 120, 0.85f);
             }
 
             // Commit snapshot as APPLIED
@@ -560,7 +564,11 @@ public class GameBoosterManager {
             AospAdbMaster.setTouchSensitivityBoost(false);
             AospAdbMaster.setSurfaceFlingerZeroLatency(false);
             AospAdbMaster.setLowLatencyNetworking(false);
+            AospAdbMaster.setAngleVulkanBackend(false);
+            AospAdbMaster.setZeroTelemetryLogSuppression(false);
+            AospAdbMaster.setZeroLatencyTouchInput(false);
             AospAdbMaster.restoreKernelVm(context);
+            CommandExecutor.execute("cmd activity set-freeze-cached-apps false 2>/dev/null; ");
 
             // Stop Booster Foreground Service
             stopBoosterService(context);

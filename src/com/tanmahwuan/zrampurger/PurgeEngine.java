@@ -239,9 +239,11 @@ public class PurgeEngine {
             compactedCount = limit;
             artGcCount = limit;
 
-            // In-Memory ZRAM idle marking and compaction (mined from AOSP ZramWriteback.java)
+            // In-Memory Kernel Batch Reclaim & ZRAM idle marking and compaction (mined from AOSP)
+            sb.append("for p in /proc/[0-9]*/reclaim; do echo anon > \"$p\" 2>/dev/null; done; ");
             sb.append("echo all > /sys/block/zram0/idle 2>/dev/null; ");
             sb.append("echo all > /sys/block/zram0/compact 2>/dev/null || echo 1 > /sys/block/zram0/compact 2>/dev/null; ");
+            sb.append("logcat -c 2>/dev/null; ");
 
             // Reset memory pressure factor
             sb.append("cmd activity memory-factor reset 2>/dev/null; ");

@@ -149,6 +149,22 @@ public class TweakEngine {
         if (p.sdk < 29) compaction.unsupportedReason = "Cần Android 10 trở lên";
         list.add(compaction);
 
+        // Đồ họa ANGLE Vulkan đa luồng
+        Tweak angle = new Tweak("angle",
+                "Đồ họa ANGLE Vulkan",
+                "Ép engine đồ họa sang Vulkan đa luồng để tăng tốc khung hình và giảm tải CPU.",
+                new Op("settings", "global", "angle_gl_driver_all_angle", "1"),
+                new Op("settings", "global", "updatable_driver_all_apps", "1"));
+        if (p.sdk < 29) angle.unsupportedReason = "Cần Android 10 trở lên";
+        list.add(angle);
+
+        // Triệt tiêu nhật ký hệ thống ngầm
+        Tweak zerolog = new Tweak("zerolog",
+                "Triệt tiêu nhật ký hệ thống ngầm",
+                "Tắt ghi chép log và crash dumps để giải phóng chu kỳ CPU và giảm nhiệt độ máy.",
+                new Op("settings", "global", "dropbox_max_files", "0"));
+        list.add(zerolog);
+
         return list;
     }
 

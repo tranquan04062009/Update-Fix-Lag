@@ -230,8 +230,11 @@ public class AospAdbMaster {
         Log.i(TAG, "Compiling AOT speed-profile and layouts for " + packageName);
         long start = System.currentTimeMillis();
 
-        String cmd = "cmd package compile -m speed-profile -f \"" + packageName + "\" 2>&1; " +
-                     "cmd package compile --compile-layouts \"" + packageName + "\" 2>&1";
+        String cmd = "cmd package compile -m speed -f \"" + packageName + "\" 2>&1 || cmd package compile -m speed-profile -f \"" + packageName + "\" 2>&1; " +
+                     "cmd package compile --compile-layouts \"" + packageName + "\" 2>&1; " +
+                     "cmd game mode performance \"" + packageName + "\" 2>/dev/null; " +
+                     "cmd game set --mode performance --fps 120 \"" + packageName + "\" 2>/dev/null; " +
+                     "cmd device_config put game_overlay \"" + packageName + "\" mode=2,fps=120 2>/dev/null";
         CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
         long duration = System.currentTimeMillis() - start;
 
@@ -331,21 +334,88 @@ public class AospAdbMaster {
 
     /**
      * Configures advanced Game Manager intervention configs (target FPS and dynamic downscale).
+     * Supports both standard cmd game set and persistent device_config game_overlay overrides.
      */
-    public static boolean setGameInterventions(String packageName, int targetFps, float downscale) {
+    public static boolean setGameResolutionAndFps(String packageName, float downscale, int targetFps) {
         if (!isValidPackageName(packageName)) return false;
-        Log.i(TAG, "Configuring Game Interventions for " + packageName + ": fps=" + targetFps + ", downscale=" + downscale);
+        Log.i(TAG, "Configuring GameManagerService for " + packageName + ": downscale=" + downscale + ", fps=" + targetFps);
         StringBuilder sb = new StringBuilder();
+
+        // 1. Force performance mode
         sb.append("cmd game mode performance \"").append(packageName).append("\" 2>/dev/null; ");
-        if (targetFps > 0) {
-            sb.append("cmd game set --mode performance --fps ").append(targetFps).append(" \"").append(packageName).append("\" 2>/dev/null; ");
+
+        // 2. Set cmd game intervention config
+        String downscaleArg = (downscale > 0.0f && downscale < 1.0f)
+                ? String.format(Locale.US, "%.2f", downscale)
+                : "disable";
+        String fpsArg = (targetFps > 0) ? String.valueOf(targetFps) : "disable";
+
+        sb.append("cmd game set --mode performance --downscale ").append(downscaleArg)
+          .append(" --fps ").append(fpsArg)
+          .append(" \"").append(packageName).append("\" 2>/dev/null; ");
+
+        // 3. DeviceConfig persistent overlay fallback (crucial for games not flagged with appCategory="game")
+        if (downscale > 0.0f && downscale < 1.0f && targetFps > 0) {
+            sb.append("cmd device_config put game_overlay \"").append(packageName)
+              .append("\" mode=2,downscaleFactor=").append(downscaleArg)
+              .append(",fps=").append(fpsArg).append(" 2>/dev/null; ");
+        } else if (downscale > 0.0f && downscale < 1.0f) {
+            sb.append("cmd device_config put game_overlay \"").append(packageName)
+              .append("\" mode=2,downscaleFactor=").append(downscaleArg).append(" 2>/dev/null; ");
+        } else if (targetFps > 0) {
+            sb.append("cmd device_config put game_overlay \"").append(packageName)
+              .append("\" mode=2,fps=").append(fpsArg).append(" 2>/dev/null; ");
+        } else {
+            sb.append("cmd device_config delete game_overlay \"").append(packageName).append("\" 2>/dev/null; ");
         }
-        if (downscale > 0.0f && downscale < 1.0f) {
-            String scaleStr = String.format(Locale.US, "%.2f", downscale);
-            sb.append("cmd game set --mode performance --downscale ").append(scaleStr).append(" \"").append(packageName).append("\" 2>/dev/null; ");
-        }
+
+        // 4. Ensure device_config sync is disabled so Phenotype doesn't erase custom interventions
+        sb.append("cmd device_config set_sync_disabled_for_tests persistent 2>/dev/null; ");
+
         CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
         return res.exitCode == 0;
+    }
+
+    /**
+     * Backward-compatible alias for setGameResolutionAndFps.
+     */
+    public static boolean setGameInterventions(String packageName, int targetFps, float downscale) {
+        return setGameResolutionAndFps(packageName, downscale, targetFps);
+    }
+
+    /**
+     * Resets GameManagerService interventions back to default native 100% resolution and OEM profile.
+     */
+    public static boolean resetGameResolution(String packageName) {
+        if (!isValidPackageName(packageName)) return false;
+        Log.i(TAG, "Resetting GameManagerService settings for " + packageName + " to OEM default");
+        String cmd = "cmd game reset \"" + packageName + "\" 2>&1; " +
+                     "cmd game set --mode performance --downscale disable --fps disable \"" + packageName + "\" 2>/dev/null; " +
+                     "cmd game set --mode standard --downscale disable --fps disable \"" + packageName + "\" 2>/dev/null; " +
+                     "cmd game mode standard \"" + packageName + "\" 2>/dev/null; " +
+                     "cmd device_config delete game_overlay \"" + packageName + "\" 2>/dev/null";
+        CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Inspects active game intervention or overlay config for a package.
+     */
+    public static String getGameResolutionStatus(String packageName) {
+        if (!isValidPackageName(packageName)) return "Chưa chọn ứng dụng";
+        CommandExecutor.CommandResult overlayRes = CommandExecutor.execute("cmd device_config get game_overlay \"" + packageName + "\" 2>/dev/null");
+        String overlay = (overlayRes.stdout != null) ? overlayRes.stdout.trim() : "";
+        if (!overlay.isEmpty() && !overlay.equals("null") && !overlay.equals("undefined")) {
+            return "Đang can thiệp: " + overlay;
+        }
+        CommandExecutor.CommandResult modeRes = CommandExecutor.execute("cmd game mode \"" + packageName + "\" 2>/dev/null");
+        String mode = (modeRes.stdout != null) ? modeRes.stdout.trim() : "";
+        if (mode.contains("2") || mode.contains("performance")) {
+            return "Chế độ: Performance (Phân giải gốc 100%)";
+        } else if (!mode.isEmpty()) {
+            return "Chế độ: " + mode + " (Mặc định 100%)";
+        }
+        return "Mặc định (Chưa can thiệp 100%)";
     }
 
     /**
@@ -373,6 +443,74 @@ public class AospAdbMaster {
         Log.i(TAG, "Memory pressure factor reset to normal.");
     }
 
+    /**
+     * Redirects graphics engine to ANGLE (Vulkan backend) for OpenGL ES.
+     * Mined from AOSP GraphicsEnvironment.java & frameworks/base.
+     */
+    public static boolean setAngleVulkanBackend(boolean enable) {
+        Log.i(TAG, "Setting ANGLE Vulkan backend: " + enable);
+        StringBuilder sb = new StringBuilder();
+        if (enable) {
+            sb.append("settings put global angle_gl_driver_all_angle 1 2>/dev/null; ");
+            sb.append("settings put global show_angle_in_use_dialog_box 0 2>/dev/null; ");
+            sb.append("settings put global updatable_driver_all_apps 1 2>/dev/null; ");
+            sb.append("setprop debug.angle.backend 2 2>/dev/null; ");
+            sb.append("setprop persist.graphics.egl angle 2>/dev/null; ");
+        } else {
+            sb.append("settings put global angle_gl_driver_all_angle 0 2>/dev/null; ");
+            sb.append("settings delete global angle_gl_driver_all_angle 2>/dev/null; ");
+            sb.append("setprop debug.angle.backend 0 2>/dev/null; ");
+            sb.append("setprop persist.graphics.egl \"\" 2>/dev/null; ");
+        }
+        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Suppresses background logging, tracing, and crash dumps to free CPU cycles.
+     */
+    public static boolean setZeroTelemetryLogSuppression(boolean enable) {
+        Log.i(TAG, "Zero-telemetry log suppression: " + enable);
+        StringBuilder sb = new StringBuilder();
+        if (enable) {
+            sb.append("setprop log.tag.all SUPPRESS 2>/dev/null; ");
+            sb.append("setprop persist.logd.size 64K 2>/dev/null; ");
+            sb.append("logcat -G 64K 2>/dev/null; ");
+            sb.append("logcat -c 2>/dev/null; ");
+            sb.append("setprop persist.traced.enable 0 2>/dev/null; ");
+            sb.append("settings put global dropbox_max_files 0 2>/dev/null; ");
+            sb.append("cmd looper_stats disable 2>/dev/null; ");
+            sb.append("dumpsys binder_calls_stats --disable 2>/dev/null; ");
+        } else {
+            sb.append("setprop log.tag.all \"\" 2>/dev/null; ");
+            sb.append("setprop persist.logd.size 256K 2>/dev/null; ");
+            sb.append("setprop persist.traced.enable 1 2>/dev/null; ");
+            sb.append("settings put global dropbox_max_files 50 2>/dev/null; ");
+            sb.append("cmd looper_stats enable 2>/dev/null; ");
+        }
+        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
+        return res.exitCode == 0;
+    }
+
+    /**
+     * Sets 0ms touch input latency (disables synthetic input resampling).
+     */
+    public static boolean setZeroLatencyTouchInput(boolean enable) {
+        Log.i(TAG, "Setting 0ms Touch Input: " + enable);
+        StringBuilder sb = new StringBuilder();
+        if (enable) {
+            sb.append("setprop ro.input.resampling 0 2>/dev/null; ");
+            sb.append("setprop persist.input.touch.resampling 0 2>/dev/null; ");
+            sb.append("setprop windowsmgr.max_events_per_sec 240 2>/dev/null; ");
+        } else {
+            sb.append("setprop ro.input.resampling 1 2>/dev/null; ");
+            sb.append("setprop persist.input.touch.resampling 1 2>/dev/null; ");
+            sb.append("setprop windowsmgr.max_events_per_sec 90 2>/dev/null; ");
+        }
+        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
+        return res.exitCode == 0;
+    }
+
     // ---------------- Kernel VM tuning (reversible, only on nodes this kernel exposes) ----------------
 
     private static final java.util.regex.Pattern NODE_OK =
@@ -382,6 +520,8 @@ public class AospAdbMaster {
     /** Builds the (path, value) list for THIS device. Pure function, unit-tested. */
     static java.util.LinkedHashMap<String, String> kernelVmTargets(java.util.List<String> blockDevs, boolean byteLimitsInUse) {
         java.util.LinkedHashMap<String, String> m = new java.util.LinkedHashMap<>();
+        m.put("/proc/sys/vm/page-cluster", "0");
+        m.put("/proc/sys/vm/swappiness", "160");
         m.put("/proc/sys/vm/watermark_boost_factor", "0");
         m.put("/proc/sys/vm/compaction_proactiveness", "20");
         m.put("/proc/sys/vm/vfs_cache_pressure", "50");
