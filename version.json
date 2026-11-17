@@ -1,10 +1,10 @@
 {
-  "versionCode": 4,
-  "versionName": "2.0.0",
+  "versionCode": 5,
+  "versionName": "2.0.1",
   "minSupportedVersion": 1,
-  "title": "Bản cập nhật lớn QanH Adb v2.0.0",
-  "changelog": "• Nâng cấp lớn: QanH Adb v2.0.0 với giao diện và hệ thống tối ưu game mới\n• Nhận diện chip SoC, GPU và giám sát nhiệt độ 4 vùng chính xác\n• Bỏ qua bóp hiệu năng hãng (Samsung GOS, Xiaomi Joyose, Oppo Cosa, Vivo)\n• Ép SurfaceFlinger GPU Render (Bypass HWC) và khóa chống khựng xoay màn hình\n• Âm thanh siêu tốc AAudio MMAP DSP 5ms và tối ưu cảm ứng tức thì\n• Khóa xung PowerHAL, miễn trừ Doze và quản lý Standby Bucket\n• Nạp trước game vào RAM (Preload) và tùy chỉnh độ phân giải game AOSP\n• Giữ nguyên vẹn toàn bộ lõi dọn xả và nén bộ nhớ Z-RAM",
-  "downloadUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/download/v2.0.0/QanHAdb-v2.0.0.apk",
-  "releasePageUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/tag/v2.0.0",
+  "title": "Bản cập nhật tối ưu QanH Adb v2.0.1",
+  "changelog": "• Nâng cấp phiên bản v2.0.1: Tối ưu hóa toàn diện độ ổn định và thích nghi đa thiết bị\n• Nhận diện chip SoC, GPU và giám sát nhiệt độ 4 vùng chính xác\n• Bỏ qua bóp hiệu năng hãng (Samsung GOS, Xiaomi Joyose, Oppo Cosa, Vivo)\n• Ép SurfaceFlinger GPU Render (Bypass HWC) và khóa chống khựng xoay màn hình\n• Âm thanh siêu tốc AAudio MMAP DSP 5ms và tối ưu cảm ứng tức thì\n• Khóa xung PowerHAL, miễn trừ Doze và quản lý Standby Bucket\n• Nạp trước game vào RAM (Preload) và tùy chỉnh độ phân giải game AOSP\n• Giữ nguyên vẹn toàn bộ lõi dọn xả và nén bộ nhớ Z-RAM",
+  "downloadUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/download/v2.0.1/QanHAdb-v2.0.1.apk",
+  "releasePageUrl": "https://github.com/tranquan04062009/Update-Fix-Lag/releases/tag/v2.0.1",
   "forceUpdate": false
 }

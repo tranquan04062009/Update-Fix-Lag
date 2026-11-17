@@ -268,9 +268,9 @@ public class UpdateManager {
     public static String getCurrentVersionName(Context context) {
         try {
             PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return pInfo.versionName != null ? pInfo.versionName : "2.0.0";
+            return pInfo.versionName != null ? pInfo.versionName : "2.0.1";
         } catch (PackageManager.NameNotFoundException e) {
-            return "2.0.0";
+            return "2.0.1";
         }
     }
 }
