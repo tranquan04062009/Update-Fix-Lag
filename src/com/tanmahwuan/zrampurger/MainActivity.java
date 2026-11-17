@@ -85,12 +85,14 @@ public class MainActivity extends Activity {
     // Views - Navigation
     private View navItemDashboard;
     private View navItemApps;
-    private View navItemTerminal;
     private View navItemSettings;
     private TextView tvNavLabelDashboard;
     private TextView tvNavLabelApps;
-    private TextView tvNavLabelTerminal;
     private TextView tvNavLabelSettings;
+    private View tabGameView, navItemGame, cardPermissionBanner;
+    private TextView tvNavLabelGame, tvHealthScore, tvLastPurgeTitle, tvLastPurgeDetail, tvAppsCount, chipAppsAll, chipAppsKept;
+    private boolean appsKeptOnly = false;
+    private long lastHealthMs = 0;
 
     // Views - Dashboard
     private TextView tvRamPercent;
@@ -126,6 +128,23 @@ public class MainActivity extends Activity {
     private Button btnApplyGameResolution;
     private Button btnResetGameResolution;
     private TextView tvGameResolutionStatus;
+
+    // Views - Advanced Enhancements & Multi-Zone Hardware
+    private TextView tvBoosterChipInfo;
+    private Button btnPreloadGame;
+    private Switch switchBypassVendorLimiter;
+    private TextView tvVendorLimiterSub;
+    private Switch switchFreezeOemBloat;
+    private Switch switchTouchOverdrive;
+    private Switch switchNetworkBoost;
+
+    // Views - SurfaceFlinger & Advanced Hardware Engines
+    private Switch switchForceGpuComp;
+    private Switch switchAaudioMmap;
+    private Switch switchFixedPerf;
+    private Switch switchDciP3;
+    private Switch switchIgnoreOrientation;
+    private Button btnKillCachedApps;
 
     private float selectedDownscale = 0.8f;
     private int selectedFps = 120;
@@ -262,6 +281,10 @@ public class MainActivity extends Activity {
         GameBoosterManager.checkAndRecoverColdStart(this);
         GameBoosterManager.installCrashHandler(this);
 
+        selectedFps = UiFormat.defaultFps(deviceMaxHz());
+        btnSelectFps.setText(selectedFps + " FPS ▼");
+        btnSelectResolution.setText((int) (selectedDownscale * 100) + "% ▼");
+
         updatePrivilegeBadge();
         refreshTelemetryImmediate();
 
@@ -283,13 +306,23 @@ public class MainActivity extends Activity {
 
         navItemDashboard = findViewById(R.id.nav_item_dashboard);
         navItemApps = findViewById(R.id.nav_item_apps);
-        navItemTerminal = findViewById(R.id.nav_item_terminal);
+        navItemGame = findViewById(R.id.nav_item_game);
+        tabGameView = findViewById(R.id.tab_game_view);
         navItemSettings = findViewById(R.id.nav_item_settings);
 
         tvNavLabelDashboard = findViewById(R.id.tv_nav_label_dashboard);
         tvNavLabelApps = findViewById(R.id.tv_nav_label_apps);
-        tvNavLabelTerminal = findViewById(R.id.tv_nav_label_terminal);
+        tvNavLabelGame = findViewById(R.id.tv_nav_label_game);
         tvNavLabelSettings = findViewById(R.id.tv_nav_label_settings);
+
+        // New UI elements
+        cardPermissionBanner = findViewById(R.id.card_permission_banner);
+        tvHealthScore = findViewById(R.id.tv_health_score);
+        tvLastPurgeTitle = findViewById(R.id.tv_last_purge_title);
+        tvLastPurgeDetail = findViewById(R.id.tv_last_purge_detail);
+        tvAppsCount = findViewById(R.id.tv_apps_count);
+        chipAppsAll = findViewById(R.id.chip_apps_all);
+        chipAppsKept = findViewById(R.id.chip_apps_kept);
 
         // Dashboard Views
         tvRamPercent = findViewById(R.id.tv_ram_percent);
@@ -325,6 +358,22 @@ public class MainActivity extends Activity {
         btnResetGameResolution = findViewById(R.id.btn_reset_game_resolution);
         tvGameResolutionStatus = findViewById(R.id.tv_game_resolution_status);
 
+        // Advanced Game Views
+        tvBoosterChipInfo = findViewById(R.id.tv_booster_chip_info);
+        btnPreloadGame = findViewById(R.id.btn_preload_game);
+        switchBypassVendorLimiter = findViewById(R.id.switch_bypass_vendor_limiter);
+        tvVendorLimiterSub = findViewById(R.id.tv_vendor_limiter_sub);
+        switchFreezeOemBloat = findViewById(R.id.switch_freeze_oem_bloat);
+        switchTouchOverdrive = findViewById(R.id.switch_touch_overdrive);
+        switchNetworkBoost = findViewById(R.id.switch_network_boost);
+
+        switchForceGpuComp = findViewById(R.id.switch_force_gpu_comp);
+        switchAaudioMmap = findViewById(R.id.switch_aaudio_mmap);
+        switchFixedPerf = findViewById(R.id.switch_fixed_perf);
+        switchDciP3 = findViewById(R.id.switch_dci_p3);
+        switchIgnoreOrientation = findViewById(R.id.switch_ignore_orientation);
+        btnKillCachedApps = findViewById(R.id.btn_kill_cached_apps);
+
         // Apps Views
         etSearchApps = findViewById(R.id.et_search_apps);
         lvInstalledApps = findViewById(R.id.lv_installed_apps);
@@ -349,36 +398,42 @@ public class MainActivity extends Activity {
         tvSettingsDeviceInfo = findViewById(R.id.tv_settings_device_info);
 
         tvHeaderPrivilege.setOnClickListener(v -> requestShizukuPermission());
+        cardPermissionBanner.setOnClickListener(v -> requestShizukuPermission());
+        tvHealthScore.setOnClickListener(v -> switchTab("settings"));
     }
 
     private void setupNavigation() {
         navItemDashboard.setOnClickListener(v -> switchTab("dashboard"));
+        navItemGame.setOnClickListener(v -> switchTab("game"));
         navItemApps.setOnClickListener(v -> switchTab("apps"));
-        navItemTerminal.setOnClickListener(v -> switchTab("terminal"));
         navItemSettings.setOnClickListener(v -> switchTab("settings"));
+        findViewById(R.id.btn_open_terminal).setOnClickListener(v -> switchTab("terminal"));
+        findViewById(R.id.btn_terminal_back).setOnClickListener(v -> switchTab("settings"));
     }
 
     private void switchTab(String tab) {
         currentTab = tab;
         tabDashboardView.setVisibility("dashboard".equals(tab) ? View.VISIBLE : View.GONE);
+        tabGameView.setVisibility("game".equals(tab) ? View.VISIBLE : View.GONE);
         tabAppsView.setVisibility("apps".equals(tab) ? View.VISIBLE : View.GONE);
-        tabTerminalView.setVisibility("terminal".equals(tab) ? View.VISIBLE : View.GONE);
         tabSettingsView.setVisibility("settings".equals(tab) ? View.VISIBLE : View.GONE);
+        tabTerminalView.setVisibility("terminal".equals(tab) ? View.VISIBLE : View.GONE);
 
-        // Update Nav Colors
-        tvNavLabelDashboard.setTextColor("dashboard".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
-        tvNavLabelApps.setTextColor("apps".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
-        tvNavLabelTerminal.setTextColor("terminal".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
-        tvNavLabelSettings.setTextColor("settings".equals(tab) ? Color.parseColor("#2DD4B0") : Color.parseColor("#6B7385"));
-
-        styleNavItem(R.id.nav_item_dashboard, R.id.tv_nav_icon_dashboard, "dashboard".equals(tab));
-        styleNavItem(R.id.nav_item_apps, R.id.tv_nav_icon_apps, "apps".equals(tab));
-        styleNavItem(R.id.nav_item_terminal, R.id.tv_nav_icon_terminal, "terminal".equals(tab));
-        styleNavItem(R.id.nav_item_settings, R.id.tv_nav_icon_settings, "settings".equals(tab));
+        // Terminal is a sub-screen of "Hệ thống", so that nav item stays highlighted
+        String navTab = "terminal".equals(tab) ? "settings" : tab;
+        setNav(tvNavLabelDashboard, R.id.nav_item_dashboard, R.id.tv_nav_icon_dashboard, "dashboard".equals(navTab));
+        setNav(tvNavLabelGame, R.id.nav_item_game, R.id.tv_nav_icon_game, "game".equals(navTab));
+        setNav(tvNavLabelApps, R.id.nav_item_apps, R.id.tv_nav_icon_apps, "apps".equals(navTab));
+        setNav(tvNavLabelSettings, R.id.nav_item_settings, R.id.tv_nav_icon_settings, "settings".equals(navTab));
 
         if ("apps".equals(tab) && !appsLoaded) {
             loadInstalledAppsAsync();
         }
+    }
+
+    private void setNav(TextView label, int itemId, int iconId, boolean active) {
+        label.setTextColor(Color.parseColor(active ? "#2DD4B0" : "#6B7385"));
+        styleNavItem(itemId, iconId, active);
     }
 
     private void styleNavItem(int itemId, int iconId, boolean active) {
@@ -406,7 +461,7 @@ public class MainActivity extends Activity {
             new Thread(() -> {
                 AospAdbMaster.runIdleMaintenance();
                 mainHandler.post(() -> {
-                    Toast.makeText(this, "✅ Tối ưu hóa hệ thống hoàn tất!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Tối ưu hóa hệ thống hoàn tất!", Toast.LENGTH_SHORT).show();
                     refreshTelemetryImmediate();
                 });
             }).start();
@@ -417,7 +472,7 @@ public class MainActivity extends Activity {
             new Thread(() -> {
                 AospAdbMaster.trimSystemCaches(2147483648L);
                 mainHandler.post(() -> {
-                    Toast.makeText(this, "✅ Đã dọn sạch bộ nhớ đệm!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Đã dọn sạch bộ nhớ đệm!", Toast.LENGTH_SHORT).show();
                     refreshTelemetryImmediate();
                 });
             }).start();
@@ -464,12 +519,31 @@ public class MainActivity extends Activity {
                 String res = AospAdbMaster.compileAppLayoutsAndSpeed(pkg);
                 mainHandler.post(() -> {
                     btnTriggerAot.setEnabled(true);
-                    Toast.makeText(MainActivity.this, "✅ Tối ưu hoàn tất cho " + pkg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Tối ưu hoàn tất cho " + pkg, Toast.LENGTH_SHORT).show();
                 });
             }).start();
         });
 
         btnPickGamePkg.setOnClickListener(v -> showAppPickerDialog());
+
+        if (btnPreloadGame != null) {
+            btnPreloadGame.setOnClickListener(v -> {
+                String pkg = etTargetGamePkg.getText().toString().trim();
+                if (pkg.isEmpty() || !AospAdbMaster.isValidPackageName(pkg)) {
+                    Toast.makeText(this, "Vui lòng chọn game trước khi nạp", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                btnPreloadGame.setEnabled(false);
+                Toast.makeText(this, "⚡ Đang nạp trước game vào RAM...", Toast.LENGTH_SHORT).show();
+                new Thread(() -> {
+                    boolean ok = GameFilePreloader.preloadGame(pkg);
+                    mainHandler.post(() -> {
+                        btnPreloadGame.setEnabled(true);
+                        Toast.makeText(MainActivity.this, ok ? "Đã nạp xong game vào RAM!" : "Nạp game hoàn tất!", Toast.LENGTH_SHORT).show();
+                    });
+                }).start();
+            });
+        }
 
         if (btnSelectResolution != null) {
             btnSelectResolution.setOnClickListener(v -> {
@@ -495,17 +569,18 @@ public class MainActivity extends Activity {
 
         if (btnSelectFps != null) {
             btnSelectFps.setOnClickListener(v -> {
-                int currentIdx = 1; // 120 FPS default
-                for (int i = 0; i < FPS_VALUES.length; i++) {
-                    if (FPS_VALUES[i] == selectedFps) {
-                        currentIdx = i;
-                        break;
-                    }
+                final List<Integer> allowed = UiFormat.fpsChoices(deviceMaxHz(), FPS_VALUES);
+                final String[] labels = new String[allowed.size()];
+                int currentIdx = 0;
+                for (int i = 0; i < allowed.size(); i++) {
+                    int fpsVal = allowed.get(i);
+                    for (int k = 0; k < FPS_VALUES.length; k++) if (FPS_VALUES[k] == fpsVal) labels[i] = FPS_LABELS[k];
+                    if (fpsVal == selectedFps) currentIdx = i;
                 }
                 new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
                         .setTitle("Chọn tốc độ khung hình mục tiêu")
-                        .setSingleChoiceItems(FPS_LABELS, currentIdx, (dialog, which) -> {
-                            selectedFps = FPS_VALUES[which];
+                        .setSingleChoiceItems(labels, currentIdx, (dialog, which) -> {
+                            selectedFps = allowed.get(which);
                             String shortLabel = (selectedFps > 0) ? (selectedFps + " FPS") : "Mặc định";
                             btnSelectFps.setText(shortLabel + " ▼");
                             dialog.dismiss();
@@ -534,7 +609,7 @@ public class MainActivity extends Activity {
                             if (tvGameResolutionStatus != null) {
                                 tvGameResolutionStatus.setText("Đang áp dụng: " + scaleText + " | " + fpsText + " (Performance)");
                             }
-                            Toast.makeText(MainActivity.this, "✅ Đã áp dụng phân giải " + scaleText + " cho " + pkg, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Đã áp dụng phân giải " + scaleText + " cho " + pkg, Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(MainActivity.this, "Không thể áp dụng — cần quyền Shizuku/ADB", Toast.LENGTH_LONG).show();
                         }
@@ -560,7 +635,7 @@ public class MainActivity extends Activity {
                             if (tvGameResolutionStatus != null) {
                                 tvGameResolutionStatus.setText("Đã khôi phục mặc định — Độ phân giải gốc 100%");
                             }
-                            Toast.makeText(MainActivity.this, "✅ Đã trở về độ phân giải mặc định (100%)", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Đã trở về độ phân giải mặc định (100%)", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(MainActivity.this, "Không thể khôi phục — cần quyền Shizuku/ADB", Toast.LENGTH_LONG).show();
                         }
@@ -579,13 +654,159 @@ public class MainActivity extends Activity {
                             mainHandler.post(() -> {
                                 updateWidget();
                                 switchGameBooster.setChecked(false);
-                                Toast.makeText(MainActivity.this, ok ? "✅ Đã khôi phục cài đặt mặc định" : "Lỗi khôi phục", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, ok ? "Đã khôi phục cài đặt mặc định" : "Lỗi khôi phục", Toast.LENGTH_SHORT).show();
                             });
                         }).start();
                     })
                     .setNegativeButton("Hủy", null)
                     .show();
         });
+
+        // Initialize Advanced Switches
+        if (switchBypassVendorLimiter != null) {
+            switchBypassVendorLimiter.setChecked(prefs.getBoolean("pref_bypass_limiters", false));
+            switchBypassVendorLimiter.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_bypass_limiters", isChecked).apply();
+                new Thread(() -> {
+                    if (isChecked) {
+                        int count = VendorLimiterBypass.bypassAllLimiters(MainActivity.this);
+                        mainHandler.post(() -> Toast.makeText(MainActivity.this, "Đã tắt " + count + " bộ bóp hiệu năng hãng!", Toast.LENGTH_SHORT).show());
+                    } else {
+                        int count = VendorLimiterBypass.restoreLimiters(MainActivity.this);
+                        mainHandler.post(() -> Toast.makeText(MainActivity.this, "Đã khôi phục cài đặt hãng", Toast.LENGTH_SHORT).show());
+                    }
+                }).start();
+            });
+        }
+
+        if (switchFreezeOemBloat != null) {
+            switchFreezeOemBloat.setChecked(prefs.getBoolean("pref_freeze_bloat", false));
+            switchFreezeOemBloat.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_freeze_bloat", isChecked).apply();
+                new Thread(() -> {
+                    if (isChecked) {
+                        int count = OemBloatwareFreezer.freezeBrandBloat(MainActivity.this);
+                        mainHandler.post(() -> Toast.makeText(MainActivity.this, "Đã đóng băng " + count + " dịch vụ rác hãng!", Toast.LENGTH_SHORT).show());
+                    } else {
+                        int count = OemBloatwareFreezer.unfreezeBrandBloat(MainActivity.this);
+                        mainHandler.post(() -> Toast.makeText(MainActivity.this, "Đã giải phóng các dịch vụ rác", Toast.LENGTH_SHORT).show());
+                    }
+                }).start();
+            });
+        }
+
+        if (switchTouchOverdrive != null) {
+            switchTouchOverdrive.setChecked(prefs.getBoolean("pref_touch_overdrive", false));
+            switchTouchOverdrive.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_touch_overdrive", isChecked).apply();
+                new Thread(() -> {
+                    TouchDisplayOverdrive.setTouchSensitivityBoost(isChecked);
+                    TouchDisplayOverdrive.setRefreshRateLock(MainActivity.this, isChecked ? (int) Math.round(deviceMaxHz()) : -1);
+                    TouchDisplayOverdrive.setEdgeProtection(isChecked);
+                    mainHandler.post(() -> Toast.makeText(MainActivity.this, isChecked ? "Đã bật Touch120 và khóa FPS màn hình!" : "Đã trở về cảm ứng mặc định", Toast.LENGTH_SHORT).show());
+                }).start();
+            });
+        }
+
+        if (switchNetworkBoost != null) {
+            switchNetworkBoost.setChecked(prefs.getBoolean("pref_network_boost", false));
+            switchNetworkBoost.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_network_boost", isChecked).apply();
+                new Thread(() -> {
+                    NetworkAudioOptimizer.setGameDataPriority(isChecked);
+                    mainHandler.post(() -> Toast.makeText(MainActivity.this, isChecked ? "Đã kích hoạt ưu tiên mạng Game!" : "Đã tắt ưu tiên mạng", Toast.LENGTH_SHORT).show());
+                }).start();
+            });
+        }
+
+        // Hardware Chip profile & OEM Limiter inspection
+        new Thread(() -> {
+            DeviceProfiler.Profile prof = DeviceProfiler.read(MainActivity.this);
+            List<String> limiters = VendorLimiterBypass.detectInstalledLimiters(MainActivity.this);
+            mainHandler.post(() -> {
+                if (tvBoosterChipInfo != null && prof != null) {
+                    tvBoosterChipInfo.setText(prof.socVendor + " · " + prof.socModel + " | " + prof.gpu);
+                }
+                if (tvVendorLimiterSub != null && !limiters.isEmpty()) {
+                    tvVendorLimiterSub.setText("Phát hiện " + limiters.size() + " tiến trình bóp hiệu năng của hãng.");
+                }
+            });
+        }).start();
+
+        if (switchForceGpuComp != null) {
+            switchForceGpuComp.setChecked(prefs.getBoolean("pref_force_gpu_comp", false));
+            switchForceGpuComp.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_force_gpu_comp", isChecked).apply();
+                new Thread(() -> {
+                    DisplayPipelineEngine.setForceGpuComposition(isChecked);
+                    mainHandler.post(() -> Toast.makeText(MainActivity.this, isChecked ? "Đã ép GPU Render (Bypass HWC)!" : "Đã khôi phục render mặc định", Toast.LENGTH_SHORT).show());
+                }).start();
+            });
+        }
+
+        if (switchAaudioMmap != null) {
+            switchAaudioMmap.setChecked(prefs.getBoolean("pref_aaudio_mmap", false));
+            switchAaudioMmap.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_aaudio_mmap", isChecked).apply();
+                new Thread(() -> {
+                    AudioInputOverdrive.setAaudioMmapOverdrive(isChecked);
+                    mainHandler.post(() -> Toast.makeText(MainActivity.this, isChecked ? "Đã kích hoạt AAudio MMAP 5ms!" : "Đã tắt AAudio MMAP", Toast.LENGTH_SHORT).show());
+                }).start();
+            });
+        }
+
+        if (switchFixedPerf != null) {
+            switchFixedPerf.setChecked(prefs.getBoolean("pref_fixed_perf", false));
+            switchFixedPerf.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_fixed_perf", isChecked).apply();
+                String pkg = etTargetGamePkg.getText().toString().trim();
+                new Thread(() -> {
+                    PowerHalDozeGovernor.setFixedPerformanceMode(isChecked);
+                    PowerHalDozeGovernor.setAdaptiveBatteryDisabled(isChecked);
+                    if (!pkg.isEmpty()) {
+                        PowerHalDozeGovernor.exemptGameFromDoze(pkg, isChecked);
+                    }
+                    mainHandler.post(() -> Toast.makeText(MainActivity.this, isChecked ? "Đã khóa xung PowerHAL và miễn trừ Doze!" : "Đã tắt khóa xung", Toast.LENGTH_SHORT).show());
+                }).start();
+            });
+        }
+
+        if (switchDciP3 != null) {
+            switchDciP3.setChecked(prefs.getBoolean("pref_dci_p3", false));
+            switchDciP3.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_dci_p3", isChecked).apply();
+                new Thread(() -> {
+                    DisplayPipelineEngine.setDisplayColorDciP3(isChecked);
+                    mainHandler.post(() -> Toast.makeText(MainActivity.this, isChecked ? "Đã bật không gian màu DCI-P3!" : "Đã khôi phục màu gốc", Toast.LENGTH_SHORT).show());
+                }).start();
+            });
+        }
+
+        if (switchIgnoreOrientation != null) {
+            switchIgnoreOrientation.setChecked(prefs.getBoolean("pref_ignore_orientation", false));
+            switchIgnoreOrientation.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.edit().putBoolean("pref_ignore_orientation", isChecked).apply();
+                new Thread(() -> {
+                    DisplayPipelineEngine.setIgnoreOrientationRequests(isChecked);
+                    mainHandler.post(() -> Toast.makeText(MainActivity.this, isChecked ? "Đã khóa chống khựng xoay màn hình!" : "Đã mở lại cảm biến xoay", Toast.LENGTH_SHORT).show());
+                }).start();
+            });
+        }
+
+        if (btnKillCachedApps != null) {
+            btnKillCachedApps.setOnClickListener(v -> {
+                btnKillCachedApps.setEnabled(false);
+                Toast.makeText(this, "⚡ Đang dọn sạch tiến trình đệm (am kill-all)...", Toast.LENGTH_SHORT).show();
+                new Thread(() -> {
+                    boolean ok = KernelMemoryEngine.killAllCachedProcesses();
+                    mainHandler.post(() -> {
+                        btnKillCachedApps.setEnabled(true);
+                        refreshTelemetryImmediate();
+                        Toast.makeText(MainActivity.this, ok ? "Đã xả sạch các tiến trình đệm!" : "Đã hoàn tất dọn tiến trình đệm", Toast.LENGTH_SHORT).show();
+                    });
+                }).start();
+            });
+        }
     }
 
     private void showAppPickerDialog() {
@@ -675,16 +896,20 @@ public class MainActivity extends Activity {
                         vibrate(100);
                         refreshTelemetryImmediate();
                         updateWidget();
+                        saveLastPurge(res);
+                        renderLastPurge();
+                        lastHealthMs = 0;
+                        refreshHealthScore();
 
                         String msg;
                         if (res != null && res.freedMb > 0) {
                             msg = String.format(Locale.US,
-                                    "✅ Đã giải phóng %d MB RAM! (Dọn dẹp: %d ứng dụng)",
+                                    "Đã giải phóng %d MB RAM! (Dọn dẹp: %d ứng dụng)",
                                     res.freedMb, res.killedAppCount + res.compactedAppCount);
                         } else {
                             int totalCleaned = res != null ? (res.killedAppCount + res.compactedAppCount) : 1;
                             msg = String.format(Locale.US,
-                                    "✅ Đã tối ưu hóa và nén ZRAM thành công! (Dọn dẹp: %d ứng dụng)",
+                                    "Đã tối ưu hóa và nén ZRAM thành công! (Dọn dẹp: %d ứng dụng)",
                                     Math.max(1, totalCleaned));
                         }
                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
@@ -699,10 +924,52 @@ public class MainActivity extends Activity {
                     btnSuperBoost.setEnabled(true);
                     btnSuperBoost.setText("Giải phóng RAM");
                     refreshTelemetryImmediate();
-                    Toast.makeText(MainActivity.this, "✅ Đã giải phóng và tối ưu bộ nhớ!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Đã giải phóng và tối ưu bộ nhớ!", Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();
+    }
+
+    // --- LAST RESULT & HEALTH SCORE ---
+
+    private void saveLastPurge(PurgeEngine.PurgeResult res) {
+        if (res == null) return;
+        prefs.edit().putLong("lp_time", System.currentTimeMillis())
+                .putInt("lp_freed", (int) res.freedMb)
+                .putInt("lp_apps", res.killedAppCount + res.compactedAppCount)
+                .putLong("lp_ms", res.durationMs).apply();
+    }
+
+    private void renderLastPurge() {
+        long t = prefs.getLong("lp_time", 0);
+        if (t == 0) return;
+        int freed = prefs.getInt("lp_freed", 0);
+        tvLastPurgeTitle.setText(freed > 0 ? "Đã giải phóng " + freed + " MB" : "RAM đã khá thoáng");
+        tvLastPurgeDetail.setText(UiFormat.ramSummary(freed, prefs.getInt("lp_apps", 0), prefs.getLong("lp_ms", 0),
+                UiFormat.relativeTime(System.currentTimeMillis(), t)));
+    }
+
+    private void refreshHealthScore() {
+        long now = System.currentTimeMillis();
+        if (lastHealthMs != 0 && now - lastHealthMs < 30000) return;
+        lastHealthMs = now;
+        new Thread(() -> {
+            DiagnosticsEngine.Report rep = DiagnosticsEngine.run(MainActivity.this, null);
+            mainHandler.post(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                tvHealthScore.setText("Điểm " + rep.score + " · " + rep.verdict());
+                tvHealthScore.setTextColor(Color.parseColor(UiFormat.healthColor(rep.score)));
+            });
+        }).start();
+    }
+
+    private float deviceMaxHz() {
+        float max = 60f;
+        try {
+            for (android.view.Display.Mode m : getWindowManager().getDefaultDisplay().getSupportedModes())
+                max = Math.max(max, m.getRefreshRate());
+        } catch (Throwable ignored) {}
+        return max;
     }
 
     // --- APPS TAB SETUP & LOGIC ---
@@ -710,6 +977,9 @@ public class MainActivity extends Activity {
     private void setupAppsTab() {
         appListAdapter = new AppListAdapter();
         lvInstalledApps.setAdapter(appListAdapter);
+
+        chipAppsAll.setOnClickListener(v -> setAppsFilter(false));
+        chipAppsKept.setOnClickListener(v -> setAppsFilter(true));
 
         etSearchApps.addTextChangedListener(new TextWatcher() {
             @Override
@@ -769,18 +1039,34 @@ public class MainActivity extends Activity {
         filteredAppsList.clear();
         String q = query.toLowerCase(Locale.US).trim();
 
-        if (q.isEmpty()) {
-            filteredAppsList.addAll(allAppsList);
-        } else {
-            for (AppEntry a : allAppsList) {
-                if (a.name.toLowerCase(Locale.US).contains(q) || a.packageName.toLowerCase(Locale.US).contains(q)) {
-                    filteredAppsList.add(a);
-                }
-            }
+        for (AppEntry a : allAppsList) {
+            if (appsKeptOnly && !customWhitelist.contains(a.packageName)) continue;
+            if (!q.isEmpty() && !(a.name.toLowerCase(Locale.US).contains(q)
+                    || a.packageName.toLowerCase(Locale.US).contains(q))) continue;
+            filteredAppsList.add(a);
         }
 
         appListAdapter.notifyDataSetChanged();
         tvAppsEmpty.setVisibility(filteredAppsList.isEmpty() ? View.VISIBLE : View.GONE);
+        updateAppsCount();
+    }
+
+    private void updateAppsCount() {
+        if (tvAppsCount != null)
+            tvAppsCount.setText(filteredAppsList.size() + " ứng dụng · " + customWhitelist.size() + " được giữ lại");
+    }
+
+    private void updateAppsCountLater() {
+        mainHandler.post(this::updateAppsCount);
+    }
+
+    private void setAppsFilter(boolean keptOnly) {
+        appsKeptOnly = keptOnly;
+        chipAppsAll.setBackgroundResource(keptOnly ? R.drawable.bg_chip_pill : R.drawable.bg_chip_pill_active);
+        chipAppsAll.setTextColor(Color.parseColor(keptOnly ? "#A3ABBB" : "#2DD4B0"));
+        chipAppsKept.setBackgroundResource(keptOnly ? R.drawable.bg_chip_pill_active : R.drawable.bg_chip_pill);
+        chipAppsKept.setTextColor(Color.parseColor(keptOnly ? "#2DD4B0" : "#A3ABBB"));
+        filterApps(etSearchApps.getText().toString());
     }
 
     private class AppListAdapter extends BaseAdapter {
@@ -855,7 +1141,7 @@ public class MainActivity extends Activity {
                 new Thread(() -> {
                     boolean ok = AospAdbMaster.setAppHibernation(app.packageName, true);
                     mainHandler.post(() -> {
-                        Toast.makeText(MainActivity.this, ok ? "✅ Đã ngủ đông: " + app.name : "⚠️ Yêu cầu quyền Shizuku", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, ok ? "Đã ngủ đông: " + app.name : "⚠️ Yêu cầu quyền Shizuku", Toast.LENGTH_SHORT).show();
                     });
                 }).start();
             });
@@ -874,6 +1160,7 @@ public class MainActivity extends Activity {
     }
 
     private void toggleWhitelistApp(String pkg, boolean whitelist) {
+        updateAppsCountLater();
         if (whitelist) {
             customWhitelist.add(pkg);
         } else {
@@ -1023,7 +1310,7 @@ public class MainActivity extends Activity {
                     }
                     try {
                         JSONObject obj = new JSONObject(updateJson);
-                        String ver = obj.optString("versionName", "1.0.2");
+                        String ver = obj.optString("versionName", "2.0.0");
                         String url = obj.optString("downloadUrl", "");
                         String notes = obj.optString("changelog", obj.optString("releaseNotes", "Bản cập nhật tối ưu mới"));
 
@@ -1052,7 +1339,7 @@ public class MainActivity extends Activity {
                 mainHandler.post(() -> {
                     if (btnSettingsCheckUpdate != null) btnSettingsCheckUpdate.setEnabled(true);
                     if (isManual) {
-                        Toast.makeText(MainActivity.this, "✅ Bạn đang ở phiên bản mới nhất (v" + currentVersion + ")", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Bạn đang ở phiên bản mới nhất (v" + currentVersion + ")", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -1104,6 +1391,7 @@ public class MainActivity extends Activity {
         MemoryHelper.MemoryStats mem = MemoryHelper.readMemInfo();
         ZramStatsHelper.ZramStats zram = ZramStatsHelper.readStats();
         ThermalHelper.ThermalStats thermal = ThermalHelper.readTemperatures(this);
+        UniversalThermalEngine.ThermalSnapshot utherm = UniversalThermalEngine.getThermalSnapshot(this);
         boolean boosterActive = GameBoosterManager.isBoosterActive(this);
         PerformanceEngine.PerformanceTelemetry perf = PerformanceEngine.readPerformanceTelemetry(boosterActive, boosterActive ? "EXTREME_PERFORMANCE_MAX" : "OEM_BALANCED");
 
@@ -1125,26 +1413,28 @@ public class MainActivity extends Activity {
             tvZramRatio.setText(String.format(Locale.US, "%.2fx", zram.compressionRatio));
             tvZramSaved.setText(String.format(Locale.US, "Tiết kiệm: %d MB vật lý", zram.physicalSavedMb));
 
-            // Hardware Temperatures (Standard & Accurate)
-            tvCpuTemp.setText(String.format(Locale.US, "CPU: %.1f °C", thermal.cpuTempC));
-            tvGpuTemp.setText(String.format(Locale.US, "GPU: %.1f °C", thermal.gpuTempC));
-            tvBatteryTemp.setText(String.format(Locale.US, "%.1f °C", thermal.batteryTempC));
+            // Multi-Zone Accurate Hardware Temperatures
+            float cpuT = utherm.cpuTemp > 0 ? utherm.cpuTemp : (float) thermal.cpuTempC;
+            float gpuT = utherm.gpuTemp > 0 ? utherm.gpuTemp : (float) thermal.gpuTempC;
+            float batT = utherm.batteryTemp > 0 ? utherm.batteryTemp : (float) thermal.batteryTempC;
 
-            if ("CRITICAL".equals(thermal.thermalStatus)) {
-                tvThermalStatus.setText("Nhiệt độ: Nóng");
+            tvCpuTemp.setText(String.format(Locale.US, "CPU: %.1f °C", cpuT));
+            tvGpuTemp.setText(String.format(Locale.US, "GPU: %.1f °C", gpuT));
+            tvBatteryTemp.setText(String.format(Locale.US, "%.1f °C", batT));
+
+            tvThermalStatus.setText("Nhiệt độ: " + utherm.stateDescription);
+            if (utherm.thermalState == UniversalThermalEngine.STATE_HOT) {
                 tvThermalStatus.setTextColor(Color.parseColor("#F4566A"));
-            } else if ("WARM".equals(thermal.thermalStatus)) {
-                tvThermalStatus.setText("Nhiệt độ: Ấm");
+            } else if (utherm.thermalState == UniversalThermalEngine.STATE_WARM) {
                 tvThermalStatus.setTextColor(Color.parseColor("#F5A524"));
             } else {
-                tvThermalStatus.setText("Nhiệt độ: Mát mẻ");
                 tvThermalStatus.setTextColor(Color.parseColor("#34D399"));
             }
 
             // Game Booster Telemetry
             tvBoosterGpuClk.setText((perf.gpuClockMhz > 0 ? perf.gpuClockMhz : "--") + " MHz");
             tvBoosterGpuLoad.setText((perf.gpuBusyPercent >= 0 ? String.valueOf(perf.gpuBusyPercent) : "--") + " %");
-            tvBoosterGpuTemp.setText(thermal.gpuTempC > 0 ? String.format(Locale.US, "%.1f °C", thermal.gpuTempC) : "-- °C");
+            tvBoosterGpuTemp.setText(gpuT > 0 ? String.format(Locale.US, "%.1f °C", gpuT) : "-- °C");
 
             if (perf.bigClusterFreqKHz > 0) {
                 tvBoosterCpuBig.setText(String.format(Locale.US, "%.2f GHz", perf.bigClusterFreqKHz / 1000000.0));
@@ -1172,6 +1462,9 @@ public class MainActivity extends Activity {
             tvHeaderPrivilege.setBackgroundResource(R.drawable.bg_badge_shell);
             tvHeaderPrivilege.setTextColor(Color.parseColor("#A3ABBB"));
             tvHeaderPrivilege.setText("CẤP QUYỀN");
+        }
+        if (cardPermissionBanner != null) {
+            cardPermissionBanner.setVisibility(!shizukuPerm && !rootAvail ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -1234,6 +1527,8 @@ public class MainActivity extends Activity {
         checkAndRequestShizuku();
         updatePrivilegeBadge();
         startTelemetryLoop();
+        renderLastPurge();
+        refreshHealthScore();
     }
 
     @Override
@@ -1255,7 +1550,9 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (!"dashboard".equals(currentTab)) {
+        if ("terminal".equals(currentTab)) {
+            switchTab("settings");
+        } else if (!"dashboard".equals(currentTab)) {
             switchTab("dashboard");
         } else {
             super.onBackPressed();

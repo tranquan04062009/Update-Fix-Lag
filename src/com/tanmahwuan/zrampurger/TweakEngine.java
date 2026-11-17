@@ -118,18 +118,18 @@ public class TweakEngine {
         if (!p.supportsAdaptiveBattery()) standby.unsupportedReason = "Cần Android 9 trở lên";
         list.add(standby);
 
-        // Khóa cố định cài đặt hệ thống (AOSP DeviceConfig persistent)
+        // Optional, explicit opt-in: pause DeviceConfig server sync until the next reboot
         Tweak freeze = new Tweak("freeze_sync",
-                "Cố định cài đặt tối ưu",
-                "Khóa vĩnh viễn các tinh chỉnh hiệu năng để dịch vụ nền không thể tự động khôi phục về mặc định.",
-                new Op("device_config_sync", "sync", "mode", "persistent"));
+                "Giữ tinh chỉnh đến khi khởi động lại",
+                "Tạm dừng đồng bộ cờ cấu hình từ máy chủ Google để các tinh chỉnh trên không bị ghi đè. Tự hết hiệu lực khi khởi động lại máy; tắt công tắc để bật lại ngay.",
+                new Op("device_config_sync", "sync", "mode", "until_reboot"));
         if (p.sdk < 29) freeze.unsupportedReason = "Cần Android 10 trở lên";
         list.add(freeze);
 
         // Cơ chế chống nghẽn bộ nhớ thông minh (AOSP LMKD Native)
         Tweak lmkd = new Tweak("lmkd_tune",
-                "Chống nghẽn RAM tức thì",
-                "Phát hiện sớm áp lực bộ nhớ và ưu tiên giải phóng các tiến trình phụ ngốn RAM.",
+                "Chống nghẽn RAM (thử nghiệm)",
+                "Thử điều chỉnh ngưỡng của lmkd khi bộ nhớ bị nghẽn. Hiệu quả tùy máy và có thể làm hệ thống đóng ứng dụng nền sớm hơn.",
                 new Op("device_config", "lmkd_native", "thrashing_limit", "50"),
                 new Op("device_config", "lmkd_native", "thrashing_limit_decay", "10"),
                 new Op("device_config", "lmkd_native", "psi_partial_stall_ms", "100"),
@@ -152,18 +152,12 @@ public class TweakEngine {
         // Đồ họa ANGLE Vulkan đa luồng
         Tweak angle = new Tweak("angle",
                 "Đồ họa ANGLE Vulkan",
-                "Ép engine đồ họa sang Vulkan đa luồng để tăng tốc khung hình và giảm tải CPU.",
+                "Dùng ANGLE (OpenGL ES trên Vulkan) cho mọi ứng dụng. Có thể gây lỗi đồ họa ở một số game; hãy tắt nếu thấy bất thường.",
                 new Op("settings", "global", "angle_gl_driver_all_angle", "1"),
                 new Op("settings", "global", "updatable_driver_all_apps", "1"));
         if (p.sdk < 29) angle.unsupportedReason = "Cần Android 10 trở lên";
+        else if (!p.hasAngle) angle.unsupportedReason = "Máy không có sẵn ANGLE";
         list.add(angle);
-
-        // Triệt tiêu nhật ký hệ thống ngầm
-        Tweak zerolog = new Tweak("zerolog",
-                "Triệt tiêu nhật ký hệ thống ngầm",
-                "Tắt ghi chép log và crash dumps để giải phóng chu kỳ CPU và giảm nhiệt độ máy.",
-                new Op("settings", "global", "dropbox_max_files", "0"));
-        list.add(zerolog);
 
         return list;
     }
@@ -250,9 +244,6 @@ public class TweakEngine {
                 o.put("prev", before.v == null ? JSONObject.NULL : before.v);
                 snap.put(o);
 
-                if ("device_config".equals(op.kind)) {
-                    AospAdbMaster.setDeviceConfigSyncDisabledPersistent(true);
-                }
                 CommandExecutor.execute(putCmd(op, op.value));
                 Val after = read(op);
                 if (!after.ok || after.v == null || !op.value.equals(after.v)) {

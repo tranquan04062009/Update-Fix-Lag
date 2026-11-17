@@ -63,7 +63,7 @@ public class DeviceProfiler {
         public String gpu = UNKNOWN;
         public long ramMb, swapMb;
         public String zramAlgo = "";
-        public boolean hasZram, hasPsi;
+        public boolean hasZram, hasPsi, hasAngle;
         public String storage = UNKNOWN;
         public String resolution = UNKNOWN;
         public int densityDpi;
@@ -304,6 +304,10 @@ public class DeviceProfiler {
         if (new File("/sys/block/sda").exists()) p.storage = "UFS / SCSI";
         if (new File("/sys/block/nvme0n1").exists()) p.storage = "NVMe";
         p.hasPsi = new File("/proc/pressure/memory").exists();
+        p.hasAngle = "true".equals(props.get("ro.gfx.angle.supported"));
+        if (!p.hasAngle) {
+            try { ctx.getPackageManager().getPackageInfo("com.android.angle", 0); p.hasAngle = true; } catch (Throwable ignored) {}
+        }
         return p;
     }
 

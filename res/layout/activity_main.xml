@@ -30,16 +30,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Z-RAM Purger"
+                android:text="QanH Adb"
                 android:textColor="#F3F5F9"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tối ưu bộ nhớ &amp; hiệu năng"
-                android:textColor="#6B7385"
-                android:textSize="12sp" />
+                android:text="Siêu tối ưu ADB &amp; Game"
+                android:textColor="#2DD4B0"
+                android:textSize="11.5sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
@@ -68,18 +69,23 @@
             android:visibility="visible" />
 
         <include
+            android:id="@+id/tab_game_view"
+            layout="@layout/tab_game"
+            android:visibility="gone" />
+
+        <include
             android:id="@+id/tab_apps_view"
             layout="@layout/tab_apps"
             android:visibility="gone" />
 
         <include
-            android:id="@+id/tab_terminal_view"
-            layout="@layout/tab_terminal"
+            android:id="@+id/tab_settings_view"
+            layout="@layout/tab_settings"
             android:visibility="gone" />
 
         <include
-            android:id="@+id/tab_settings_view"
-            layout="@layout/tab_settings"
+            android:id="@+id/tab_terminal_view"
+            layout="@layout/tab_terminal"
             android:visibility="gone" />
     </FrameLayout>
 
@@ -122,6 +128,32 @@
                 android:textStyle="bold" />
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/nav_item_game"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="6dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:id="@+id/tv_nav_icon_game"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_nav_game"
+                android:contentDescription="Game" />
+            <TextView
+                android:id="@+id/tv_nav_label_game"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Game"
+                android:textColor="#6B7385"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/nav_item_apps"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -148,32 +180,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/nav_item_terminal"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="6dp"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true">
-            <ImageView
-                android:id="@+id/tv_nav_icon_terminal"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_nav_terminal"
-                android:contentDescription="Terminal" />
-            <TextView
-                android:id="@+id/tv_nav_label_terminal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Terminal"
-                android:textColor="#6B7385"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-        <LinearLayout
             android:id="@+id/nav_item_settings"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -188,13 +194,13 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_nav_settings"
-                android:contentDescription="Cài đặt" />
+                android:contentDescription="Hệ thống" />
             <TextView
                 android:id="@+id/tv_nav_label_settings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:text="Cài đặt"
+                android:text="Hệ thống"
                 android:textColor="#6B7385"
                 android:textSize="11sp"
                 android:textStyle="bold" />

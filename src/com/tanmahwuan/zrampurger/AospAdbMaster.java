@@ -123,9 +123,6 @@ public class AospAdbMaster {
      */
     public static boolean applyDeviceConfigLowRam(boolean enable) {
         if (appCtx == null) return false;
-        if (enable) {
-            setDeviceConfigSyncDisabledPersistent(true);
-        }
         TweakEngine.Tweak t = TweakEngine.lowRam(android.os.Build.VERSION.SDK_INT, totalRamMb());
         TweakEngine.Result r = enable ? TweakEngine.apply(appCtx, t) : TweakEngine.restore(appCtx, t);
         Log.i(TAG, "LowRam DeviceConfig enable=" + enable + " -> " + r.ok + " (" + r.message + ")");
@@ -232,9 +229,7 @@ public class AospAdbMaster {
 
         String cmd = "cmd package compile -m speed -f \"" + packageName + "\" 2>&1 || cmd package compile -m speed-profile -f \"" + packageName + "\" 2>&1; " +
                      "cmd package compile --compile-layouts \"" + packageName + "\" 2>&1; " +
-                     "cmd game mode performance \"" + packageName + "\" 2>/dev/null; " +
-                     "cmd game set --mode performance --fps 120 \"" + packageName + "\" 2>/dev/null; " +
-                     "cmd device_config put game_overlay \"" + packageName + "\" mode=2,fps=120 2>/dev/null";
+                     "cmd game mode performance \"" + packageName + "\" 2>/dev/null";
         CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
         long duration = System.currentTimeMillis() - start;
 
@@ -334,15 +329,17 @@ public class AospAdbMaster {
 
     /**
      * Configures advanced Game Manager intervention configs (target FPS and dynamic downscale).
-     * Supports both standard cmd game set and persistent device_config game_overlay overrides.
+     * Combines cmd game set, persistent device_config game_overlay, and platform_compat downscale
+     * to guarantee resolution scaling across all games (Free Fire, Genshin, PUBG, etc.).
      */
     public static boolean setGameResolutionAndFps(String packageName, float downscale, int targetFps) {
         if (!isValidPackageName(packageName)) return false;
         Log.i(TAG, "Configuring GameManagerService for " + packageName + ": downscale=" + downscale + ", fps=" + targetFps);
         StringBuilder sb = new StringBuilder();
 
-        // 1. Force performance mode
+        // 1. Force performance mode (supports both string and integer enum across all Android versions)
         sb.append("cmd game mode performance \"").append(packageName).append("\" 2>/dev/null; ");
+        sb.append("cmd game mode 2 \"").append(packageName).append("\" 2>/dev/null; ");
 
         // 2. Set cmd game intervention config
         String downscaleArg = (downscale > 0.0f && downscale < 1.0f)
@@ -350,11 +347,15 @@ public class AospAdbMaster {
                 : "disable";
         String fpsArg = (targetFps > 0) ? String.valueOf(targetFps) : "disable";
 
+        // Try both integer mode 2 and mode performance
+        sb.append("cmd game set --mode 2 --downscale ").append(downscaleArg)
+          .append(" --fps ").append(fpsArg)
+          .append(" \"").append(packageName).append("\" 2>/dev/null; ");
         sb.append("cmd game set --mode performance --downscale ").append(downscaleArg)
           .append(" --fps ").append(fpsArg)
           .append(" \"").append(packageName).append("\" 2>/dev/null; ");
 
-        // 3. DeviceConfig persistent overlay fallback (crucial for games not flagged with appCategory="game")
+        // 3. DeviceConfig persistent overlay (crucial for games not flagged with appCategory="game")
         if (downscale > 0.0f && downscale < 1.0f && targetFps > 0) {
             sb.append("cmd device_config put game_overlay \"").append(packageName)
               .append("\" mode=2,downscaleFactor=").append(downscaleArg)
@@ -369,8 +370,17 @@ public class AospAdbMaster {
             sb.append("cmd device_config delete game_overlay \"").append(packageName).append("\" 2>/dev/null; ");
         }
 
-        // 4. Ensure device_config sync is disabled so Phenotype doesn't erase custom interventions
-        sb.append("cmd device_config set_sync_disabled_for_tests persistent 2>/dev/null; ");
+        // 4. Android Platform Compat fallback (forces WindowManager / SurfaceFlinger render downscale)
+        if (downscale > 0.0f && downscale < 1.0f) {
+            int pct = Math.round(downscale * 100.0f);
+            sb.append("am compat enable DOWNSCALE_").append(pct).append(" \"").append(packageName).append("\" 2>/dev/null; ");
+            sb.append("am compat enable DOWNSCALED \"").append(packageName).append("\" 2>/dev/null; ");
+        } else {
+            sb.append("am compat reset-all \"").append(packageName).append("\" 2>/dev/null; ");
+        }
+
+        // 5. Force-stop game so new resolution takes immediate effect upon relaunch
+        sb.append("am force-stop \"").append(packageName).append("\" 2>/dev/null; ");
 
         CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
         return res.exitCode == 0;
@@ -390,10 +400,14 @@ public class AospAdbMaster {
         if (!isValidPackageName(packageName)) return false;
         Log.i(TAG, "Resetting GameManagerService settings for " + packageName + " to OEM default");
         String cmd = "cmd game reset \"" + packageName + "\" 2>&1; " +
+                     "cmd game set --mode 2 --downscale disable --fps disable \"" + packageName + "\" 2>/dev/null; " +
                      "cmd game set --mode performance --downscale disable --fps disable \"" + packageName + "\" 2>/dev/null; " +
                      "cmd game set --mode standard --downscale disable --fps disable \"" + packageName + "\" 2>/dev/null; " +
                      "cmd game mode standard \"" + packageName + "\" 2>/dev/null; " +
-                     "cmd device_config delete game_overlay \"" + packageName + "\" 2>/dev/null";
+                     "cmd device_config delete game_overlay \"" + packageName + "\" 2>/dev/null; " +
+                     "am compat reset-all \"" + packageName + "\" 2>/dev/null; " +
+                     "am compat disable DOWNSCALED \"" + packageName + "\" 2>/dev/null; " +
+                     "am force-stop \"" + packageName + "\" 2>/dev/null; ";
         CommandExecutor.CommandResult res = CommandExecutor.execute(cmd);
         return res.exitCode == 0;
     }
@@ -443,74 +457,6 @@ public class AospAdbMaster {
         Log.i(TAG, "Memory pressure factor reset to normal.");
     }
 
-    /**
-     * Redirects graphics engine to ANGLE (Vulkan backend) for OpenGL ES.
-     * Mined from AOSP GraphicsEnvironment.java & frameworks/base.
-     */
-    public static boolean setAngleVulkanBackend(boolean enable) {
-        Log.i(TAG, "Setting ANGLE Vulkan backend: " + enable);
-        StringBuilder sb = new StringBuilder();
-        if (enable) {
-            sb.append("settings put global angle_gl_driver_all_angle 1 2>/dev/null; ");
-            sb.append("settings put global show_angle_in_use_dialog_box 0 2>/dev/null; ");
-            sb.append("settings put global updatable_driver_all_apps 1 2>/dev/null; ");
-            sb.append("setprop debug.angle.backend 2 2>/dev/null; ");
-            sb.append("setprop persist.graphics.egl angle 2>/dev/null; ");
-        } else {
-            sb.append("settings put global angle_gl_driver_all_angle 0 2>/dev/null; ");
-            sb.append("settings delete global angle_gl_driver_all_angle 2>/dev/null; ");
-            sb.append("setprop debug.angle.backend 0 2>/dev/null; ");
-            sb.append("setprop persist.graphics.egl \"\" 2>/dev/null; ");
-        }
-        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
-        return res.exitCode == 0;
-    }
-
-    /**
-     * Suppresses background logging, tracing, and crash dumps to free CPU cycles.
-     */
-    public static boolean setZeroTelemetryLogSuppression(boolean enable) {
-        Log.i(TAG, "Zero-telemetry log suppression: " + enable);
-        StringBuilder sb = new StringBuilder();
-        if (enable) {
-            sb.append("setprop log.tag.all SUPPRESS 2>/dev/null; ");
-            sb.append("setprop persist.logd.size 64K 2>/dev/null; ");
-            sb.append("logcat -G 64K 2>/dev/null; ");
-            sb.append("logcat -c 2>/dev/null; ");
-            sb.append("setprop persist.traced.enable 0 2>/dev/null; ");
-            sb.append("settings put global dropbox_max_files 0 2>/dev/null; ");
-            sb.append("cmd looper_stats disable 2>/dev/null; ");
-            sb.append("dumpsys binder_calls_stats --disable 2>/dev/null; ");
-        } else {
-            sb.append("setprop log.tag.all \"\" 2>/dev/null; ");
-            sb.append("setprop persist.logd.size 256K 2>/dev/null; ");
-            sb.append("setprop persist.traced.enable 1 2>/dev/null; ");
-            sb.append("settings put global dropbox_max_files 50 2>/dev/null; ");
-            sb.append("cmd looper_stats enable 2>/dev/null; ");
-        }
-        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
-        return res.exitCode == 0;
-    }
-
-    /**
-     * Sets 0ms touch input latency (disables synthetic input resampling).
-     */
-    public static boolean setZeroLatencyTouchInput(boolean enable) {
-        Log.i(TAG, "Setting 0ms Touch Input: " + enable);
-        StringBuilder sb = new StringBuilder();
-        if (enable) {
-            sb.append("setprop ro.input.resampling 0 2>/dev/null; ");
-            sb.append("setprop persist.input.touch.resampling 0 2>/dev/null; ");
-            sb.append("setprop windowsmgr.max_events_per_sec 240 2>/dev/null; ");
-        } else {
-            sb.append("setprop ro.input.resampling 1 2>/dev/null; ");
-            sb.append("setprop persist.input.touch.resampling 1 2>/dev/null; ");
-            sb.append("setprop windowsmgr.max_events_per_sec 90 2>/dev/null; ");
-        }
-        CommandExecutor.CommandResult res = CommandExecutor.execute(sb.toString());
-        return res.exitCode == 0;
-    }
-
     // ---------------- Kernel VM tuning (reversible, only on nodes this kernel exposes) ----------------
 
     private static final java.util.regex.Pattern NODE_OK =
@@ -518,10 +464,12 @@ public class AospAdbMaster {
     private static final String VM_PREFS = "kernel_vm";
 
     /** Builds the (path, value) list for THIS device. Pure function, unit-tested. */
-    static java.util.LinkedHashMap<String, String> kernelVmTargets(java.util.List<String> blockDevs, boolean byteLimitsInUse) {
+    static java.util.LinkedHashMap<String, String> kernelVmTargets(java.util.List<String> blockDevs, boolean byteLimitsInUse, boolean hasZram) {
         java.util.LinkedHashMap<String, String> m = new java.util.LinkedHashMap<>();
-        m.put("/proc/sys/vm/page-cluster", "0");
-        m.put("/proc/sys/vm/swappiness", "160");
+        if (hasZram) {                   // swappiness>100 only makes sense for in-RAM compressed swap
+            m.put("/proc/sys/vm/page-cluster", "0");
+            m.put("/proc/sys/vm/swappiness", "160");
+        }
         m.put("/proc/sys/vm/watermark_boost_factor", "0");
         m.put("/proc/sys/vm/compaction_proactiveness", "20");
         m.put("/proc/sys/vm/vfs_cache_pressure", "50");
@@ -532,6 +480,12 @@ public class AospAdbMaster {
         }
         for (String d : blockDevs) m.put("/sys/block/" + d + "/queue/read_ahead_kb", "512");
         return m;
+    }
+
+    static boolean hasZramDevice(String ls) {
+        if (ls == null) return false;
+        for (String n : ls.trim().split("\\s+")) if (n.matches("zram\\d+")) return true;
+        return false;
     }
 
     static java.util.List<String> parseBlockDevices(String ls) {
@@ -568,7 +522,7 @@ public class AospAdbMaster {
         boolean byteLimits = !"0".equals(bytes.get("/proc/sys/vm/dirty_bytes")) && bytes.get("/proc/sys/vm/dirty_bytes") != null
                 || !"0".equals(bytes.get("/proc/sys/vm/dirty_background_bytes")) && bytes.get("/proc/sys/vm/dirty_background_bytes") != null;
 
-        java.util.LinkedHashMap<String, String> targets = kernelVmTargets(devs, byteLimits);
+        java.util.LinkedHashMap<String, String> targets = kernelVmTargets(devs, byteLimits, hasZramDevice(ls == null ? null : ls.stdout));
         java.util.Map<String, String> before = readNodes(targets.keySet());
 
         StringBuilder w = new StringBuilder();

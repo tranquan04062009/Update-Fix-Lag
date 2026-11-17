@@ -453,17 +453,38 @@ public class GameBoosterManager {
             AospAdbMaster.setThermalGovernorOverride(true);
             AospAdbMaster.setWindowBlurDisabled(true);
             AospAdbMaster.applyDeviceConfigLowRam(true);
+
+            // Phase 9: Display & SurfaceFlinger Overdrive
+            DisplayPipelineEngine.setForceGpuComposition(true);
+            DisplayPipelineEngine.setDisplayColorDciP3(true);
+            DisplayPipelineEngine.setIgnoreOrientationRequests(true);
+
+            // Phase 10: Ultra-low latency Audio & Touch Pipeline
+            AudioInputOverdrive.setAaudioMmapOverdrive(true);
+            AudioInputOverdrive.setTouchFilterOverdrive(true);
+            AudioInputOverdrive.setSystemFeedbackSuppressed(true);
+
+            // Phase 11: PowerHAL & Doze Exemption
+            PowerHalDozeGovernor.setFixedPerformanceMode(true);
+            PowerHalDozeGovernor.setAdaptiveBatteryDisabled(true);
+            if (targetPackage != null && !targetPackage.isEmpty()) {
+                PowerHalDozeGovernor.exemptGameFromDoze(targetPackage, true);
+            }
+
+            // Phase 12: Memory & LMKD Tuning
+            KernelMemoryEngine.tuneLmkdPsi(true);
+            KernelMemoryEngine.killAllCachedProcesses();
+
+            // Phase 13: App Standby Buckets & Junk Freeze
+            AppOpsStandbyManager.enforceRestrictedBuckets(context, targetPackage);
+            VendorLimiterBypass.bypassAllLimiters(context);
+            OemBloatwareFreezer.freezeBrandBloat(context);
+            NetworkAudioOptimizer.setGameDataPriority(true);
             AospAdbMaster.setTouchSensitivityBoost(true);
             AospAdbMaster.setSurfaceFlingerZeroLatency(true);
             AospAdbMaster.setLowLatencyNetworking(true);
-            AospAdbMaster.setAngleVulkanBackend(true);
-            AospAdbMaster.setZeroTelemetryLogSuppression(true);
-            AospAdbMaster.setZeroLatencyTouchInput(true);
             AospAdbMaster.applyKernelVmOptimization(context);
-            CommandExecutor.execute("cmd jobscheduler cancel-all 2>/dev/null; cmd activity set-freeze-cached-apps true 2>/dev/null; ");
-            if (targetPackage != null && PerformanceEngine.isValidPackageName(targetPackage)) {
-                AospAdbMaster.setGameInterventions(targetPackage, 120, 0.85f);
-            }
+            // Game resolution/FPS interventions are applied ONLY from the Game tab, when the user chooses them.
 
             // Commit snapshot as APPLIED
             snapshot.state = "APPLIED";
@@ -564,11 +585,21 @@ public class GameBoosterManager {
             AospAdbMaster.setTouchSensitivityBoost(false);
             AospAdbMaster.setSurfaceFlingerZeroLatency(false);
             AospAdbMaster.setLowLatencyNetworking(false);
-            AospAdbMaster.setAngleVulkanBackend(false);
-            AospAdbMaster.setZeroTelemetryLogSuppression(false);
-            AospAdbMaster.setZeroLatencyTouchInput(false);
             AospAdbMaster.restoreKernelVm(context);
-            CommandExecutor.execute("cmd activity set-freeze-cached-apps false 2>/dev/null; ");
+
+            // 8. Restore Advanced Engines
+            DisplayPipelineEngine.setForceGpuComposition(false);
+            DisplayPipelineEngine.setDisplayColorDciP3(false);
+            DisplayPipelineEngine.setIgnoreOrientationRequests(false);
+            AudioInputOverdrive.setAaudioMmapOverdrive(false);
+            AudioInputOverdrive.setTouchFilterOverdrive(false);
+            AudioInputOverdrive.setSystemFeedbackSuppressed(false);
+            PowerHalDozeGovernor.setFixedPerformanceMode(false);
+            PowerHalDozeGovernor.setAdaptiveBatteryDisabled(false);
+            KernelMemoryEngine.tuneLmkdPsi(false);
+            VendorLimiterBypass.restoreLimiters(context);
+            OemBloatwareFreezer.unfreezeBrandBloat(context);
+            NetworkAudioOptimizer.setGameDataPriority(false);
 
             // Stop Booster Foreground Service
             stopBoosterService(context);

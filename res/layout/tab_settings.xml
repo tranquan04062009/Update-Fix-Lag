@@ -13,332 +13,429 @@
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="100dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="112dp">
 
-        <!-- VERSION & UPDATE CARD -->
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:background="@drawable/bg_card_bento">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Phiên bản ứng dụng"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_settings_version_sub"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Phiên bản 1.0.2 (Bản chính thức)"
-                    android:textColor="#A3ABBB"
-                    android:textSize="11.5sp"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btn_settings_check_update"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:background="@drawable/bg_btn_secondary"
-                android:text="Kiểm tra"
-                android:textColor="#2DD4B0"
-                android:textSize="11.5sp"
-                android:textStyle="bold"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
-        </LinearLayout>
-
-        <!-- PERFORMANCE PANEL (built in code: diagnosis + AOSP tweaks) -->
+            android:paddingStart="4dp"
+            android:text="Hệ thống"
+            android:textColor="#F3F5F9"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:letterSpacing="-0.01" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="Chẩn đoán, tinh chỉnh và thông tin thiết bị"
+            android:textColor="#6B7385"
+            android:textSize="13sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="4dp"
+            android:text="CHẨN ĐOÁN &amp; TINH CHỈNH"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
         <LinearLayout
             android:id="@+id/ll_perf_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
-
-        <!-- ANIMATION SPEED SCALER -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="4dp"
+            android:text="HIỆU NĂNG NHANH"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginTop="10dp"
             android:background="@drawable/bg_card_bento">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tốc độ chuyển cảnh"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tối ưu hóa thời gian phản hồi và chuyển cảnh mượt mà giữa các ứng dụng."
-                android:textColor="#A3ABBB"
-                android:textSize="11.5sp"
-                android:layout_marginTop="2dp" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp">
-
+                android:gravity="center_vertical"
+                android:padding="16dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quản lý RAM chạy ngầm"
+        android:textColor="#F3F5F9"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nén và đóng băng tiến trình nền sớm hơn."
+        android:textColor="#6B7385"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+                </LinearLayout>
+                <Switch
+                    android:id="@+id/switch_settings_lowram"
+                    style="@style/ShadcnSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:showText="false"
+                    android:textOn=""
+                    android:textOff=""
+                    android:switchMinWidth="52dp"
+                    android:thumbTextPadding="0dp"
+                    android:splitTrack="false"
+                    android:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/bg_divider" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phản hồi chạm nhanh"
+        android:textColor="#F3F5F9"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rút ngắn thời gian nhấn giữ để thao tác nhạy hơn."
+        android:textColor="#6B7385"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+                </LinearLayout>
+                <Switch
+                    android:id="@+id/switch_settings_touch"
+                    style="@style/ShadcnSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:showText="false"
+                    android:textOn=""
+                    android:textOff=""
+                    android:switchMinWidth="52dp"
+                    android:thumbTextPadding="0dp"
+                    android:splitTrack="false"
+                    android:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/bg_divider" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tối ưu hiển thị (thử nghiệm)"
+        android:textColor="#F3F5F9"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thử giảm độ trễ vẽ khung hình. Hiệu quả tùy máy."
+        android:textColor="#6B7385"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+                </LinearLayout>
+                <Switch
+                    android:id="@+id/switch_settings_zerolatency"
+                    style="@style/ShadcnSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:showText="false"
+                    android:textOn=""
+                    android:textOff=""
+                    android:switchMinWidth="52dp"
+                    android:thumbTextPadding="0dp"
+                    android:splitTrack="false"
+                    android:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/bg_divider" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tốc độ chuyển cảnh"
+        android:textColor="#F3F5F9"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+                <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Điều chỉnh thời gian hoạt ảnh của hệ thống."
+        android:textColor="#6B7385"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
                 <TextView
                     android:id="@+id/pill_anim_0"
                     android:layout_width="0dp"
-                    android:layout_height="38dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:layout_marginEnd="4dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_chip_pill"
-                    android:text="Tắt hiệu ứng"
+                    android:text="Tắt"
                     android:textColor="#A3ABBB"
-                    android:textSize="11.5sp" />
-
+                    android:textSize="12sp" />
                 <TextView
                     android:id="@+id/pill_anim_05"
                     android:layout_width="0dp"
-                    android:layout_height="38dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_chip_pill_active"
-                    android:text="0.5x (Nhanh)"
-                    android:textColor="#2DD4B0"
-                    android:textSize="11.5sp"
-                    android:textStyle="bold" />
-
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip_pill"
+                    android:text="0.5x"
+                    android:textColor="#A3ABBB"
+                    android:textSize="12sp" />
                 <TextView
                     android:id="@+id/pill_anim_1"
                     android:layout_width="0dp"
-                    android:layout_height="38dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:background="@drawable/bg_chip_pill"
-                    android:text="1.0x (Mặc định)"
-                    android:textColor="#A3ABBB"
-                    android:textSize="11.5sp" />
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:background="@drawable/bg_chip_pill_active"
+                    android:text="1.0x (gốc)"
+                    android:textColor="#2DD4B0"
+                    android:textSize="12sp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-
-        <!-- BACKGROUND LOW-RAM TUNER -->
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card_bento">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginEnd="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tối ưu hóa RAM chạy ngầm"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tự động thu hồi RAM và đóng băng các ứng dụng không hoạt động."
-                    android:textColor="#A3ABBB"
-                    android:textSize="11.5sp"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <Switch
-                android:id="@+id/switch_settings_lowram"
-                style="@style/ShadcnSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:showText="false"
-                android:textOn=""
-                android:textOff=""
-                android:switchMinWidth="48dp"
-                android:thumbTextPadding="0dp"
-                android:splitTrack="false"
-                android:track="@drawable/switch_track"
-                android:thumb="@drawable/switch_thumb" />
-        </LinearLayout>
-
-        <!-- TOUCH SENSITIVITY BOOSTER -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card_bento">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginEnd="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Độ nhạy cảm ứng &amp; Phản hồi nhanh"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tăng tốc độ quét màn hình cảm ứng và giảm độ trễ phản hồi khi chạm."
-                    android:textColor="#A3ABBB"
-                    android:textSize="11.5sp"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <Switch
-                android:id="@+id/switch_settings_touch"
-                style="@style/ShadcnSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:showText="false"
-                android:textOn=""
-                android:textOff=""
-                android:switchMinWidth="48dp"
-                android:thumbTextPadding="0dp"
-                android:splitTrack="false"
-                android:track="@drawable/switch_track"
-                android:thumb="@drawable/switch_thumb" />
-        </LinearLayout>
-
-        <!-- ZERO LATENCY RENDERING OPTIMIZER -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card_bento">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginEnd="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tối ưu hóa khung hình &amp; Hiển thị"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Loại bỏ độ trễ vẽ bề mặt và tối ưu hiệu suất mượt mà cho toàn hệ thống."
-                    android:textColor="#A3ABBB"
-                    android:textSize="11.5sp"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <Switch
-                android:id="@+id/switch_settings_zerolatency"
-                style="@style/ShadcnSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:showText="false"
-                android:textOn=""
-                android:textOff=""
-                android:switchMinWidth="48dp"
-                android:thumbTextPadding="0dp"
-                android:splitTrack="false"
-                android:track="@drawable/switch_track"
-                android:thumb="@drawable/switch_thumb" />
-        </LinearLayout>
-
-        <!-- WIDGET GUIDE CARD -->
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="4dp"
+            android:text="THIẾT BỊ"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card_bento">
-
+            android:background="@drawable/bg_card_bento"
+            android:padding="16dp">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tiện ích Màn hình chính (Widget)"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nhấn giữ ngoài màn hình chính → chọn Widgets → thêm Z-RAM Extreme để dọn dẹp RAM 1-chạm cực nhanh mà không cần mở ứng dụng!"
-                android:textColor="#A3ABBB"
-                android:textSize="12sp"
-                android:lineSpacingExtra="3dp"
-                android:layout_marginTop="4dp" />
+        android:id="@+id/tv_settings_device_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đang đọc thông tin thiết bị…"
+        android:textColor="#A3ABBB"
+        android:textSize="12.5sp"
+        android:lineSpacingMultiplier="1.2"
+        android:textIsSelectable="true" />
         </LinearLayout>
-
-        <!-- DEVICE HARDWARE SPECS CARD -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="4dp"
+            android:text="ỨNG DỤNG"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginTop="10dp"
             android:background="@drawable/bg_card_bento">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Thông tin thiết bị"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_settings_device_info"
-                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phiên bản và cập nhật"
+        android:textColor="#F3F5F9"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+                    <TextView
+        android:id="@+id/tv_settings_version_sub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đang kiểm tra…"
+        android:textColor="#6B7385"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+                </LinearLayout>
+                <Button
+                    android:id="@+id/btn_settings_check_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_btn_secondary"
+                    android:stateListAnimator="@null"
+                    android:text="Kiểm tra"
+                    android:textAllCaps="false"
+                    android:textColor="#2DD4B0"
+                    android:textSize="12.5sp"
+                    android:textStyle="bold"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/bg_divider" />
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Thiết bị: Samsung Galaxy A42 5G (SM-A426N)\nBộ xử lý: Qualcomm Snapdragon 750G 5G\nHệ điều hành: Android 13\nTrạng thái bộ nhớ: Đang hoạt động tối ưu"
-                android:textColor="#A3ABBB"
-                android:textSize="12sp"
-                android:lineSpacingExtra="4dp"
-                android:layout_marginTop="6dp" />
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Widget màn hình chính"
+        android:textColor="#F3F5F9"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+                <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nhấn giữ màn hình chính, chọn Widgets rồi thêm Z-RAM để dọn RAM chỉ với một chạm."
+        android:textColor="#6B7385"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+            </LinearLayout>
         </LinearLayout>
-
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="4dp"
+            android:text="CÔNG CỤ NÂNG CAO"
+            android:textColor="#6B7385"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_bento">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Terminal shell"
+        android:textColor="#F3F5F9"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+                    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chạy lệnh qua Shizuku hoặc Root. Chỉ dành cho người dùng biết rõ lệnh mình nhập."
+        android:textColor="#6B7385"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+                </LinearLayout>
+                <Button
+                    android:id="@+id/btn_open_terminal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_btn_secondary"
+                    android:stateListAnimator="@null"
+                    android:text="Mở"
+                    android:textAllCaps="false"
+                    android:textColor="#2DD4B0"
+                    android:textSize="12.5sp"
+                    android:textStyle="bold"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="18dp" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

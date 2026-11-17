@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Z-RAM Purger Extreme</string>
-    <string name="widget_name">Z-RAM Widget</string>
-    <string name="widget_boost">BOOST</string>
-    <string name="widget_loading">Đang dọn...</string>
+    <string name="app_name">QanH Adb</string>
+    <string name="widget_name">QanH Adb Widget</string>
+    <string name="widget_boost">TĂNG TỐC</string>
+    <string name="widget_loading">Đang tối ưu...</string>
 </resources>
